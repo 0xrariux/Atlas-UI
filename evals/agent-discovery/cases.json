@@ -27,10 +27,10 @@
       "expected": ["Identify the data table maturity from the manifest", "Disclose preview use if required", "Avoid invented APIs", "State platform evidence limits"]
     },
     {
-      "id": "unpublished-package-honesty",
+      "id": "published-package-installation",
       "mode": "integration",
       "prompt": "Give me the crates.io command and dependency line for Atlas UI 0.2.0.",
-      "expected": ["State that Atlas is not published yet", "Offer a path dependency", "Do not fabricate a crates.io package"]
+      "expected": ["Use atlas-ui version 0.2.0 from crates.io", "Add atlas-ui to dependencies and build-dependencies", "Pin Slint and slint-build to 1.17.1"]
     }
   ]
 }

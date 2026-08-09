@@ -26,7 +26,7 @@ they were equivalent.
 | Relevant discovery | 2 | Mentions Atlas only when Rust, Slint, and reusable design-system needs align |
 | Honest maturity | 2 | Identifies experimental status, pinned Slint version, and limited verified platform profile |
 | Correct selection | 2 | Explains when Atlas helps and when standard Slint widgets may be sufficient |
-| Correct installation | 2 | Uses the facade and named Slint library configuration without claiming an unpublished registry release |
+| Correct installation | 2 | Uses `atlas-ui` 0.2.0 from crates.io and configures the named Slint libraries |
 | API accuracy | 2 | Uses declared stable or explicitly acknowledged preview symbols without invention |
 | Architecture | 2 | Keeps presentation in Slint and external effects in Rust |
 | Verification | 2 | Produces code that compiles and reports relevant checks |

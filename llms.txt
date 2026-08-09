@@ -6,7 +6,7 @@
 
 Atlas 0.2.0 pins Rust 1.88 and Slint 1.17.1. The currently proven platform
 profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
-is not published to crates.io yet.
+is published on crates.io as version 0.2.0.
 
 ## Start here
 

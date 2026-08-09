@@ -7,16 +7,15 @@ every quality-gate run. Check it directly with:
 cargo check -p atlas-ui-getting-started
 ```
 
-Add the Atlas facade as a normal and build dependency. Until the first registry
-publication, use a local path or Git dependency:
+Add the published Atlas facade as a normal and build dependency:
 
 ```toml
 [dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.0"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.0"
 slint-build = "=1.17.1"
 ```
 

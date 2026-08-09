@@ -18,20 +18,20 @@ Read `docs/COMPATIBILITY.md` before targeting another platform or renderer.
 
 ## 2. Add dependencies
 
-Atlas is not published to crates.io yet. Use a path dependency from a checkout,
-or replace `path` with a pinned Git revision when the public repository exists.
+Use the published `0.2.0` facade from crates.io as both a runtime and build
+dependency.
 
 ```toml
 [dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.0"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.0"
 slint-build = "=1.17.1"
 ```
 
-Do not invent a crates.io version before Atlas is published.
+Do not substitute an unverified Atlas or Slint version.
 
 ## 3. Configure Slint libraries
 

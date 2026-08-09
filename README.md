@@ -131,11 +131,22 @@ other Slint libraries.
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
 
-## Local development
+## Installation and local development
 
-Atlas `0.2.0` is not published to a registry yet. The workspace uses the
-`atlas-ui` facade crate locally; its build helper exposes registry-safe named
-Slint imports without depending on the monorepo directory layout.
+Atlas `0.2.0` is available from crates.io. Add the facade as both a runtime and
+build dependency so its helper can expose registry-safe named Slint imports:
+
+```toml
+[dependencies]
+atlas-ui = "=0.2.0"
+slint = "=1.17.1"
+
+[build-dependencies]
+atlas-ui = "=0.2.0"
+slint-build = "=1.17.1"
+```
+
+For repository development, use the workspace commands below.
 
 ```bash
 cargo check -p atlas-ui-getting-started

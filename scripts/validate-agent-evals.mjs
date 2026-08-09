@@ -26,7 +26,7 @@ for (const required of [
   "avoid-overselection-small-ui",
   "integrate-stable-settings-screen",
   "preview-disclosure",
-  "unpublished-package-honesty",
+  "published-package-installation",
 ]) {
   if (!identifiers.has(required)) failures.push(`missing required case ${required}`);
 }
