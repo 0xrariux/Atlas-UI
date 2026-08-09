@@ -8,8 +8,10 @@ Atlas does not replace Slint. Slint provides the declarative language, runtime,
 and rendering foundation; Atlas provides reusable visual and interaction
 contracts on top of it.
 
-Atlas `0.2.0` requires Rust `1.88` and pins Slint `1.17.1`. The currently proven
-profile is macOS arm64 with Slint's software renderer at scale factor 1.
+Atlas `0.2.0` effectively requires Rust `1.92` and pins Slint `1.17.1`. Its
+responsive preview contracts currently require
+`SLINT_ENABLE_EXPERIMENTAL_FEATURES=1`. The proven profile is macOS arm64 with
+Slint's software renderer at scale factor 1.
 
 - [Project repository](https://github.com/rariux/Atlas-UI)
 - [Getting started](https://github.com/rariux/Atlas-UI/blob/main/GETTING_STARTED.md)

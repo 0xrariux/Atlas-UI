@@ -12,6 +12,8 @@
 
 <p align="center"><strong>Powered by <a href="https://github.com/slint-ui/slint">Slint</a></strong></p>
 
+<p align="center"><sub><strong>AI-agent friendly</strong> · Structured manifests, documented contracts, and deterministic validation for human–AI collaboration. <a href="docs/AI_INTEGRATION_GUIDE.md">Agent guide</a></sub></p>
+
 Writing Rust is great; pairing it with a modern interface for your applications is even better.
 
 Atlas UI is a native component library and visual foundation for **Rust and
@@ -148,6 +150,17 @@ slint = "=1.17.1"
 atlas-ui = "=0.2.0"
 slint-build = "=1.17.1"
 ```
+
+Atlas `0.2.0` currently wraps Slint's experimental `FlexboxLayout`. Enable it
+for the Slint compiler used by your application:
+
+```toml
+# .cargo/config.toml
+[env]
+SLINT_ENABLE_EXPERIMENTAL_FEATURES = "1"
+```
+
+The effective Rust MSRV is `1.92`, as required by `slint-build 1.17.1`.
 
 For repository development, use the workspace commands below.
 

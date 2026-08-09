@@ -19,6 +19,17 @@ atlas-ui = "=0.2.0"
 slint-build = "=1.17.1"
 ```
 
+Atlas `0.2.0` uses Slint's experimental `FlexboxLayout` behind Atlas preview
+contracts. Enable experimental Slint compilation in the consumer repository:
+
+```toml
+# .cargo/config.toml
+[env]
+SLINT_ENABLE_EXPERIMENTAL_FEATURES = "1"
+```
+
+Rust `1.92` or newer is required by `slint-build 1.17.1`.
+
 Configure the named Slint libraries and compile your entry point:
 
 ```rust
