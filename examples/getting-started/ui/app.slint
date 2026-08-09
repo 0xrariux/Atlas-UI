@@ -1,0 +1,30 @@
+import {
+    AtlasSettings, ThemeMode, TypographyScale, AtlasGrid, AtlasTheme,
+    AtlasHeading, HeadingLevel, AtlasParagraph,
+    AtlasTextField, AtlasCheckbox, AtlasButton, ButtonTone
+} from "@atlas-ui/stable.slint";
+export { AtlasSettings, ThemeMode, TypographyScale }
+    from "@atlas-ui/stable.slint";
+
+export component App inherits Window {
+    callback create-requested();
+
+    title: "Atlas UI · Getting started";
+    preferred-width: AtlasGrid.breakpoint-compact;
+    preferred-height: AtlasGrid.content-narrow;
+    background: AtlasTheme.canvas;
+
+    VerticalLayout {
+        padding: AtlasGrid.space-8;
+        spacing: AtlasGrid.space-4;
+        AtlasHeading { text: "Create a workspace"; level: HeadingLevel.h1; }
+        AtlasParagraph { text: "A compiled consumer with controlled application intent."; muted: true; }
+        AtlasTextField { label: "Project"; placeholder: "atlas-ui"; required: true; }
+        AtlasCheckbox { label: "Initialize documentation"; checked: true; }
+        AtlasButton {
+            text: "Create";
+            tone: ButtonTone.primary;
+            clicked => { root.create-requested(); }
+        }
+    }
+}

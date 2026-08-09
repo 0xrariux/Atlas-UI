@@ -1,0 +1,125 @@
+name: Rendering or component defect
+description: Report a reproducible visual, interaction, accessibility, or component problem.
+title: "[Defect]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve Atlas UI. Remove secrets, personal data, and proprietary content before submitting.
+
+  - type: dropdown
+    id: defect_kind
+    attributes:
+      label: Problem category
+      options:
+        - Rendering or layout
+        - Interaction or focus
+        - Accessibility
+        - Responsive behavior
+        - Theme, density, or tokens
+        - API or component behavior
+        - Performance
+        - Documentation or example
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: affected_surface
+    attributes:
+      label: Affected component or subsystem
+      description: Name the component, template, facade, or package involved.
+      placeholder: AtlasDataTable from preview.slint
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Atlas and Slint versions
+      placeholder: Atlas 0.2.0, Slint 1.17.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, architecture, renderer, scale factor, theme, density, and viewport or window size where relevant.
+      placeholder: |
+        OS: macOS 15
+        Architecture: arm64
+        Renderer: software
+        Scale factor: 1
+        Theme and density: dark, normal
+        Window or viewport: 1080 x 900
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide the smallest code sample, repository link, and exact steps that reproduce the problem.
+      placeholder: |
+        1. Import ...
+        2. Set ...
+        3. Resize the window to ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Describe the observable result that should occur.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Describe what happens instead, including its practical impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Visual evidence or logs
+      description: Attach screenshots, recordings, diffs, or relevant logs. Redact sensitive information.
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Regression status
+      options:
+        - Unknown
+        - Not a regression
+        - Regression from an earlier Atlas version
+        - Regression after a Slint update
+    validations:
+      required: true
+
+  - type: input
+    id: last_working
+    attributes:
+      label: Last known working version
+      description: Complete this when the behavior is a regression.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Submission checklist
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: I identified whether the affected API is stable or preview.
+          required: true
+        - label: I removed secrets, personal data, and proprietary content.
+          required: true
+        - label: I understand that Atlas UI is experimental and provided as is.
+          required: true

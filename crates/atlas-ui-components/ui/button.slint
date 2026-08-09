@@ -1,0 +1,94 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasTypography, AtlasControlTokens, AtlasSettings, Density
+} from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, ComponentFrame, FocusRing } from "@atlas-ui-core/core.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+
+export enum ButtonTone { neutral, primary, secondary, danger, live }
+
+export component AtlasButton inherits ComponentFrame {
+    in property <string> text;
+    in property <bool> preview-focus-visible: false;
+    in property <bool> large: false;
+    in property <bool> show-icon: false;
+    in property <IconName> icon-name: IconName.none;
+    in property <bool> loading: false;
+    in property <bool> contained-focus: false;
+    in property <ButtonTone> tone: ButtonTone.neutral;
+    callback clicked();
+    callback traversal-requested(bool);
+    callback dismiss-requested();
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+    accessible-description: root.loading ? "Loading" : "";
+    accessible-id: "atlas-button-" + root.text;
+    accessible-enabled: root.enabled && !root.loading;
+    accessible-action-default => { action.trigger(); }
+
+    interactive: true;
+    horizontal-stretch: 0;
+    density: root.large ? Density.comfortable : AtlasSettings.density;
+    hovered: action.hovered;
+    pressed: action.pressed;
+    min-width: label.preferred-width + root.control-padding-x * 2
+        + (root.show-icon ? root.control-height : AtlasGrid.zero);
+    height: root.control-height;
+    border-color: tone == ButtonTone.danger ? AtlasTheme.danger
+        : tone == ButtonTone.live ? AtlasTheme.warning
+        : tone == ButtonTone.primary ? AtlasControlTokens.primary-background
+        : AtlasControlTokens.border;
+    background: tone == ButtonTone.primary
+        ? (root.pressed ? AtlasControlTokens.primary-background-pressed
+            : root.hovered ? AtlasControlTokens.primary-background-hover
+            : AtlasControlTokens.primary-background)
+        : (root.pressed ? AtlasTheme.surface-pressed
+            : root.hovered ? AtlasTheme.surface-hover
+            : root.selected ? AtlasTheme.surface-selected : AtlasTheme.surface);
+    opacity: root.enabled && !root.loading ? 1 : AtlasControlTokens.disabled-opacity;
+
+    if root.show-icon: AtlasIcon {
+        x: root.control-padding-x;
+        y: (parent.height - AtlasTypography.size-title-small) / 2;
+        width: AtlasTypography.size-title-small;
+        height: AtlasTypography.size-title-small;
+        size: AtlasTypography.size-title-small;
+        name: root.loading ? IconName.none : root.icon-name;
+        icon-color: root.enabled ? AtlasControlTokens.foreground : AtlasControlTokens.foreground-disabled;
+    }
+
+    label := Text {
+        x: root.show-icon ? root.control-height : AtlasGrid.zero;
+        width: root.show-icon ? parent.width - self.x - root.control-padding-x : parent.width;
+        text: root.loading ? "Loading…" : root.text;
+        color: root.enabled
+            ? (root.tone == ButtonTone.primary ? AtlasControlTokens.primary-foreground : AtlasControlTokens.foreground)
+            : AtlasControlTokens.foreground-disabled;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body-small;
+        font-weight: AtlasTypography.weight-semibold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    FocusRing {
+        x: -(AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        y: -(AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        width: parent.width + 2 * (AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        height: parent.height + 2 * (AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        active: action.focus-visible || root.preview-focus-visible;
+    }
+    action := ActionArea {
+        enabled: root.enabled && !root.loading;
+        contained-focus: root.contained-focus;
+        selected: root.selected;
+        accessible-name: root.text;
+        action-description: root.loading ? "Loading" : "";
+        automation-id: "atlas-button-" + root.text;
+        activated => { root.clicked(); }
+        traversal-requested(backwards) => { root.traversal-requested(backwards); }
+        dismiss-requested => { root.dismiss-requested(); }
+    }
+    public function focus-from-keyboard() { action.focus-from-keyboard(); }
+}

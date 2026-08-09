@@ -1,0 +1,32 @@
+import { AtlasGrid, AtlasShape, AtlasTypography, AtlasStatusTokens } from "@atlas-ui-tokens/tokens.slint";
+
+export enum BadgeTone { neutral, healthy, warning, danger, info, live }
+
+export component AtlasBadge inherits Rectangle {
+    in property <string> text;
+    in property <BadgeTone> tone: BadgeTone.neutral;
+    in property <bool> dot: false;
+    private property <color> tone-color: root.tone == BadgeTone.healthy ? AtlasStatusTokens.healthy
+        : root.tone == BadgeTone.warning ? AtlasStatusTokens.warning
+        : root.tone == BadgeTone.danger ? AtlasStatusTokens.danger
+        : root.tone == BadgeTone.info ? AtlasStatusTokens.info
+        : root.tone == BadgeTone.live ? AtlasStatusTokens.live : AtlasStatusTokens.neutral;
+    height: AtlasGrid.space-6;
+    min-width: badge-text.preferred-width + AtlasGrid.space-4 + (root.dot ? AtlasGrid.space-4 : AtlasGrid.zero);
+    background: AtlasStatusTokens.background;
+    border-width: AtlasShape.border-width; border-color: root.tone-color; border-radius: AtlasShape.radius-round;
+    accessible-role: AccessibleRole.text; accessible-label: root.text;
+    if root.dot: Rectangle {
+        x: AtlasGrid.space-2;
+        y: (parent.height - AtlasGrid.space-2) / 2;
+        width: AtlasGrid.space-2; height: AtlasGrid.space-2;
+        border-radius: AtlasShape.radius-round; background: root.tone-color; accessible-role: AccessibleRole.none;
+    }
+    badge-text := Text {
+        x: root.dot ? AtlasGrid.space-5 : AtlasGrid.space-2;
+        width: parent.width - self.x - AtlasGrid.space-2;
+        text: root.text; color: root.tone-color; font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-caption; font-weight: AtlasTypography.weight-semibold;
+        horizontal-alignment: center; vertical-alignment: center;
+    }
+}

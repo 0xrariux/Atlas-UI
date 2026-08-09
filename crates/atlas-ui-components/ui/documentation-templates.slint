@@ -1,0 +1,151 @@
+import { ScrollView } from "std-widgets.slint";
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography
+} from "@atlas-ui-tokens/tokens.slint";
+import { AtlasHeading, AtlasParagraph, HeadingLevel } from "editorial.slint";
+import { AtlasBadge, BadgeTone } from "badge.slint";
+import { AtlasAdmonition, AtlasDocumentTable, AtlasTerminalBlock, AdmonitionTone, DocumentTableRow } from "rich-content.slint";
+import { AtlasStepper, StepItem } from "final-wave.slint";
+
+export enum RoadmapStatusTone { neutral, positive, warning, negative }
+export struct RoadmapStatusRow {
+    label: string,
+    owner: string,
+    status: string,
+    detail: string,
+    tone: RoadmapStatusTone,
+}
+
+export component AtlasRoadmapContentTemplate inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <string> eyebrow;
+    in property <string> title;
+    in property <string> summary;
+    in property <string> notice-title;
+    in property <string> notice-body;
+    in property <[RoadmapStatusRow]> status-rows;
+    in property <[DocumentTableRow]> status-table-rows;
+    in property <[StepItem]> phases;
+    in property <int> current-phase: 0;
+    in property <string> audit-command;
+    in property <string> audit-output;
+    out property <bool> compact: root.reference-width < AtlasGrid.breakpoint-compact;
+    callback phase-requested(int);
+    callback copy-command-requested(string);
+
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.region;
+    accessible-label: root.title;
+    ScrollView {
+        viewport-width: parent.width;
+        VerticalLayout {
+            width: parent.width - AtlasGrid.space-2;
+            spacing: AtlasGrid.space-5;
+            AtlasBadge {
+                width: AtlasGrid.column-min-width * 2;
+                text: root.eyebrow;
+                tone: BadgeTone.info;
+            }
+            AtlasHeading {
+                height: root.compact ? AtlasTypography.line-display * 3 : AtlasTypography.line-display * 2;
+                text: root.title;
+                level: HeadingLevel.h1;
+                anchor-id: "overview";
+            }
+            AtlasParagraph {
+                height: root.compact ? AtlasTypography.line-lead * 5 : AtlasTypography.line-lead * 3;
+                text: root.summary;
+                lead: true;
+                muted: true;
+            }
+            AtlasAdmonition {
+                height: root.compact ? AtlasGrid.space-12 * 3 : AtlasGrid.space-12 * 2;
+                title: root.notice-title;
+                body: root.notice-body;
+                tone: AdmonitionTone.warning;
+            }
+            AtlasHeading {
+                height: AtlasTypography.line-heading;
+                text: "Current status";
+                level: HeadingLevel.h2;
+                anchor-id: "status";
+            }
+            if !root.compact: AtlasDocumentTable {
+                height: AtlasGrid.space-10 * (root.status-rows.length + 1);
+                accessible-name: "Current roadmap status";
+                columns: [
+                    { title: "Area", width: (root.width - AtlasGrid.space-8) * 0.22 },
+                    { title: "Owner", width: (root.width - AtlasGrid.space-8) * 0.14 },
+                    { title: "Status", width: (root.width - AtlasGrid.space-8) * 0.14 },
+                    { title: "Evidence", width: (root.width - AtlasGrid.space-8) * 0.50 }
+                ];
+                rows: root.status-table-rows;
+            }
+            if root.compact: Rectangle {
+                height: root.status-rows.length * (AtlasGrid.space-12 * 2 + AtlasGrid.space-2);
+                background: AtlasTheme.transparent;
+                VerticalLayout {
+                    spacing: AtlasGrid.space-2;
+                    for row in root.status-rows: Rectangle {
+                        height: AtlasGrid.space-12 * 2;
+                        background: AtlasTheme.surface;
+                        border-width: AtlasShape.border-width;
+                        border-color: row.tone == RoadmapStatusTone.negative ? AtlasTheme.danger
+                            : row.tone == RoadmapStatusTone.warning ? AtlasTheme.warning
+                            : row.tone == RoadmapStatusTone.positive ? AtlasTheme.success
+                            : AtlasTheme.border-subtle;
+                        border-radius: AtlasShape.radius-control;
+                        Text {
+                            x: AtlasGrid.space-3; y: AtlasGrid.space-2;
+                            width: parent.width - AtlasGrid.space-6; height: AtlasGrid.space-5;
+                            text: row.label + " · " + row.status;
+                            color: AtlasTheme.content-primary;
+                            font-family: AtlasTypography.font-sans;
+                            font-size: AtlasTypography.size-body-small;
+                            font-weight: AtlasTypography.weight-semibold;
+                            overflow: elide;
+                        }
+                        Text {
+                            x: AtlasGrid.space-3; y: AtlasGrid.space-6;
+                            width: parent.width - AtlasGrid.space-6; height: AtlasGrid.space-8;
+                            text: row.detail + " · " + row.owner;
+                            color: AtlasTheme.content-secondary;
+                            font-family: AtlasTypography.font-sans;
+                            font-size: AtlasTypography.size-caption;
+                            wrap: word-wrap;
+                            overflow: elide;
+                        }
+                    }
+                }
+            }
+            AtlasHeading {
+                height: AtlasTypography.line-heading;
+                text: "Delivery roadmap";
+                level: HeadingLevel.h2;
+                anchor-id: "roadmap";
+            }
+            AtlasStepper {
+                height: root.compact ? root.phases.length * (AtlasGrid.space-12 + AtlasGrid.space-2) : root.phases.length * AtlasGrid.space-12;
+                steps: root.phases;
+                current: root.current-phase;
+                compact: root.compact;
+                interactive: true;
+                step-requested(index) => { root.phase-requested(index); }
+            }
+            AtlasHeading {
+                height: AtlasTypography.line-heading;
+                text: "Verification";
+                level: HeadingLevel.h2;
+                anchor-id: "verification";
+            }
+            AtlasTerminalBlock {
+                height: AtlasGrid.space-12 * 4;
+                title: "Quality gate";
+                command: root.audit-command;
+                output: root.audit-output;
+                copy-requested(command) => { root.copy-command-requested(command); }
+            }
+            Rectangle { height: AtlasGrid.space-12 * 2; background: AtlasTheme.transparent; }
+        }
+    }
+}

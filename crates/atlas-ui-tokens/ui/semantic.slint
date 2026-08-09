@@ -1,0 +1,62 @@
+import { AtlasPalette } from "palette.slint";
+import { AtlasSettings, ThemeMode } from "settings.slint";
+
+// Semantic colors are the only color vocabulary consumed by generic visual
+// primitives. Explicit dark/light properties power documentation matrices.
+export global AtlasTheme {
+    out property <color> dark-canvas: AtlasPalette.neutral-950;
+    out property <color> dark-surface: AtlasPalette.neutral-900;
+    out property <color> dark-surface-raised: AtlasPalette.neutral-850;
+    out property <color> dark-surface-hover: #203343;
+    out property <color> dark-surface-pressed: #294052;
+    out property <color> dark-surface-selected: #173b57;
+    out property <color> dark-content-primary: AtlasPalette.neutral-50;
+    out property <color> dark-content-secondary: AtlasPalette.neutral-300;
+    out property <color> dark-content-disabled: AtlasPalette.neutral-500;
+    out property <color> dark-border-subtle: AtlasPalette.neutral-800;
+    out property <color> dark-border-strong: AtlasPalette.neutral-700;
+
+    out property <color> light-canvas: AtlasPalette.neutral-25;
+    out property <color> light-surface: AtlasPalette.neutral-0;
+    out property <color> light-surface-raised: AtlasPalette.neutral-50;
+    out property <color> light-surface-hover: #e4ebf3;
+    out property <color> light-surface-pressed: #d8e2ec;
+    out property <color> light-surface-selected: #dceeff;
+    out property <color> light-content-primary: #172330;
+    out property <color> light-content-secondary: #4d6072;
+    out property <color> light-content-disabled: #8796a5;
+    out property <color> light-border-subtle: #d5dfe9;
+    out property <color> light-border-strong: #aebdcb;
+
+    out property <color> canvas: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-canvas : dark-canvas;
+    out property <color> surface: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-surface : dark-surface;
+    out property <color> surface-raised: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-surface-raised : dark-surface-raised;
+    out property <color> surface-hover: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-surface-hover : dark-surface-hover;
+    out property <color> surface-pressed: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-surface-pressed : dark-surface-pressed;
+    out property <color> surface-selected: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-surface-selected : dark-surface-selected;
+    out property <color> content-primary: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-content-primary : dark-content-primary;
+    out property <color> content-secondary: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-content-secondary : dark-content-secondary;
+    out property <color> content-disabled: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-content-disabled : dark-content-disabled;
+    out property <color> border-subtle: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-border-subtle : dark-border-subtle;
+    out property <color> border-strong: AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-border-strong : dark-border-strong;
+
+    out property <color> content-accent: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.brand-700 : AtlasPalette.brand-300;
+    out property <color> action-primary: AtlasSettings.resolved-theme-mode == ThemeMode.light ? #315e50 : #a9dfcc;
+    out property <color> action-primary-hover: AtlasSettings.resolved-theme-mode == ThemeMode.light ? #294f43 : #8bc9b3;
+    out property <color> action-primary-pressed: AtlasSettings.resolved-theme-mode == ThemeMode.light ? #203f36 : #65a991;
+    out property <color> on-action-primary: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> focus-ring: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.blue-700 : AtlasPalette.blue-400;
+    out property <color> success: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.green-700 : AtlasPalette.green-400;
+    out property <color> warning: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.amber-700 : AtlasPalette.amber-400;
+    out property <color> danger: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.red-700 : AtlasPalette.red-400;
+    out property <color> info: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.blue-700 : AtlasPalette.blue-400;
+    out property <color> on-accent: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> on-success: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> on-warning: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> on-danger: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> on-info: AtlasSettings.resolved-theme-mode == ThemeMode.light ? AtlasPalette.neutral-0 : AtlasPalette.neutral-950;
+    out property <color> transparent: AtlasPalette.transparent;
+    out property <color> grid-minor: AtlasPalette.grid-minor;
+    out property <color> grid-major: AtlasPalette.grid-major;
+    out property <color> overlay-backdrop: AtlasSettings.theme-mode == ThemeMode.light ? #17233066 : #000000aa;
+}

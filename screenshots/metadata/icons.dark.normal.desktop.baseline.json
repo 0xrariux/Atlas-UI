@@ -1,0 +1,30 @@
+{
+  "identity": {
+    "schema_version": 1,
+    "id": "icons.dark.normal.desktop",
+    "page": "icons",
+    "fixture": "vector-icons-v1",
+    "theme": "dark",
+    "density": "normal",
+    "motion": "full",
+    "grid": false,
+    "viewport": {
+      "width": 1080,
+      "height": 760
+    },
+    "renderer": "software",
+    "scale_factor": 1
+  },
+  "image": {
+    "width": 1080,
+    "height": 760
+  },
+  "platform": "darwin",
+  "architecture": "arm64",
+  "approval": {
+    "status": "approved",
+    "reviewer": "Project maintainer",
+    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
+    "approved_at": "2026-08-09T15:46:21.824Z"
+  }
+}

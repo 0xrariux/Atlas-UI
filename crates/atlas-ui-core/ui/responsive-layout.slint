@@ -1,0 +1,241 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasZOrder
+} from "@atlas-ui-tokens/tokens.slint";
+
+export enum LayoutGap { none, compact, normal, spacious }
+export enum SplitOrientation { horizontal, vertical }
+export enum StickyEdge { top, bottom }
+
+export component AtlasStack inherits Rectangle {
+    in property <LayoutGap> gap: LayoutGap.normal;
+    in property <length> inset: AtlasGrid.zero;
+    in property <CrossAxisAlignment> cross-alignment: CrossAxisAlignment.stretch;
+    background: transparent;
+    VerticalLayout {
+        padding: root.inset;
+        spacing: root.gap == LayoutGap.none ? AtlasGrid.zero
+            : root.gap == LayoutGap.compact ? AtlasGrid.space-2
+            : root.gap == LayoutGap.spacious ? AtlasGrid.space-6
+            : AtlasGrid.space-4;
+        cross-axis-alignment: root.cross-alignment;
+        @children
+    }
+}
+
+export component AtlasCluster inherits Rectangle {
+    in property <LayoutGap> gap: LayoutGap.normal;
+    in property <length> inset: AtlasGrid.zero;
+    in property <LayoutAlignment> alignment: LayoutAlignment.start;
+    in property <CrossAxisAlignment> cross-alignment: CrossAxisAlignment.center;
+    background: transparent;
+    FlexboxLayout {
+        padding: root.inset;
+        spacing: root.gap == LayoutGap.none ? AtlasGrid.zero
+            : root.gap == LayoutGap.compact ? AtlasGrid.space-2
+            : root.gap == LayoutGap.spacious ? AtlasGrid.space-6
+            : AtlasGrid.space-4;
+        flex-direction: row;
+        flex-wrap: wrap;
+        alignment: root.alignment;
+        cross-axis-alignment: root.cross-alignment;
+        @children
+    }
+}
+
+export component AtlasSidebar inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <length> collapse-below: AtlasGrid.breakpoint-wide;
+    in property <LayoutGap> gap: LayoutGap.normal;
+    out property <bool> collapsed: root.reference-width < root.collapse-below;
+    background: transparent;
+    FlexboxLayout {
+        spacing: root.gap == LayoutGap.compact ? AtlasGrid.space-2
+            : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
+        flex-direction: root.collapsed ? column : row;
+        flex-wrap: no-wrap;
+        cross-axis-alignment: stretch;
+        @children
+    }
+}
+
+export component AtlasSwitcher inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <length> switch-below: AtlasGrid.breakpoint-compact;
+    in property <LayoutGap> gap: LayoutGap.normal;
+    out property <bool> stacked: root.reference-width < root.switch-below;
+    background: transparent;
+    FlexboxLayout {
+        spacing: root.gap == LayoutGap.compact ? AtlasGrid.space-2
+            : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
+        flex-direction: root.stacked ? column : row;
+        flex-wrap: no-wrap;
+        cross-axis-alignment: stretch;
+        @children
+    }
+}
+
+export component AtlasAutoGrid inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <LayoutGap> gap: LayoutGap.normal;
+    out property <int> column-count: root.reference-width < AtlasGrid.breakpoint-compact ? 1
+        : root.reference-width < AtlasGrid.breakpoint-wide ? 2 : 3;
+    out property <length> item-basis: (root.width - (root.column-count - 1) * root.resolved-gap) / root.column-count;
+    private property <length> resolved-gap: root.gap == LayoutGap.compact ? AtlasGrid.space-2
+        : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
+    background: transparent;
+    FlexboxLayout {
+        spacing: root.resolved-gap;
+        flex-direction: row;
+        flex-wrap: wrap;
+        cross-axis-alignment: stretch;
+        @children
+    }
+}
+
+// A bounded content contract for text, editors and other intrinsically-sized
+// children. Consumers bind their content width to resolved-content-width;
+// clipping is a final safety net, not the sizing strategy.
+export component AtlasIntrinsicFrame inherits Rectangle {
+    in property <length> available-width: root.width;
+    in property <length> preferred-content-width: AtlasGrid.content-standard;
+    in property <length> min-content-width: AtlasGrid.column-min-width * 2;
+    in property <length> max-content-width: AtlasGrid.content-wide;
+    in property <length> inset: AtlasGrid.zero;
+    out property <length> resolved-content-width: max(
+        root.min-content-width,
+        min(root.max-content-width, root.available-width - root.inset * 2)
+    );
+
+    background: transparent;
+    clip: true;
+    Rectangle {
+        x: root.inset;
+        width: min(root.resolved-content-width, root.preferred-content-width);
+        height: parent.height;
+        background: transparent;
+        @children
+    }
+}
+
+// Generic split container. It owns responsive orientation and spacing while
+// panes remain explicit children, so domain screens keep content ownership.
+export component AtlasSplitView inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <length> stack-below: AtlasGrid.breakpoint-compact;
+    in property <SplitOrientation> orientation: SplitOrientation.horizontal;
+    in property <LayoutGap> gap: LayoutGap.compact;
+    out property <bool> stacked: root.orientation == SplitOrientation.vertical
+        || root.reference-width < root.stack-below;
+    out property <length> resolved-gap: root.gap == LayoutGap.none ? AtlasGrid.zero
+        : root.gap == LayoutGap.normal ? AtlasGrid.space-4
+        : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-2;
+
+    background: transparent;
+    FlexboxLayout {
+        spacing: root.resolved-gap;
+        flex-direction: root.stacked ? column : row;
+        flex-wrap: no-wrap;
+        cross-axis-alignment: stretch;
+        @children
+    }
+}
+
+// A pane applies the same min/preferred/max policy in either split direction.
+export component AtlasSplitPane inherits Rectangle {
+    in property <SplitOrientation> orientation: SplitOrientation.horizontal;
+    in property <length> preferred-extent: AtlasGrid.column-min-width * 4;
+    in property <length> min-extent: AtlasGrid.column-min-width * 2;
+    in property <length> max-extent: AtlasGrid.content-standard;
+    in property <bool> flexible: false;
+    out property <length> resolved-extent: max(root.min-extent, min(root.max-extent, root.preferred-extent));
+
+    flex-basis: root.resolved-extent;
+    flex-grow: root.flexible ? 1 : 0;
+    flex-shrink: root.flexible ? 1 : 0;
+    background: transparent;
+    clip: true;
+    @children
+}
+
+// Controlled separator: pointer and keyboard interaction only emit requested
+// extents. The host owns persistence and can reject or normalize every value.
+export component AtlasResizeHandle inherits Rectangle {
+    in property <SplitOrientation> orientation: SplitOrientation.horizontal;
+    in property <length> current-extent: AtlasGrid.column-min-width * 4;
+    in property <length> min-extent: AtlasGrid.column-min-width * 2;
+    in property <length> max-extent: AtlasGrid.content-standard;
+    in property <length> keyboard-step: AtlasGrid.space-4;
+    in property <bool> enabled: true;
+    in property <bool> preview-focus: false;
+    callback resize-requested(length);
+    callback resize-finished(length);
+    callback reset-requested();
+
+    preferred-width: root.orientation == SplitOrientation.horizontal ? AtlasGrid.space-3 : AtlasGrid.space-12;
+    preferred-height: root.orientation == SplitOrientation.vertical ? AtlasGrid.space-3 : AtlasGrid.space-12;
+    background: touch.pressed || focus.has-focus || root.preview-focus
+        ? AtlasTheme.surface-selected : touch.has-hover ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+    border-radius: AtlasShape.radius-small;
+    accessible-role: AccessibleRole.slider;
+    accessible-label: root.orientation == SplitOrientation.horizontal
+        ? "Resize horizontal panels" : "Resize vertical panels";
+    accessible-value: root.current-extent / AtlasGrid.hairline;
+    accessible-value-minimum: root.min-extent / AtlasGrid.hairline;
+    accessible-value-maximum: root.max-extent / AtlasGrid.hairline;
+
+    Rectangle {
+        width: root.orientation == SplitOrientation.horizontal ? AtlasShape.focus-width : AtlasGrid.space-6;
+        height: root.orientation == SplitOrientation.vertical ? AtlasShape.focus-width : AtlasGrid.space-6;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        border-radius: AtlasShape.radius-round;
+        background: focus.has-focus || root.preview-focus ? AtlasTheme.focus-ring : AtlasTheme.border-strong;
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.orientation == SplitOrientation.horizontal ? col-resize : row-resize;
+        pointer-event(event) => {
+            if (event.kind == PointerEventKind.down) { focus.focus(); }
+            if (event.kind == PointerEventKind.move && self.pressed) {
+                root.resize-requested(max(root.min-extent, min(root.max-extent,
+                    root.current-extent + (root.orientation == SplitOrientation.horizontal
+                        ? self.mouse-x - self.width / 2 : self.mouse-y - self.height / 2))));
+            }
+            if (event.kind == PointerEventKind.up) { root.resize-finished(root.current-extent); }
+        }
+        double-clicked => { root.reset-requested(); }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        focus-on-tab-navigation: true;
+        key-pressed(event) => {
+            if (event.text == Key.Home) { root.resize-requested(root.min-extent); return accept; }
+            if (event.text == Key.End) { root.resize-requested(root.max-extent); return accept; }
+            if (event.text == Key.Return) { root.reset-requested(); return accept; }
+            if (event.text == Key.LeftArrow || event.text == Key.UpArrow) {
+                root.resize-requested(max(root.min-extent, root.current-extent - root.keyboard-step)); return accept;
+            }
+            if (event.text == Key.RightArrow || event.text == Key.DownArrow) {
+                root.resize-requested(min(root.max-extent, root.current-extent + root.keyboard-step)); return accept;
+            }
+            return reject;
+        }
+    }
+}
+
+// Slint does not position children as CSS sticky does. This primitive defines
+// the stable visual/z-order contract; hosts place it before or after the
+// independently scrolling viewport according to edge.
+export component AtlasStickyRegion inherits Rectangle {
+    in property <StickyEdge> edge: StickyEdge.top;
+    in property <bool> elevated: true;
+
+    out property <int> z-level: AtlasZOrder.sticky;
+    background: AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: elevated ? AtlasTheme.border-subtle : AtlasTheme.transparent;
+    border-radius: AtlasShape.radius-control;
+    clip: true;
+    @children
+}

@@ -1,0 +1,89 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasOverlayTokens } from "@atlas-ui-tokens/tokens.slint";
+import { OverlayFocusController } from "@atlas-ui-core/core.slint";
+import { AtlasButton, ButtonTone } from "button.slint";
+
+export enum ModalSize { small, normal, wide }
+
+export component AtlasModal inherits Rectangle {
+    in-out property <bool> open: false;
+    in property <string> title;
+    in property <string> meta;
+    in property <string> description;
+    in property <ModalSize> size: ModalSize.normal;
+    in property <bool> danger: false;
+    in property <bool> contained: false;
+    in property <string> cancel-text: "Cancel";
+    in property <string> confirm-text: "Confirm";
+    callback cancelled();
+    callback confirmed();
+    callback focus-restore-requested();
+
+    visible: root.open;
+    background: AtlasOverlayTokens.backdrop;
+    border-radius: root.contained ? AtlasShape.radius-surface : AtlasShape.radius-none;
+    clip: root.contained;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: root.title;
+    accessible-description: root.description;
+    accessible-expandable: true;
+    accessible-expanded: root.open;
+
+    panel := Rectangle {
+        width: min(root.size == ModalSize.small ? AtlasOverlayTokens.modal-width-small
+            : root.size == ModalSize.wide ? AtlasOverlayTokens.modal-width-wide
+            : AtlasOverlayTokens.modal-width-normal, parent.width - AtlasGrid.space-12);
+        height: root.size == ModalSize.small ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 6;
+        x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+        border-radius: AtlasShape.radius-surface;
+        border-width: AtlasShape.border-width;
+        border-color: root.danger ? AtlasTheme.danger : AtlasOverlayTokens.border;
+        background: AtlasOverlayTokens.background;
+        VerticalLayout {
+            padding: AtlasGrid.space-6; spacing: AtlasGrid.space-3;
+            Text {
+                text: root.title; color: AtlasTheme.content-primary;
+                font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title;
+                font-weight: AtlasTypography.weight-bold; overflow: elide;
+            }
+            Text {
+                visible: root.meta != ""; height: self.visible ? AtlasGrid.space-5 : AtlasGrid.zero;
+                text: root.meta; color: root.danger ? AtlasTheme.danger : AtlasTheme.content-accent;
+                font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-body-small;
+                font-weight: AtlasTypography.weight-semibold; overflow: elide;
+            }
+            Text {
+                text: root.description; color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body;
+                wrap: word-wrap; vertical-stretch: 1;
+            }
+            HorizontalLayout {
+                height: AtlasGrid.space-10; spacing: AtlasGrid.space-2; alignment: end;
+                cancel-action := AtlasButton {
+                    text: root.cancel-text; tone: ButtonTone.secondary; contained-focus: true;
+                    clicked => { root.cancelled(); }
+                    dismiss-requested => { root.cancelled(); }
+                    traversal-requested(_) => { confirm-action.focus-from-keyboard(); }
+                }
+                confirm-action := AtlasButton {
+                    text: root.confirm-text; tone: root.danger ? ButtonTone.danger : ButtonTone.primary; contained-focus: true;
+                    clicked => { root.confirmed(); }
+                    dismiss-requested => { root.cancelled(); }
+                    traversal-requested(_) => { cancel-action.focus-from-keyboard(); }
+                }
+            }
+        }
+    }
+    focus-cycle := OverlayFocusController {
+        active: root.open;
+        dismiss-requested => { root.cancelled(); }
+        traverse-requested(backwards) => {
+            if (backwards) { /* host focuses previous modal action */ }
+            else { /* host focuses next modal action */ }
+        }
+        restore-focus-requested => { root.focus-restore-requested(); }
+    }
+    changed open => {
+        if (root.open) { confirm-action.focus-from-keyboard(); }
+        else { focus-cycle.deactivate(); }
+    }
+}

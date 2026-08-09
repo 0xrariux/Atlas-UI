@@ -1,0 +1,76 @@
+name: Feature or design-system feedback
+description: Propose a capability or explain a recurring product-development need.
+title: "[Proposal]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the underlying problem before proposing an API or visual solution. Atlas favors reusable system-level improvements over application-specific behavior.
+
+  - type: dropdown
+    id: proposal_kind
+    attributes:
+      label: Proposal category
+      options:
+        - New component
+        - Existing component improvement
+        - Tokens or theming
+        - Layout or responsive composition
+        - Accessibility or keyboard behavior
+        - Documentation or developer experience
+        - Testing or visual validation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Explain the recurring user or developer problem and who encounters it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_approach
+    attributes:
+      label: Current approach and limitations
+      description: Explain how applications solve this today and why composition of existing Atlas components is insufficient.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the desired behavior or contract. Code and mockups are optional.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include existing Atlas components, application-local solutions, or other libraries considered.
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Examples and evidence
+      description: Add screenshots, reduced examples, comparable patterns, or accessibility requirements where useful.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: This need is reusable across multiple screens or applications.
+          required: true
+        - label: I checked the stable and preview component catalogs first.
+          required: true
+        - label: The proposal keeps domain data and external effects in the Rust host.
+          required: true
+        - label: I removed secrets, personal data, and proprietary content.
+          required: true

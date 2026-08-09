@@ -1,0 +1,25 @@
+import {
+    AtlasTheme, AtlasTypography
+} from "../../atlas-ui-tokens/ui/tokens.slint";
+import { ComponentFrame, FocusRing } from "../ui/core.slint";
+
+// Replace ExampleComponent and expose intention-level properties/callbacks.
+// Do not add color or px literals here: extend tokens first.
+export component ExampleComponent inherits ComponentFrame {
+    in property <string> text;
+    in property <bool> keyboard-focused: false;
+    callback activated();
+
+    Text {
+        text: root.text;
+        color: AtlasTheme.content-primary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body;
+        font-weight: AtlasTypography.weight-medium;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    FocusRing { active: root.keyboard-focused; }
+}

@@ -1,0 +1,83 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasFieldTokens
+} from "@atlas-ui-tokens/tokens.slint";
+
+export component AtlasTextField inherits Rectangle {
+    in property <string> label;
+    in-out property <string> value;
+    in property <string> placeholder;
+    in property <string> hint;
+    in property <string> error;
+    in property <bool> enabled: true;
+    in property <bool> required: false;
+    in property <bool> mono: false;
+    in property <string> automation-id;
+    callback edited(string);
+
+    out property <bool> invalid: root.error != "";
+    out property <bool> focused: editor.has-focus;
+
+    height: AtlasDensity.control-height + AtlasGrid.space-8
+        + (root.hint != "" || root.invalid ? AtlasGrid.space-4 : AtlasGrid.zero);
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+
+    VerticalLayout {
+        spacing: AtlasGrid.space-1;
+        Text {
+            height: AtlasGrid.space-4;
+            text: root.label + (root.required ? " *" : "");
+            color: root.invalid ? AtlasFieldTokens.message-invalid : AtlasFieldTokens.label;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            font-weight: AtlasTypography.weight-semibold;
+            overflow: elide;
+        }
+        Rectangle {
+            height: AtlasDensity.control-height;
+            clip: true;
+            background: AtlasFieldTokens.background;
+            border-width: AtlasShape.border-width;
+            border-color: root.invalid ? AtlasFieldTokens.border-invalid
+                : root.focused ? AtlasFieldTokens.border-focus : AtlasFieldTokens.border;
+            border-radius: AtlasShape.radius-control;
+            editor := TextInput {
+                x: AtlasDensity.control-padding-x;
+                width: parent.width - AtlasDensity.control-padding-x * 2;
+                text <=> root.value;
+                enabled: root.enabled;
+                read-only: !root.enabled;
+                single-line: true;
+                color: root.enabled ? AtlasTheme.content-primary : AtlasTheme.content-disabled;
+                selection-foreground-color: AtlasTheme.canvas;
+                selection-background-color: AtlasTheme.content-accent;
+                font-family: root.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body-small;
+                vertical-alignment: center;
+                accessible-label: root.label;
+                accessible-description: root.invalid ? root.error : root.hint;
+                accessible-id: root.automation-id;
+                edited => { root.edited(self.text); }
+            }
+            Text {
+                x: AtlasDensity.control-padding-x;
+                width: parent.width - AtlasDensity.control-padding-x * 2;
+                visible: root.value == "" && !root.focused;
+                text: root.placeholder;
+                color: AtlasTheme.content-secondary;
+                font-family: root.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body-small;
+                vertical-alignment: center;
+            }
+        }
+        Text {
+            visible: root.hint != "" || root.invalid;
+            height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero;
+            text: root.invalid ? root.error : root.hint;
+            color: root.invalid ? AtlasFieldTokens.message-invalid : AtlasFieldTokens.message;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            overflow: elide;
+        }
+    }
+}

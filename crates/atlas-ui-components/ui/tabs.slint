@@ -1,0 +1,69 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+
+export enum TabVariant { global, view }
+
+export component AtlasTab inherits Rectangle {
+    in property <string> text;
+    in property <bool> selected: false;
+    in property <bool> enabled: true;
+    in property <bool> dirty: false;
+    in property <TabVariant> variant: TabVariant.global;
+    in property <bool> active-in-roving-group: false;
+    in property <int> index: 0;
+    in property <int> count: 1;
+    in property <string> automation-id;
+    in property <bool> preview-focus-visible: false;
+    callback activated();
+    callback navigation-requested(int);
+
+    height: AtlasDensity.row-height;
+    min-width: label.preferred-width + AtlasGrid.space-8;
+    horizontal-stretch: 0;
+    border-radius: AtlasShape.radius-control;
+    border-width: root.selected ? AtlasShape.border-width : AtlasGrid.zero;
+    border-color: root.selected ? AtlasTheme.info : AtlasTheme.transparent;
+    background: root.selected ? AtlasTheme.surface-selected : action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+    accessible-role: AccessibleRole.tab;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    accessible-item-selectable: true;
+    accessible-item-selected: root.selected;
+    accessible-item-index: root.index;
+    accessible-item-count: root.count;
+    accessible-id: root.automation-id;
+    accessible-action-default => { action.trigger(); }
+
+    label := Text {
+        text: root.text; color: root.selected ? AtlasTheme.content-primary : AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small;
+        font-weight: AtlasTypography.weight-semibold; horizontal-alignment: center; vertical-alignment: center;
+    }
+    if root.dirty: Rectangle {
+        x: parent.width - AtlasGrid.space-3; y: AtlasGrid.space-2;
+        width: AtlasGrid.space-2; height: AtlasGrid.space-2;
+        border-radius: AtlasShape.radius-round; background: AtlasTheme.warning;
+        accessible-role: AccessibleRole.none;
+    }
+    FocusRing {
+        x: -(AtlasShape.focus-offset + AtlasShape.focus-width); y: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+        width: parent.width + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+        height: parent.height + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+        active: action.focus-visible || root.preview-focus-visible;
+    }
+    action := ActionArea {
+        enabled: root.enabled;
+        focus-on-tab-navigation: root.active-in-roving-group;
+        activated => { root.activated(); }
+        navigation-requested(direction) => { root.navigation-requested(direction); }
+    }
+    public function focus-from-group() { action.focus-from-keyboard(); }
+}
+
+export component AtlasTabPanel inherits Rectangle {
+    in property <string> accessible-name;
+    accessible-role: AccessibleRole.tab-panel;
+    accessible-label: root.accessible-name;
+    background: AtlasTheme.transparent;
+}

@@ -1,0 +1,4 @@
+[env]
+# Atlas wraps Slint's preview FlexboxLayout behind its own preview contracts.
+# Keep this explicit until Slint promotes the primitive to its stable language.
+SLINT_ENABLE_EXPERIMENTAL_FEATURES = "1"

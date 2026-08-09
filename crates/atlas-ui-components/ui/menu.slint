@@ -1,0 +1,61 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasOverlayTokens } from "@atlas-ui-tokens/tokens.slint";
+import { OverlayFocusController } from "@atlas-ui-core/core.slint";
+
+export struct MenuItem { id: string, label: string, shortcut: string, enabled: bool, danger: bool }
+
+export component AtlasMenu inherits Rectangle {
+    in property <[MenuItem]> items;
+    in-out property <int> active-index: 0;
+    in property <bool> open: true;
+    callback item-requested(string);
+    callback dismissed();
+
+    width: AtlasOverlayTokens.menu-width;
+    height: root.open ? root.items.length * AtlasDensity.row-height + AtlasGrid.space-2 : AtlasGrid.zero;
+    visible: root.open;
+    background: AtlasOverlayTokens.background;
+    border-width: AtlasShape.border-width; border-color: AtlasOverlayTokens.border; border-radius: AtlasShape.radius-control;
+    accessible-role: AccessibleRole.list;
+    accessible-label: "Context menu";
+    accessible-item-count: root.items.length;
+
+    VerticalLayout {
+        padding: AtlasGrid.space-1;
+        for item[index] in root.items: Rectangle {
+            height: AtlasDensity.row-height;
+            border-radius: AtlasShape.radius-small;
+            background: root.active-index == index ? AtlasTheme.surface-selected : touch.has-hover ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+            opacity: item.enabled ? 1 : 0.55;
+            accessible-role: AccessibleRole.list-item;
+            accessible-label: item.label;
+            accessible-enabled: item.enabled;
+            accessible-item-index: index;
+            accessible-item-selected: root.active-index == index;
+            accessible-action-default => { if (item.enabled) { root.item-requested(item.id); } }
+            Text {
+                x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-6;
+                text: item.label; color: item.danger ? AtlasTheme.danger : AtlasTheme.content-primary;
+                font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center;
+            }
+            Text {
+                x: parent.width - self.preferred-width - AtlasGrid.space-3;
+                text: item.shortcut; color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; vertical-alignment: center;
+            }
+            touch := TouchArea {
+                enabled: item.enabled;
+                clicked => { root.active-index = index; root.item-requested(item.id); }
+            }
+        }
+    }
+    keys := OverlayFocusController {
+        active: root.open;
+        dismiss-requested => { root.dismissed(); }
+        traverse-requested(backwards) => {
+            root.active-index = backwards
+                ? (root.active-index <= 0 ? root.items.length - 1 : root.active-index - 1)
+                : (root.active-index + 1 >= root.items.length ? 0 : root.active-index + 1);
+        }
+    }
+    changed open => { if (root.open) { keys.activate(); } }
+}

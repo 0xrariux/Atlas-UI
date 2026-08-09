@@ -1,0 +1,60 @@
+// All geometry derives from a 4 px unit. Hairlines and optical corrections are
+// explicit named exceptions to the grid.
+export global AtlasGrid {
+    out property <length> zero: 0px;
+    out property <length> hairline: 1px;
+    out property <length> unit: 4px;
+    out property <length> baseline: 4px;
+    out property <length> space-1: 4px;
+    out property <length> space-2: 8px;
+    out property <length> space-3: 12px;
+    out property <length> space-4: 16px;
+    out property <length> space-5: 20px;
+    out property <length> space-6: 24px;
+    out property <length> space-8: 32px;
+    out property <length> space-10: 40px;
+    out property <length> space-12: 48px;
+    out property <length> column-min-width: 64px;
+    out property <length> gutter-compact: 12px;
+    out property <length> gutter-normal: 16px;
+    out property <length> gutter-wide: 24px;
+    out property <length> page-margin-compact: 16px;
+    out property <length> page-margin-normal: 24px;
+    out property <length> page-margin-wide: 32px;
+    out property <length> content-narrow: 640px;
+    out property <length> content-standard: 960px;
+    out property <length> content-wide: 1280px;
+    out property <length> breakpoint-compact: 600px;
+    out property <length> breakpoint-wide: 1024px;
+}
+
+export global AtlasShape {
+    out property <length> radius-none: 0px;
+    out property <length> radius-small: 4px;
+    out property <length> radius-control: 8px;
+    out property <length> radius-surface: 12px;
+    out property <length> radius-round: 999px;
+    out property <length> border-width: 1px;
+    out property <length> focus-width: 2px;
+    out property <length> focus-offset: 2px;
+}
+
+export global AtlasElevation {
+    out property <length> level-0-blur: 0px;
+    out property <length> level-1-blur: 8px;
+    out property <length> level-1-y: 4px;
+    out property <length> level-2-blur: 20px;
+    out property <length> level-2-y: 8px;
+}
+
+export global AtlasZOrder {
+    out property <int> base: 0;
+    out property <int> raised: 10;
+    out property <int> sticky: 20;
+    out property <int> dropdown: 100;
+    out property <int> overlay: 200;
+    out property <int> modal: 300;
+    out property <int> toast: 400;
+    out property <int> debug: 1000;
+}
+

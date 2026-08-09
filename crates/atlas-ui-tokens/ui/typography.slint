@@ -1,0 +1,51 @@
+import "../assets/fonts/inter/Inter-Variable.ttf";
+import "../assets/fonts/jetbrains-mono/JetBrainsMono-Variable.ttf";
+import { AtlasSettings, TypographyScale } from "settings.slint";
+
+export global AtlasTypography {
+    out property <string> font-sans: "Inter";
+    out property <string> font-mono: "JetBrains Mono";
+    out property <float> scale-factor: AtlasSettings.typography-scale == TypographyScale.compact
+        ? 0.875 : AtlasSettings.typography-scale == TypographyScale.large ? 1.25 : 1;
+    out property <length> size-caption: 10px * scale-factor;
+    // Operational labels keep a 10 px floor in compact mode. Captions may be
+    // smaller because they are supplementary; labels must remain scannable.
+    out property <length> size-label: AtlasSettings.typography-scale == TypographyScale.compact
+        ? 10px : AtlasSettings.typography-scale == TypographyScale.large ? 14px : 11px;
+    out property <length> size-body-small: 12px * scale-factor;
+    out property <length> size-body: 14px * scale-factor;
+    out property <length> size-title-small: 16px * scale-factor;
+    out property <length> size-title: 20px * scale-factor;
+    out property <length> size-display: 28px * scale-factor;
+    out property <length> size-heading-1: 36px * scale-factor;
+    out property <length> size-heading-2: 28px * scale-factor;
+    out property <length> size-heading-3: 22px * scale-factor;
+    out property <length> size-heading-4: 18px * scale-factor;
+    out property <length> size-heading-5: 16px * scale-factor;
+    out property <length> size-heading-6: 14px * scale-factor;
+    out property <length> line-caption: 16px * scale-factor;
+    out property <length> line-body-small: 20px * scale-factor;
+    out property <length> line-body: 24px * scale-factor;
+    out property <length> line-lead: 28px * scale-factor;
+    out property <length> line-heading-small: 24px * scale-factor;
+    out property <length> line-heading: 32px * scale-factor;
+    out property <length> line-display: 44px * scale-factor;
+    out property <int> weight-regular: 400;
+    out property <int> weight-medium: 500;
+    out property <int> weight-semibold: 600;
+    out property <int> weight-bold: 700;
+    out property <length> measure-readable: 680px;
+    out property <length> measure-compact: 520px;
+    out property <length> block-gap-compact: 12px;
+    out property <length> block-gap-normal: 24px;
+    out property <length> block-gap-spacious: 32px;
+    out property <length> paragraph-gap: 16px;
+    out property <length> heading-gap: 24px;
+    out property <length> list-gap: 8px;
+    out property <length> code-inset: 16px;
+    out property <length> mono-size-inline: 12px * scale-factor;
+    out property <length> mono-size-block: 12px * scale-factor;
+    out property <length> mono-line-block: 20px * scale-factor;
+    out property <length> underline-thickness: 1px;
+    out property <length> underline-offset: 4px;
+}

@@ -1,0 +1,34 @@
+[workspace]
+resolver = "3"
+members = [
+    "apps/gallery",
+    "examples/getting-started",
+    "crates/atlas-ui",
+    "crates/atlas-ui-components",
+    "crates/atlas-ui-core",
+    "crates/atlas-ui-documents",
+    "crates/atlas-ui-icons",
+    "crates/atlas-ui-testing",
+    "crates/atlas-ui-tokens",
+]
+
+[workspace.package]
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+image = { version = "=0.25.10", default-features = false, features = ["png"] }
+slint = "=1.17.1"
+slint-build = "=1.17.1"
+pulldown-cmark = "=0.13.4"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"

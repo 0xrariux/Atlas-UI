@@ -1,0 +1,31 @@
+{
+  "identity": {
+    "schema_version": 1,
+    "id": "typography-stress.light.compact.mobile",
+    "page": "typography-stress",
+    "fixture": "typography-stress-v1",
+    "theme": "light",
+    "density": "compact",
+    "motion": "reduced",
+    "grid": false,
+    "viewport": {
+      "width": 360,
+      "height": 900
+    },
+    "renderer": "software",
+    "scale_factor": 1,
+    "typography_scale": "compact"
+  },
+  "image": {
+    "width": 360,
+    "height": 900
+  },
+  "platform": "darwin",
+  "architecture": "arm64",
+  "approval": {
+    "status": "approved",
+    "reviewer": "Project maintainer",
+    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
+    "approved_at": "2026-08-09T15:46:22.403Z"
+  }
+}

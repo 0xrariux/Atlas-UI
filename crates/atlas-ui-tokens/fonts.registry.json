@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "fonts": [
+    {
+      "id": "inter-variable",
+      "family": "Inter",
+      "role": "sans",
+      "asset": "assets/fonts/inter/Inter-Variable.ttf",
+      "license": "OFL-1.1",
+      "license_file": "assets/fonts/inter/OFL.txt",
+      "source": "https://github.com/google/fonts/tree/main/ofl/inter",
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+    },
+    {
+      "id": "jetbrains-mono-variable",
+      "family": "JetBrains Mono",
+      "role": "mono",
+      "asset": "assets/fonts/jetbrains-mono/JetBrainsMono-Variable.ttf",
+      "license": "OFL-1.1",
+      "license_file": "assets/fonts/jetbrains-mono/OFL.txt",
+      "source": "https://github.com/google/fonts/tree/main/ofl/jetbrainsmono",
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda"
+    }
+  ]
+}

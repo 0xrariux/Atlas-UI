@@ -1,0 +1,31 @@
+import { AtlasSettings, Density } from "settings.slint";
+
+export global AtlasDensity {
+    out property <length> control-height-compact: 28px;
+    out property <length> control-height-normal: 36px;
+    out property <length> control-height-comfortable: 44px;
+    out property <length> control-padding-x-compact: 8px;
+    out property <length> control-padding-x-normal: 12px;
+    out property <length> control-padding-x-comfortable: 16px;
+    out property <length> control-gap-compact: 4px;
+    out property <length> control-gap-normal: 8px;
+    out property <length> control-gap-comfortable: 12px;
+    out property <length> row-height-compact: 32px;
+    out property <length> row-height-normal: 40px;
+    out property <length> row-height-comfortable: 48px;
+    out property <length> pointer-target-min: 36px;
+
+    out property <length> control-height: AtlasSettings.density == Density.compact
+        ? control-height-compact : AtlasSettings.density == Density.comfortable
+            ? control-height-comfortable : control-height-normal;
+    out property <length> control-padding-x: AtlasSettings.density == Density.compact
+        ? control-padding-x-compact : AtlasSettings.density == Density.comfortable
+            ? control-padding-x-comfortable : control-padding-x-normal;
+    out property <length> control-gap: AtlasSettings.density == Density.compact
+        ? control-gap-compact : AtlasSettings.density == Density.comfortable
+            ? control-gap-comfortable : control-gap-normal;
+    out property <length> row-height: AtlasSettings.density == Density.compact
+        ? row-height-compact : AtlasSettings.density == Density.comfortable
+            ? row-height-comfortable : row-height-normal;
+}
+

@@ -1,0 +1,46 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasMotion } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasButton, ButtonTone } from "button.slint";
+
+export component AtlasSkeleton inherits Rectangle {
+    in property <int> lines: 4;
+    in property <string> loading-label: "Loading";
+    border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
+    accessible-role: AccessibleRole.progress-indicator; accessible-label: root.loading-label;
+    VerticalLayout {
+        padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+        for line in root.lines: Rectangle {
+            height: line == 0 ? AtlasGrid.space-5 : AtlasGrid.space-3;
+            horizontal-stretch: line == root.lines - 1 ? 1 : line == 0 ? 2 : 3;
+            border-radius: AtlasShape.radius-small; background: AtlasTheme.surface-hover;
+            animate background { duration: AtlasMotion.normal; }
+        }
+    }
+}
+
+export component AtlasEmptyState inherits Rectangle {
+    in property <string> title: "Nothing here yet";
+    in property <string> message;
+    border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
+    accessible-role: AccessibleRole.region; accessible-label: root.title; accessible-description: root.message;
+    VerticalLayout { padding: AtlasGrid.space-6; spacing: AtlasGrid.space-2; alignment: center;
+        Text { text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; horizontal-alignment: center; }
+        Text { text: root.message; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; horizontal-alignment: center; wrap: word-wrap; }
+    }
+}
+
+export component AtlasErrorState inherits Rectangle {
+    in property <string> title: "Unavailable"; in property <string> message;
+    in property <string> retry-label: "Retry"; callback retry();
+    border-width: AtlasShape.border-width; border-color: AtlasTheme.danger;
+    border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
+    accessible-role: AccessibleRole.region; accessible-label: root.title; accessible-description: root.message;
+    HorizontalLayout { padding: AtlasGrid.space-5; spacing: AtlasGrid.space-4; alignment: center;
+        if root.retry-label != "": AtlasButton { text: root.retry-label; tone: ButtonTone.danger; clicked => { root.retry(); } }
+        VerticalLayout { horizontal-stretch: 1; spacing: AtlasGrid.space-1;
+            Text { text: root.title; color: AtlasTheme.danger; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; horizontal-alignment: right; }
+            Text { text: root.message; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; horizontal-alignment: right; wrap: word-wrap; }
+        }
+    }
+}

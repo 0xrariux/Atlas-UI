@@ -1,0 +1,30 @@
+# Atlas UI
+
+> Atlas UI is an experimental native Rust and Slint design system. It provides
+> tokens, accessible components, responsive compositions, application
+> templates, and deterministic visual validation without replacing Slint.
+
+Atlas 0.2.0 pins Rust 1.88 and Slint 1.17.1. The currently proven platform
+profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
+is not published to crates.io yet.
+
+## Start here
+
+- [README](README.md): vision, scope, maturity, and project positioning
+- [Getting started](GETTING_STARTED.md): complete dependency and build setup
+- [Agent quickstart](docs/AGENT_QUICKSTART.md): deterministic coding-agent workflow
+- [Component index](docs/AGENT_COMPONENT_INDEX.md): components organized by need
+- [API manifest guide](docs/AGENT_MANIFEST.md): machine-readable API lookup
+- [API manifest](docs/atlas-ui-agent-manifest.json): exact component signatures and maturity
+- [Compatibility](docs/COMPATIBILITY.md): supported and unverified configurations
+- [Architecture](docs/ARCHITECTURE.md): ownership and dependency boundaries
+
+## Authoritative API files
+
+- [Stable Slint facade](crates/atlas-ui-components/ui/stable.slint): SemVer-governed exports
+- [Preview Slint facade](crates/atlas-ui-components/ui/preview.slint): evolving exports
+- [Compiled consumer](examples/getting-started): minimal verified integration
+
+Prefer stable exports, never infer properties from component names, keep
+external effects in Rust, and configure imports with
+`atlas_ui::slint_library_paths()`.

@@ -1,0 +1,16 @@
+export enum ThemeMode { system, dark, light }
+export enum Density { compact, normal, comfortable }
+export enum MotionPreference { full, reduced }
+export enum TypographyScale { compact, normal, large }
+
+// Applications set these once at their root. Individual components may expose
+// a density override but should default to these settings.
+export global AtlasSettings {
+    in-out property <ThemeMode> theme-mode: ThemeMode.system;
+    in-out property <bool> system-dark: true;
+    out property <ThemeMode> resolved-theme-mode: theme-mode == ThemeMode.system
+        ? (system-dark ? ThemeMode.dark : ThemeMode.light) : theme-mode;
+    in-out property <Density> density: Density.normal;
+    in-out property <MotionPreference> motion: MotionPreference.full;
+    in-out property <TypographyScale> typography-scale: TypographyScale.normal;
+}

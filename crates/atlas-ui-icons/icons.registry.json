@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "license": "CC0-1.0",
+  "view_box": "0 0 24 24",
+  "rendering_contract": {
+    "monochrome": true,
+    "embedded_text": false,
+    "external_resources": false,
+    "color_source": "semantic-token"
+  },
+  "icons": [
+    { "id": "none", "asset": "assets/none.svg", "sha256": "514c32b580f8ebd2439ba38a35df6b6de6446d745786b1487aec3fffe9d36676" },
+    { "id": "add", "asset": "assets/add.svg", "sha256": "402f93c761f373507655fb04c5d5db8a44df694672b4cb8e677f3f665c821197" },
+    { "id": "back", "asset": "assets/back.svg", "sha256": "e852b1a17ff4ae8ca07d5ccc583ba3ce264d271e90e8e43eb37db564d383e197" },
+    { "id": "check", "asset": "assets/check.svg", "sha256": "5d576a8a0af30d3130484ae551485138756af30de2cc1a7e5ecd587f75d3d7f5" },
+    { "id": "close", "asset": "assets/close.svg", "sha256": "29b19025ae0e1259ba4d68178dbad097882174476d4ec3fff053031056430d22" },
+    { "id": "info", "asset": "assets/info.svg", "sha256": "31e73bcb927b0c1cbbd866891bdace801cbbfc77eac711d852082241eb2ad1c5" },
+    { "id": "lock", "asset": "assets/lock.svg", "sha256": "31bf6be6e47a44b5bd189741b8bbf3fde733c194b7841aa7281da9a9dde3a853" },
+    { "id": "logs", "asset": "assets/logs.svg", "sha256": "faaef6954a81fd24194edb93613d2665101d62c116b6a79f402a8e6c190baaf2" },
+    { "id": "menu", "asset": "assets/menu.svg", "sha256": "cfe78dab610dac86c8ceccbcbddb7f2e453c97b73a7a5d9ad5da8efbcb9746a8" },
+    { "id": "profile", "asset": "assets/profile.svg", "sha256": "5171ce64c8ffbb517abf1641b11b5d250814b9bed77aa6201fd61e8ca666595e" },
+    { "id": "refresh", "asset": "assets/refresh.svg", "sha256": "724606565c77bc0036f5f7924b71bee16b7a246aaa2f682307499cce7db81671" },
+    { "id": "search", "asset": "assets/search.svg", "sha256": "400363e25a1284f7a5b59958944d1a37b97517e84fdbc402c6fac269d70481a9" },
+    { "id": "shield", "asset": "assets/shield.svg", "sha256": "781354ccec2947691e4765d778dd0c3294da2775fcddb06380801e73364cc6a2" },
+    { "id": "warning", "asset": "assets/warning.svg", "sha256": "37876886893fb652ec36493c4fc13ea9773b7756e60166f3d8f3dd64286bf85c" },
+    { "id": "chevron-down", "asset": "assets/chevron-down.svg", "sha256": "29026d5fc9ae357e539eb5d829bcccc0ef01807d6b7866a8f7a1baece2807f0a" }
+  ]
+}

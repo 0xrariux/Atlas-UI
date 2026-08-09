@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "library_version": "0.1.0",
+  "facade": "ui/tokens.slint",
+  "base_grid_px": 4,
+  "literal_policy": {
+    "allowed_roots": ["crates/atlas-ui-tokens/ui", "apps/gallery/ui"],
+    "forbidden_roots": [
+      "crates/atlas-ui-core/ui",
+      "crates/atlas-ui-icons/ui",
+      "crates/atlas-ui-components/ui"
+    ],
+    "named_exceptions": ["hairline", "focus-width", "focus-offset", "optical icon corrections"]
+  },
+  "families": [
+    {
+      "id": "palette",
+      "layer": 0,
+      "file": "ui/palette.slint",
+      "exports": ["AtlasPalette"],
+      "consumer_policy": "token-files-only"
+    },
+    {
+      "id": "settings",
+      "layer": 0,
+      "file": "ui/settings.slint",
+      "exports": ["ThemeMode", "Density", "MotionPreference", "TypographyScale", "AtlasSettings"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "semantic-colors",
+      "layer": 1,
+      "file": "ui/semantic.slint",
+      "exports": ["AtlasTheme"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "geometry",
+      "layer": 1,
+      "file": "ui/geometry.slint",
+      "exports": ["AtlasGrid", "AtlasShape", "AtlasElevation", "AtlasZOrder"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "density",
+      "layer": 1,
+      "file": "ui/density.slint",
+      "exports": ["AtlasDensity"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "typography",
+      "layer": 1,
+      "file": "ui/typography.slint",
+      "exports": ["AtlasTypography"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "motion",
+      "layer": 1,
+      "file": "ui/motion.slint",
+      "exports": ["AtlasMotion"],
+      "consumer_policy": "public"
+    },
+    {
+      "id": "component-roles",
+      "layer": 2,
+      "file": "ui/component-tokens.slint",
+      "exports": ["AtlasControlTokens", "AtlasFieldTokens", "AtlasStatusTokens", "AtlasOverlayTokens", "AtlasViewportTokens"],
+      "consumer_policy": "components"
+    }
+  ]
+}

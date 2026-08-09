@@ -1,0 +1,202 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity,
+    AtlasOverlayTokens
+} from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing, OverlayFocusController } from "@atlas-ui-core/core.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { AtlasTextField } from "text-field.slint";
+import { AtlasButton } from "button.slint";
+import { AtlasEmptyState, AtlasSkeleton } from "data-states.slint";
+
+export struct DocumentSearchResult {
+    id: string,
+    route: string,
+    title: string,
+    section: string,
+    excerpt: string,
+}
+
+export struct CommandPaletteItem {
+    id: string,
+    label: string,
+    group: string,
+    shortcut: string,
+    disabled: bool,
+}
+
+export component AtlasAnchorAction inherits Rectangle {
+    in property <string> anchor-id;
+    in property <string> label;
+    in property <bool> revealed: false;
+    in property <bool> preview-focus-visible: false;
+    callback copy-deep-link-requested(string);
+
+    min-width: AtlasDensity.pointer-target-min;
+    min-height: AtlasDensity.pointer-target-min;
+    background: AtlasTheme.transparent;
+    opacity: root.revealed || action.hovered || action.focus-visible ? 1 : 0;
+    AtlasIcon {
+        size: AtlasGrid.space-5;
+        name: IconName.back;
+        icon-color: AtlasTheme.content-accent;
+    }
+    action := ActionArea {
+        accessible-role: AccessibleRole.button;
+        accessible-label: root.label == "" ? "Copy deep link" : root.label;
+        accessible-description: "Anchor " + root.anchor-id;
+        activated => { root.copy-deep-link-requested(root.anchor-id); }
+        accessible-action-default => { root.copy-deep-link-requested(root.anchor-id); }
+    }
+    FocusRing {
+        width: parent.width; height: parent.height;
+        active: action.focus-visible || root.preview-focus-visible;
+    }
+    public function focus-from-keyboard() { action.focus-from-keyboard(); }
+}
+
+export component AtlasDocumentSearch inherits Rectangle {
+    in-out property <string> query;
+    in property <[DocumentSearchResult]> results;
+    in property <bool> loading: false;
+    in property <string> accessible-name: "Search documentation";
+    callback query-edited(string);
+    callback result-requested(string);
+
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.search;
+    accessible-label: root.accessible-name;
+    VerticalLayout {
+        spacing: AtlasGrid.space-3;
+        AtlasTextField {
+            height: AtlasGrid.space-12 * 2;
+            label: root.accessible-name;
+            placeholder: "Search titles, sections and content";
+            value: root.query;
+            edited(value) => { root.query-edited(value); }
+        }
+        if root.loading: AtlasSkeleton { height: AtlasGrid.space-12 * 3; lines: 3; }
+        if !root.loading && root.query != "" && root.results.length == 0: AtlasEmptyState {
+            height: AtlasGrid.space-12 * 3;
+            title: "No results";
+            message: "Try a broader term or another section.";
+        }
+        if !root.loading && root.results.length > 0: Rectangle {
+            vertical-stretch: 1;
+            background: AtlasTheme.surface;
+            border-width: AtlasShape.border-width;
+            border-color: AtlasTheme.border-subtle;
+            border-radius: AtlasShape.radius-surface;
+            clip: true;
+            VerticalLayout {
+                for result in root.results: Rectangle {
+                    height: AtlasGrid.space-12 + AtlasGrid.space-6;
+                    background: action.hovered ? AtlasTheme.surface-hover : AtlasTheme.surface;
+                    Text {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-2;
+                        width: parent.width - AtlasGrid.space-8; height: AtlasGrid.space-5;
+                        text: result.title + " · " + result.section;
+                        color: AtlasTheme.content-primary;
+                        font-family: AtlasTypography.font-sans;
+                        font-size: AtlasTypography.size-body-small;
+                        font-weight: AtlasTypography.weight-semibold;
+                        overflow: elide;
+                    }
+                    Text {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-6;
+                        width: parent.width - AtlasGrid.space-8; height: AtlasGrid.space-8;
+                        text: result.excerpt;
+                        color: AtlasTheme.content-secondary;
+                        font-family: AtlasTypography.font-sans;
+                        font-size: AtlasTypography.size-caption;
+                        wrap: word-wrap;
+                        overflow: elide;
+                    }
+                    action := ActionArea {
+                        accessible-role: AccessibleRole.list-item;
+                        accessible-label: result.title + " " + result.section;
+                        accessible-description: result.excerpt;
+                        activated => { root.result-requested(result.route); }
+                        accessible-action-default => { root.result-requested(result.route); }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component AtlasCommandPalette inherits Rectangle {
+    in-out property <bool> open: false;
+    in-out property <string> query;
+    in property <[CommandPaletteItem]> commands;
+    in property <int> active-index: 0;
+    callback query-edited(string);
+    callback command-requested(string);
+    callback close-requested();
+    callback focus-restore-requested();
+
+    visible: root.open;
+    background: AtlasOverlayTokens.backdrop;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: "Command palette";
+    panel := Rectangle {
+        x: (parent.width - self.width) / 2; y: AtlasGrid.space-12 * 2;
+        width: min(parent.width - AtlasGrid.space-8, AtlasOverlayTokens.modal-width-normal);
+        height: min(parent.height - AtlasGrid.space-12 * 3, AtlasGrid.space-12 * 9);
+        background: AtlasTheme.surface;
+        border-width: AtlasShape.border-width;
+        border-color: AtlasTheme.border-strong;
+        border-radius: AtlasShape.radius-surface;
+        clip: true;
+        VerticalLayout {
+            padding: AtlasGrid.space-4; spacing: AtlasGrid.space-2;
+            AtlasTextField {
+                height: AtlasGrid.space-12 * 2;
+                label: "Command palette";
+                placeholder: "Type a command";
+                value: root.query;
+                edited(value) => { root.query-edited(value); }
+            }
+            for command[index] in root.commands: Rectangle {
+                height: AtlasDensity.row-height;
+                background: index == root.active-index ? AtlasTheme.surface-selected : action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+                border-radius: AtlasShape.radius-control;
+                opacity: command.disabled ? 0.55 : 1;
+                Text {
+                    x: AtlasGrid.space-3; width: parent.width - AtlasGrid.column-min-width * 2;
+                    text: command.label;
+                    color: AtlasTheme.content-primary;
+                    font-family: AtlasTypography.font-sans;
+                    font-size: AtlasTypography.size-body-small;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                Text {
+                    x: parent.width - AtlasGrid.column-min-width * 2;
+                    width: AtlasGrid.column-min-width * 2 - AtlasGrid.space-3;
+                    text: command.shortcut;
+                    color: AtlasTheme.content-secondary;
+                    font-family: AtlasTypography.font-mono;
+                    font-size: AtlasTypography.size-caption;
+                    horizontal-alignment: right;
+                    vertical-alignment: center;
+                }
+                action := ActionArea {
+                    enabled: !command.disabled;
+                    selected: index == root.active-index;
+                    accessible-role: AccessibleRole.list-item;
+                    accessible-label: command.group + " " + command.label;
+                    activated => { root.command-requested(command.id); }
+                    accessible-action-default => { root.command-requested(command.id); }
+                }
+            }
+            Rectangle { vertical-stretch: 1; background: AtlasTheme.transparent; }
+            AtlasButton { height: AtlasDensity.control-height; text: "Close"; clicked => { root.close-requested(); } }
+        }
+    }
+    focus := OverlayFocusController {
+        active: root.open;
+        dismiss-requested => { root.close-requested(); }
+        restore-focus-requested => { root.focus-restore-requested(); }
+    }
+    changed open => { if (root.open) { focus.activate(); } else { focus.deactivate(); } }
+}

@@ -1,0 +1,96 @@
+import { Slider } from "std-widgets.slint";
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, Surface } from "@atlas-ui-core/core.slint";
+import { AtlasButton } from "button.slint";
+
+export enum ValueTone { neutral, accent, positive, negative, info }
+export struct SegmentOption { label: string, value: string, disabled: bool }
+export struct KeyValueItem { label: string, value: string, tone: ValueTone, mono: bool }
+export enum ProgressTone { neutral, success, warning }
+
+export component AtlasPanel inherits Surface {
+    in property <string> title; in property <string> meta; in property <bool> padded: true;
+    in property <length> content-padding: AtlasGrid.space-4;
+    raised: true; accessible-role: AccessibleRole.region; accessible-label: root.title;
+}
+
+export component AtlasMetricCard inherits Surface {
+    in property <string> label; in property <string> value; in property <string> meta;
+    in property <ValueTone> tone: ValueTone.neutral; in property <bool> compact: false;
+    in property <string> help-text;
+    height: root.compact ? AtlasGrid.space-12 * 2 : AtlasGrid.space-12 * 3;
+    raised: true; accessible-role: AccessibleRole.region; accessible-label: root.label;
+    accessible-value: root.value; accessible-description: root.meta + " " + root.help-text;
+    VerticalLayout { padding: AtlasGrid.space-4; spacing: AtlasGrid.space-2;
+        Text { text: root.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; font-weight: AtlasTypography.weight-semibold; }
+        Text { text: root.value; color: root.tone == ValueTone.positive ? AtlasTheme.success : root.tone == ValueTone.negative ? AtlasTheme.danger : root.tone == ValueTone.info ? AtlasTheme.info : root.tone == ValueTone.accent ? AtlasTheme.content-accent : AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title; font-weight: AtlasTypography.weight-bold; }
+        Text { text: root.meta; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; overflow: elide; }
+    }
+}
+
+export component AtlasSelectField inherits Rectangle {
+    in property <string> label; in property <string> value; in property <string> hint; in property <string> error;
+    in property <bool> enabled: true; in property <bool> required: false; callback activated();
+    height: AtlasDensity.control-height + AtlasGrid.space-8 + (root.hint != "" || root.error != "" ? AtlasGrid.space-4 : AtlasGrid.zero);
+    background: AtlasTheme.transparent; opacity: root.enabled ? 1 : 0.55;
+    Rectangle { y: AtlasGrid.space-5; height: AtlasDensity.control-height; border-width: AtlasShape.border-width; border-color: root.error != "" ? AtlasTheme.danger : action.focused ? AtlasTheme.focus-ring : AtlasTheme.border-strong; border-radius: AtlasShape.radius-control; background: AtlasTheme.canvas;
+        Text { x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-8; text: root.value; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; overflow: elide; }
+        Text { x: parent.width - AtlasGrid.space-6; width: AtlasGrid.space-4; text: "⌄"; color: AtlasTheme.content-secondary; vertical-alignment: center; }
+    }
+    Text { y: AtlasGrid.space-5 + AtlasDensity.control-height + AtlasGrid.space-2; width: parent.width; text: root.error != "" ? root.error : root.hint; color: root.error != "" ? AtlasTheme.danger : AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
+    Text { x: AtlasGrid.space-1; y: AtlasGrid.zero; width: parent.width - AtlasGrid.space-2; height: AtlasGrid.space-5; text: root.label + (root.required ? " *" : ""); color: root.error != "" ? AtlasTheme.danger : AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; vertical-alignment: center; }
+    accessible-role: AccessibleRole.combobox; accessible-label: root.label; accessible-value: root.value; accessible-expandable: true; accessible-enabled: root.enabled; accessible-action-default => { action.trigger(); }
+    action := ActionArea { enabled: root.enabled; activated => { root.activated(); } }
+}
+
+export component AtlasSegmentedControl inherits Rectangle {
+    in property <string> label; in property <string> selected-value; in property <[SegmentOption]> options; callback selection-changed(string);
+    height: AtlasDensity.row-height + AtlasGrid.space-5; accessible-role: AccessibleRole.tab-list; accessible-label: root.label;
+    Text { height: AtlasGrid.space-4; text: root.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
+    HorizontalLayout { y: AtlasGrid.space-5; height: AtlasDensity.row-height; spacing: AtlasGrid.space-1;
+        for option in root.options: AtlasButton { text: option.label; enabled: !option.disabled; selected: root.selected-value == option.value; clicked => { root.selection-changed(option.value); } }
+    }
+}
+
+export component AtlasProgressBar inherits Rectangle {
+    in property <float> value: 0; in property <float> maximum: 100; in property <string> label; in property <string> meta;
+    in property <ProgressTone> tone: ProgressTone.neutral;
+    out property <float> percent: root.maximum <= 0 ? 0 : max(0, min(1, root.value / root.maximum));
+    height: AtlasGrid.space-12; accessible-role: AccessibleRole.progress-indicator; accessible-label: root.label; accessible-value: round(root.percent * 100) + "%"; accessible-value-minimum: 0; accessible-value-maximum: root.maximum;
+    Text { width: parent.width; text: root.label; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+    Text { width: parent.width; horizontal-alignment: right; text: root.meta; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; }
+    Rectangle { y: AtlasGrid.space-8; width: parent.width; height: AtlasGrid.space-2; border-radius: AtlasShape.radius-round; background: AtlasTheme.surface-hover;
+        Rectangle { x: AtlasGrid.zero; y: AtlasGrid.zero; width: parent.width * root.percent; height: parent.height; border-radius: AtlasShape.radius-round; background: root.tone == ProgressTone.success ? AtlasTheme.success : root.tone == ProgressTone.warning ? AtlasTheme.warning : AtlasTheme.info; }
+    }
+}
+
+export component AtlasRangeControl inherits Rectangle {
+    in-out property <float> value: 0; in property <float> minimum: 0; in property <float> maximum: 100; in property <float> step: 1;
+    in property <string> label; in property <string> unit; in property <bool> enabled: true; callback value-changed(float);
+    height: AtlasGrid.space-12 + AtlasGrid.space-2; accessible-role: AccessibleRole.slider; accessible-label: root.label; accessible-value: root.value + root.unit; accessible-value-minimum: root.minimum; accessible-value-maximum: root.maximum; accessible-value-step: root.step;
+    Text { text: root.label; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+    Slider { y: AtlasGrid.space-8; width: parent.width; value <=> root.value; minimum: root.minimum; maximum: root.maximum; enabled: root.enabled; changed value => { root.value-changed(root.value); } }
+}
+
+export component AtlasPagination inherits Rectangle {
+    in property <int> page: 1; in property <int> page-count: 1; in property <bool> enabled: true; callback page-requested(int);
+    private property <length> counter-width: AtlasGrid.column-min-width;
+    private property <length> action-width: (root.width - root.counter-width - AtlasGrid.space-4) / 2;
+    height: AtlasDensity.control-height; min-width: AtlasGrid.column-min-width * 4;
+    AtlasButton { x: AtlasGrid.zero; width: root.action-width; text: "Previous"; enabled: root.enabled && root.page > 1; clicked => { root.page-requested(root.page - 1); } }
+    Text { x: (root.width - root.counter-width) / 2; width: root.counter-width; text: root.page + " / " + root.page-count; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; horizontal-alignment: center; vertical-alignment: center; }
+    AtlasButton { x: root.width - root.action-width; width: root.action-width; text: "Next"; enabled: root.enabled && root.page < root.page-count; clicked => { root.page-requested(root.page + 1); } }
+}
+
+export component AtlasKeyValueList inherits Surface {
+    in property <string> title; in property <[KeyValueItem]> items; in property <bool> compact: false;
+    height: (root.title == "" ? AtlasGrid.zero : AtlasDensity.row-height) + root.items.length * (root.compact ? AtlasGrid.space-12 : AtlasDensity.row-height);
+    accessible-role: AccessibleRole.list; accessible-label: root.title; accessible-item-count: root.items.length;
+    VerticalLayout { padding: AtlasGrid.space-3;
+        if root.title != "": Text { height: AtlasDensity.row-height; text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; }
+        for item[index] in root.items: HorizontalLayout { height: root.compact ? AtlasGrid.space-12 : AtlasDensity.row-height; spacing: AtlasGrid.space-3;
+            Text { text: item.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+            Text { horizontal-stretch: 1; horizontal-alignment: right; text: item.value; color: item.tone == ValueTone.positive ? AtlasTheme.success : item.tone == ValueTone.negative ? AtlasTheme.danger : AtlasTheme.content-primary; font-family: item.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+        }
+    }
+}

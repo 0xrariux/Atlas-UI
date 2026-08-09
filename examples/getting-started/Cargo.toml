@@ -1,0 +1,18 @@
+[package]
+name = "atlas-ui-getting-started"
+description = "Compiled minimal consumer of Atlas UI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+slint.workspace = true
+
+[build-dependencies]
+atlas-ui = { path = "../../crates/atlas-ui", version = "=0.2.0" }
+slint-build.workspace = true
+
+[lints]
+workspace = true

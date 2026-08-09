@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atlas UI visual scenarios",
+  "type": "object",
+  "required": ["schema_version", "scenarios"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "page", "fixture", "theme", "density", "motion", "grid", "viewport", "renderer", "scale_factor", "threshold"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9.-]+$" },
+          "page": { "type": "string" },
+          "fixture": { "type": "string" },
+          "theme": { "enum": ["dark", "light"] },
+          "theme_mode": { "enum": ["system"] },
+          "system_dark": { "type": "boolean" },
+          "density": { "enum": ["compact", "normal", "comfortable"] },
+          "motion": { "enum": ["full", "reduced"] },
+          "grid": { "type": "boolean" },
+          "viewport": {
+            "type": "object",
+            "required": ["width", "height"],
+            "properties": {
+              "width": { "type": "integer", "minimum": 320 },
+              "height": { "type": "integer", "minimum": 240 }
+            }
+          },
+          "renderer": { "const": "software" },
+          "scale_factor": { "const": 1 },
+          "threshold": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    }
+  }
+}

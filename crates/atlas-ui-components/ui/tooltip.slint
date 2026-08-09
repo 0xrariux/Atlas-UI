@@ -1,0 +1,43 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasOverlayTokens } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+
+export enum TooltipTone { neutral, warning }
+export enum TooltipPlacement { top, bottom }
+
+export component AtlasTooltip inherits Rectangle {
+    in property <string> text;
+    in property <TooltipTone> tone: TooltipTone.neutral;
+    in property <TooltipPlacement> placement: TooltipPlacement.top;
+    in property <bool> force-open: false;
+    in property <string> accessible-name: "More information";
+    out property <bool> open: root.force-open || action.hovered || action.focused;
+
+    width: AtlasGrid.space-5; height: AtlasGrid.space-5;
+    border-width: AtlasShape.border-width; border-radius: AtlasShape.radius-round;
+    border-color: root.tone == TooltipTone.warning ? AtlasTheme.warning : AtlasTheme.info;
+    background: AtlasTheme.surface-selected;
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.accessible-name;
+    accessible-description: root.text;
+
+    Text {
+        text: "i"; color: root.tone == TooltipTone.warning ? AtlasTheme.warning : AtlasTheme.info;
+        font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small;
+        font-weight: AtlasTypography.weight-bold; horizontal-alignment: center; vertical-alignment: center;
+    }
+    FocusRing { active: action.focus-visible; }
+    action := ActionArea { accessible-name: root.accessible-name; }
+    if root.open: Rectangle {
+        x: -(self.width - root.width) / 2;
+        y: root.placement == TooltipPlacement.top ? -self.height - AtlasGrid.space-2 : root.height + AtlasGrid.space-2;
+        width: AtlasOverlayTokens.tooltip-width; height: AtlasGrid.space-12;
+        border-width: AtlasShape.border-width; border-color: AtlasOverlayTokens.border;
+        border-radius: AtlasShape.radius-control; background: AtlasOverlayTokens.background;
+        Text {
+            x: AtlasGrid.space-3; y: AtlasGrid.space-2;
+            width: parent.width - AtlasGrid.space-6; height: parent.height - AtlasGrid.space-4;
+            text: root.text; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small; wrap: word-wrap; vertical-alignment: center;
+        }
+    }
+}

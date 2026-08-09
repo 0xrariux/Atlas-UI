@@ -1,0 +1,178 @@
+// Shared behavior layer for every control that can be focused or activated.
+// Visual components consume these observable states and keep their own styling.
+export component ActionArea inherits Rectangle {
+    in property <bool> enabled: true;
+    in property <bool> selected: false;
+    in property <string> accessible-name;
+    in property <string> action-description;
+    in property <string> automation-id;
+    in property <bool> focus-on-tab-navigation: true;
+    in property <bool> contained-focus: false;
+
+    out property <bool> hovered: pointer.has-hover && root.enabled;
+    out property <bool> pointer-pressed: pointer.pressed && root.enabled;
+    out property <bool> keyboard-pressed: key-active && root.enabled;
+    out property <bool> pressed: root.pointer-pressed || root.keyboard-pressed;
+    out property <bool> focused: focus.has-focus;
+    out property <bool> focus-visible: focus.has-focus && keyboard-modality;
+    out property <bool> disabled: !root.enabled;
+
+    callback activated();
+    callback focus-entered(bool /* keyboard */);
+    callback focus-left();
+    callback navigation-requested(int /* -2 first, -1 previous, 1 next, 2 last */);
+    callback traversal-requested(bool /* backwards */);
+    callback dismiss-requested();
+
+    private property <bool> keyboard-modality: false;
+    private property <bool> key-active: false;
+
+    background: transparent;
+
+    public function focus-from-keyboard() {
+        keyboard-modality = true;
+        focus.focus();
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        focus-on-tab-navigation: root.focus-on-tab-navigation;
+        accessible-role: AccessibleRole.none;
+
+        focus-gained(reason) => {
+            root.keyboard-modality = reason == FocusReason.tab-navigation;
+            root.focus-entered(root.keyboard-modality);
+        }
+        focus-lost(_) => {
+            root.key-active = false;
+            root.focus-left();
+        }
+        key-pressed(event) => {
+            root.keyboard-modality = true;
+            if (root.contained-focus && event.text == Key.Escape) {
+                root.dismiss-requested();
+                return accept;
+            }
+            if (root.contained-focus && (event.text == Key.Tab || event.text == Key.Backtab)) {
+                root.traversal-requested(event.text == Key.Backtab || event.modifiers.shift);
+                return accept;
+            }
+            if (event.text == Key.LeftArrow || event.text == Key.UpArrow) {
+                root.navigation-requested(-1);
+                return accept;
+            }
+            if (event.text == Key.RightArrow || event.text == Key.DownArrow) {
+                root.navigation-requested(1);
+                return accept;
+            }
+            if (event.text == Key.Home) { root.navigation-requested(-2); return accept; }
+            if (event.text == Key.End) { root.navigation-requested(2); return accept; }
+            if (root.enabled && (event.text == Key.Return || event.text == Key.Space)) {
+                root.key-active = true;
+                return accept;
+            }
+            return reject;
+        }
+        key-released(event) => {
+            if (root.enabled && root.key-active
+                    && (event.text == Key.Return || event.text == Key.Space)) {
+                root.key-active = false;
+                root.activated();
+                return accept;
+            }
+            return reject;
+        }
+    }
+
+    pointer := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.keyboard-modality = false;
+            focus.focus();
+            root.activated();
+        }
+    }
+
+    public function trigger() {
+        if (root.enabled) { root.activated(); }
+    }
+}
+
+// Headless focus boundary for modal surfaces and transient menus. The owner
+// maps traversal intents to concrete children and restores the invoking focus.
+export component OverlayFocusController inherits Rectangle {
+    in property <bool> active: false;
+    callback dismiss-requested();
+    callback traverse-requested(bool /* backwards */);
+    callback restore-focus-requested();
+
+    visible: false;
+
+    public function activate() { if (root.active) { scope.focus(); } }
+    public function deactivate() { scope.clear-focus(); root.restore-focus-requested(); }
+
+    scope := FocusScope {
+        enabled: root.active;
+        focus-on-tab-navigation: false;
+        key-pressed(event) => {
+            if (event.text == Key.Escape) { root.dismiss-requested(); return accept; }
+            if (event.text == Key.Tab || event.text == Key.Backtab) {
+                root.traverse-requested(event.text == Key.Backtab || event.modifiers.shift);
+                return accept;
+            }
+            return reject;
+        }
+    }
+}
+
+// Selection remains controlled by the consumer. This avoids hidden state and
+// supports single, additive and range selection with the same intent contract.
+export enum SelectionMode { none, single, multiple }
+
+export component SelectionController inherits Rectangle {
+    in property <SelectionMode> mode: SelectionMode.single;
+    in property <int> anchor-index: -1;
+    callback selection-requested(int /* index */, bool /* additive */, bool /* range */);
+
+    visible: false;
+
+    public function select(index: int, additive: bool, range: bool) {
+        if (mode == SelectionMode.none || index < 0) { return; }
+        selection-requested(
+            index,
+            mode == SelectionMode.multiple && additive,
+            mode == SelectionMode.multiple && range && anchor-index >= 0
+        );
+    }
+}
+
+// A group owns one active item. Children call these functions and bind their
+// tab eligibility to active-index, yielding a predictable roving-focus model.
+export component RovingFocusController inherits Rectangle {
+    in-out property <int> active-index: 0;
+    in property <int> item-count: 0;
+    in property <bool> wrap: true;
+    callback focus-requested(int /* index */);
+
+    visible: false;
+
+    function move-to(index: int) {
+        if (item-count <= 0) { return; }
+        active-index = max(0, min(item-count - 1, index));
+        focus-requested(active-index);
+    }
+
+    public function next() {
+        if (item-count <= 0) { return; }
+        move-to(active-index + 1 >= item-count && wrap ? 0 : active-index + 1);
+    }
+
+    public function previous() {
+        if (item-count <= 0) { return; }
+        move-to(active-index <= 0 && wrap ? item-count - 1 : active-index - 1);
+    }
+
+    public function first() { move-to(0); }
+    public function last() { move-to(item-count - 1); }
+}

@@ -1,0 +1,277 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity
+} from "@atlas-ui-tokens/tokens.slint";
+import { AtlasButton } from "button.slint";
+
+export enum HeadingLevel { h1, h2, h3, h4, h5, h6 }
+export enum EditorialTone { primary, secondary, accent, danger }
+export enum EditorialEmphasis { regular, emphasis, strong }
+
+export component AtlasStyledText inherits Rectangle {
+    in property <string> text;
+    in property <EditorialTone> tone: EditorialTone.primary;
+    in property <EditorialEmphasis> emphasis: EditorialEmphasis.regular;
+    in property <bool> underlined: false;
+    in property <bool> mono: false;
+
+    min-height: AtlasTypography.line-body;
+    max-width: AtlasTypography.measure-readable;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+    label := Text {
+        width: parent.width;
+        height: parent.height - (root.underlined ? AtlasTypography.underline-offset : AtlasGrid.zero);
+        text: root.text;
+        color: root.tone == EditorialTone.secondary ? AtlasTheme.content-secondary
+            : root.tone == EditorialTone.accent ? AtlasTheme.content-accent
+            : root.tone == EditorialTone.danger ? AtlasTheme.danger : AtlasTheme.content-primary;
+        font-family: root.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans;
+        font-size: root.mono ? AtlasTypography.mono-size-inline : AtlasTypography.size-body;
+        font-weight: root.emphasis == EditorialEmphasis.strong
+            ? AtlasTypography.weight-bold : AtlasTypography.weight-regular;
+        font-italic: root.emphasis == EditorialEmphasis.emphasis;
+        wrap: word-wrap;
+    }
+    if root.underlined: Rectangle {
+        x: AtlasGrid.zero;
+        y: parent.height - AtlasTypography.underline-offset;
+        width: min(parent.width, label.preferred-width);
+        height: AtlasTypography.underline-thickness;
+        background: root.tone == EditorialTone.accent ? AtlasTheme.content-accent
+            : root.tone == EditorialTone.danger ? AtlasTheme.danger : AtlasTheme.content-primary;
+    }
+}
+
+export component AtlasHeading inherits Text {
+    in property <HeadingLevel> level: HeadingLevel.h2;
+    in property <EditorialTone> tone: EditorialTone.primary;
+    in property <string> anchor-id;
+
+    color: root.tone == EditorialTone.secondary ? AtlasTheme.content-secondary
+        : root.tone == EditorialTone.accent ? AtlasTheme.content-accent
+        : root.tone == EditorialTone.danger ? AtlasTheme.danger
+        : AtlasTheme.content-primary;
+    font-family: AtlasTypography.font-sans;
+    font-size: root.level == HeadingLevel.h1 ? AtlasTypography.size-heading-1
+        : root.level == HeadingLevel.h2 ? AtlasTypography.size-heading-2
+        : root.level == HeadingLevel.h3 ? AtlasTypography.size-heading-3
+        : root.level == HeadingLevel.h4 ? AtlasTypography.size-heading-4
+        : root.level == HeadingLevel.h5 ? AtlasTypography.size-heading-5
+        : AtlasTypography.size-heading-6;
+    font-weight: root.level == HeadingLevel.h5 || root.level == HeadingLevel.h6
+        ? AtlasTypography.weight-semibold : AtlasTypography.weight-bold;
+    wrap: word-wrap;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+    accessible-description: root.anchor-id == "" ? "Heading" : "Heading anchor " + root.anchor-id;
+}
+
+export component AtlasParagraph inherits Text {
+    in property <bool> lead: false;
+    in property <bool> muted: false;
+    in property <bool> mono: false;
+
+    max-width: AtlasTypography.measure-readable;
+    color: root.muted ? AtlasTheme.content-secondary : AtlasTheme.content-primary;
+    font-family: root.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans;
+    font-size: root.lead ? AtlasTypography.size-title-small
+        : root.mono ? AtlasTypography.mono-size-block : AtlasTypography.size-body;
+    font-weight: root.lead ? AtlasTypography.weight-medium : AtlasTypography.weight-regular;
+    wrap: word-wrap;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+}
+
+export component AtlasSelectableText inherits Rectangle {
+    in property <string> text;
+    in property <string> selected-text;
+    in property <int> selection-start;
+    in property <int> selection-end;
+    in property <int> selection-byte-start: root.selection-start;
+    in property <int> selection-byte-end: root.selection-end;
+    in property <bool> selection-supported: true;
+    in property <bool> copy-enabled: true;
+    callback selection-requested(int, int);
+    callback copy-selection-requested(string);
+    callback copy-all-requested(string);
+
+    min-height: AtlasGrid.space-12 * 4;
+    max-width: AtlasTypography.measure-readable;
+    background: AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+    accessible-description: root.selection-supported
+        ? (root.selected-text == "" ? "No text selected" : "Text selection available")
+        : "Native rich text selection unavailable; copy all remains available";
+    selection-view := TextInput {
+        x: AtlasGrid.space-4; y: AtlasGrid.space-4;
+        width: parent.width - AtlasGrid.space-8;
+        height: parent.height - AtlasGrid.space-12 - AtlasDensity.control-height;
+        text: root.text;
+        read-only: true;
+        single-line: false;
+        color: AtlasTheme.content-primary;
+        selection-background-color: AtlasTheme.focus-ring;
+        selection-foreground-color: AtlasTheme.on-accent;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body;
+        wrap: word-wrap;
+    }
+    init => {
+        if root.selection-supported && root.selected-text != "" {
+            selection-view.set-selection-offsets(root.selection-byte-start, root.selection-byte-end);
+        }
+    }
+    Text {
+        x: AtlasGrid.space-4; y: parent.height - AtlasDensity.control-height - AtlasGrid.space-3;
+        width: parent.width - AtlasGrid.column-min-width * 5;
+        height: AtlasDensity.control-height;
+        text: !root.selection-supported ? "Selection unavailable"
+            : root.selected-text == "" ? "No selection"
+            : "Selected " + (root.selection-end - root.selection-start) + " characters";
+        color: root.selected-text == "" ? AtlasTheme.content-secondary : AtlasTheme.content-accent;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-caption;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+    AtlasButton {
+        x: parent.width - AtlasGrid.column-min-width * 5;
+        y: parent.height - AtlasDensity.control-height - AtlasGrid.space-3;
+        width: AtlasGrid.column-min-width * 2;
+        text: "Copy selection";
+        enabled: root.copy-enabled && root.selection-supported && root.selected-text != "";
+        clicked => { root.copy-selection-requested(root.selected-text); }
+    }
+    AtlasButton {
+        x: parent.width - AtlasGrid.column-min-width * 2 - AtlasGrid.space-3;
+        y: parent.height - AtlasDensity.control-height - AtlasGrid.space-3;
+        width: AtlasGrid.column-min-width * 2;
+        text: "Copy all";
+        enabled: root.copy-enabled && root.text != "";
+        clicked => { root.copy-all-requested(root.text); }
+    }
+}
+
+export component AtlasInlineCode inherits Rectangle {
+    in property <string> code;
+    min-width: label.preferred-width + AtlasGrid.space-3;
+    min-height: AtlasGrid.space-6;
+    background: AtlasTheme.surface-raised;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-small;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.code;
+    label := Text {
+        x: AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-4;
+        text: root.code;
+        color: AtlasTheme.content-accent;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-body-small;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+}
+
+export component AtlasCodeBlock inherits Rectangle {
+    in property <string> code;
+    in property <string> language;
+    in property <bool> copy-enabled: true;
+    callback copy-requested(string);
+
+    min-height: max(AtlasGrid.space-12 * 2, AtlasGrid.space-10 + code-text.preferred-height + AtlasGrid.space-4);
+    background: AtlasTheme.surface-raised;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.language == "" ? "Code block" : root.language + " code block";
+    accessible-description: root.code;
+
+    Text {
+        x: AtlasGrid.space-4; y: AtlasGrid.space-3;
+        width: parent.width - AtlasGrid.space-12 * 2;
+        height: AtlasGrid.space-5;
+        text: root.language == "" ? "text" : root.language;
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-caption;
+        font-weight: AtlasTypography.weight-semibold;
+    }
+    if root.copy-enabled: AtlasButton {
+        x: parent.width - self.width - AtlasGrid.space-3; y: AtlasGrid.space-2;
+        width: AtlasGrid.space-12 + AtlasGrid.space-4;
+        text: "Copy";
+        accessible-label: "Copy code";
+        clicked => { root.copy-requested(root.code); }
+    }
+    code-text := Text {
+        x: AtlasGrid.space-4; y: AtlasGrid.space-10;
+        width: parent.width - AtlasGrid.space-8;
+        height: parent.height - AtlasGrid.space-12;
+        text: root.code;
+        color: AtlasTheme.content-primary;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-body-small;
+        wrap: word-wrap;
+        overflow: clip;
+    }
+}
+
+export component AtlasBlockQuote inherits Rectangle {
+    in property <string> quote;
+    in property <string> attribution;
+    min-height: AtlasGrid.space-12 * 2;
+    background: AtlasTheme.surface;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.quote;
+    Rectangle {
+        x: AtlasGrid.zero; y: AtlasGrid.zero;
+        width: AtlasGrid.space-1; height: parent.height;
+        background: AtlasTheme.content-accent;
+        border-radius: AtlasShape.radius-round;
+    }
+    Text {
+        x: AtlasGrid.space-5; y: AtlasGrid.space-3;
+        width: parent.width - AtlasGrid.space-8;
+        height: parent.height - (root.attribution == "" ? AtlasGrid.space-6 : AtlasGrid.space-10);
+        text: root.quote;
+        color: AtlasTheme.content-primary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body;
+        wrap: word-wrap;
+    }
+    if root.attribution != "": Text {
+        x: AtlasGrid.space-5; y: parent.height - AtlasGrid.space-8;
+        width: parent.width - AtlasGrid.space-8; height: AtlasGrid.space-5;
+        text: "— " + root.attribution;
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body-small;
+    }
+}
+
+export component AtlasDivider inherits Rectangle {
+    in property <string> label;
+    height: root.label == "" ? AtlasGrid.hairline : AtlasGrid.space-6;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.label == "" ? "Section separator" : root.label;
+    Rectangle { y: (parent.height - AtlasGrid.hairline) / 2; height: AtlasGrid.hairline; background: AtlasTheme.border-subtle; }
+    if root.label != "": Rectangle {
+        x: AtlasGrid.space-4; width: text-label.preferred-width + AtlasGrid.space-4;
+        background: AtlasTheme.canvas;
+        text-label := Text {
+            x: AtlasGrid.space-2; width: parent.width - AtlasGrid.space-4;
+            text: root.label; color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption;
+            vertical-alignment: center;
+        }
+    }
+}

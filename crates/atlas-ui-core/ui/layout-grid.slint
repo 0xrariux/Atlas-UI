@@ -1,0 +1,48 @@
+import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+
+export enum LayoutWidth { fluid, narrow, standard, wide }
+
+// Centers a composition on a standard content width and applies responsive
+// page margins. Place this behind or around screen-level compositions.
+export component ContentFrame inherits Rectangle {
+    in property <LayoutWidth> layout-width: LayoutWidth.standard;
+    in property <length> reference-width: root.width;
+    out property <length> page-margin: reference-width < AtlasGrid.breakpoint-compact
+        ? AtlasGrid.page-margin-compact
+        : reference-width < AtlasGrid.breakpoint-wide
+            ? AtlasGrid.page-margin-normal : AtlasGrid.page-margin-wide;
+    out property <length> content-max-width: layout-width == LayoutWidth.narrow
+        ? AtlasGrid.content-narrow
+        : layout-width == LayoutWidth.wide ? AtlasGrid.content-wide
+        : layout-width == LayoutWidth.fluid ? reference-width
+        : AtlasGrid.content-standard;
+    out property <length> content-x: max(page-margin, (reference-width - content-max-width) / 2);
+    out property <length> content-width: min(content-max-width, max(AtlasGrid.zero, reference-width - page-margin * 2));
+
+    background: AtlasTheme.transparent;
+}
+
+// Development-only overlay used to inspect alignment. It deliberately has no
+// TouchArea and must be placed last in a composition so it remains transparent
+// to input. It is not intended as application chrome.
+export component LayoutGridOverlay inherits Rectangle {
+    in property <length> step: AtlasGrid.unit;
+    in property <int> major-every: 4;
+    in property <color> minor-color: AtlasTheme.grid-minor;
+    in property <color> major-color: AtlasTheme.grid-major;
+
+    background: AtlasTheme.transparent;
+    clip: true;
+    for line[index] in Math.floor(root.width / root.step) + 1: Rectangle {
+        x: index * root.step;
+        width: AtlasGrid.hairline;
+        height: root.height;
+        background: Math.mod(index, root.major-every) == 0 ? root.major-color : root.minor-color;
+    }
+    for line[index] in Math.floor(root.height / root.step) + 1: Rectangle {
+        y: index * root.step;
+        height: AtlasGrid.hairline;
+        width: root.width;
+        background: Math.mod(index, root.major-every) == 0 ? root.major-color : root.minor-color;
+    }
+}

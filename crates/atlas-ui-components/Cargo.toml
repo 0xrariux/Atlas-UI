@@ -1,0 +1,16 @@
+[package]
+name = "atlas-ui-components"
+description = "Public native Slint components for Atlas UI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+atlas-ui-core = { path = "../atlas-ui-core", version = "=0.2.0" }
+atlas-ui-icons = { path = "../atlas-ui-icons", version = "=0.2.0" }
+atlas-ui-tokens = { path = "../atlas-ui-tokens", version = "=0.2.0" }
+
+[lints]
+workspace = true

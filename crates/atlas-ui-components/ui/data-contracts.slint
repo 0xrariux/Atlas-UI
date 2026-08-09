@@ -1,0 +1,51 @@
+// These types define scalable data-component contracts before a concrete
+// table implementation exists. Sorting, filtering and persistence stay with
+// the consumer; components emit intentions and render observable state.
+export enum DataViewState { ready, loading, empty, error }
+export { SelectionMode } from "@atlas-ui-core/core.slint";
+export enum SortDirection { none, ascending, descending }
+export enum CellEditorKind { none, text, number, choice, toggle }
+export enum ColumnPin { none, start, end }
+
+export struct DataColumn {
+    id: string,
+    label: string,
+    width: length,
+    min-width: length,
+    max-width: length,
+    grow: float,
+    resizable: bool,
+    sortable: bool,
+    filterable: bool,
+    editable: bool,
+    editor: CellEditorKind,
+    pin: ColumnPin,
+}
+
+export struct DataCell {
+    column-id: string,
+    text: string,
+    accessible-text: string,
+    tooltip: string,
+    editable: bool,
+}
+
+export struct DataRow {
+    id: string,
+    cells: [DataCell],
+    selected: bool,
+    expanded: bool,
+    disabled: bool,
+    detail: string,
+}
+
+export struct DataSort {
+    column-id: string,
+    direction: SortDirection,
+}
+
+export struct DataFilter {
+    column-id: string,
+    query: string,
+    active: bool,
+}

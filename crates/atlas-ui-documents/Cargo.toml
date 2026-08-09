@@ -1,0 +1,17 @@
+[package]
+name = "atlas-ui-documents"
+description = "Document, navigation, Markdown and search contracts for Atlas UI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+pulldown-cmark.workspace = true
+
+[dev-dependencies]
+atlas-ui-testing = { path = "../atlas-ui-testing", version = "=0.2.0" }
+
+[lints]
+workspace = true

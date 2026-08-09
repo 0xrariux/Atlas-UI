@@ -1,0 +1,37 @@
+import {
+    AtlasTheme, AtlasDensity, AtlasShape, AtlasSettings, Density
+} from "@atlas-ui-tokens/tokens.slint";
+
+// Lowest-level visual scaffold for controls and small components. It exposes
+// resolved geometry while keeping each component free to define its semantics.
+export component ComponentFrame inherits Rectangle {
+    in property <Density> density: AtlasSettings.density;
+    in property <bool> enabled: true;
+    in property <bool> interactive: false;
+    in property <bool> hovered: false;
+    in property <bool> pressed: false;
+    in property <bool> selected: false;
+    in property <bool> raised: false;
+
+    out property <length> control-height: density == Density.compact
+        ? AtlasDensity.control-height-compact : density == Density.comfortable
+            ? AtlasDensity.control-height-comfortable : AtlasDensity.control-height-normal;
+    out property <length> control-padding-x: density == Density.compact
+        ? AtlasDensity.control-padding-x-compact : density == Density.comfortable
+            ? AtlasDensity.control-padding-x-comfortable : AtlasDensity.control-padding-x-normal;
+    out property <length> control-gap: density == Density.compact
+        ? AtlasDensity.control-gap-compact : density == Density.comfortable
+            ? AtlasDensity.control-gap-comfortable : AtlasDensity.control-gap-normal;
+
+    background: pressed && interactive ? AtlasTheme.surface-pressed
+        : hovered && interactive ? AtlasTheme.surface-hover
+        : selected && interactive ? AtlasTheme.surface-selected
+        : raised ? AtlasTheme.surface-raised : AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-control;
+}
+
+export component Surface inherits ComponentFrame {
+    border-radius: AtlasShape.radius-surface;
+}

@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "default": {
+    "intent": "Present a deterministic Atlas component or composition fixture for visual-quality and robustness review without simulating a complete domain application.",
+    "intentional_traits": [
+      "A fixture may place several variants, states, or roles side by side for comparison.",
+      "Text and data are deterministic demonstration content.",
+      "Native chrome consistent with the Slint renderer may remain visible."
+    ],
+    "invariants": [
+      "No content may be clipped, overlap, or become unreadable.",
+      "Alignment, spacing, and hierarchy must follow a shared system.",
+      "Visible states must remain identifiable with credible contrast.",
+      "Whitespace must appear intentional or support a readable structure."
+    ],
+    "exclusions": [
+      "Do not criticize a demonstration fixture for lacking rich domain data.",
+      "Do not report a consistent native scrollbar as an artifact.",
+      "Do not turn a personal density, radius, or color preference into a defect."
+    ]
+  },
+  "pages": {
+    "data": {
+      "intent": "Demonstrate Atlas data presentation: desktop tables, compact adaptation, loading, empty and error states, and controlled selection and expansion.",
+      "intentional_traits": [
+        "The table and alternate states deliberately appear in one fixture.",
+        "Rows may simultaneously be selected, expanded, and disabled.",
+        "A narrow viewport may turn rows into cards instead of preserving columns."
+      ],
+      "invariants": [
+        "Headers, cells, and actions must preserve readable axes in table mode.",
+        "Compact mode must not create horizontal overflow or clip essential content.",
+        "Selection, expansion, and disabled states must not rely on color alone.",
+        "Skeleton, empty, and error states must retain coherent geometry and hierarchy."
+      ],
+      "exclusions": [
+        "Multiple row states shown together are intentional.",
+        "Responsive cards are not a loss of structure.",
+        "The deliberately truncated pull-request fixture demonstrates its tooltip contract."
+      ]
+    },
+    "components": {
+      "intent": "Present foundational Atlas components in controlled states to verify their consistency, hierarchy, and catalog composition.",
+      "intentional_traits": [
+        "Variants and states of one component deliberately appear together.",
+        "Controls do not form a complete domain form.",
+        "Loading, disabled, invalid, and focus states may be forced for visual evidence."
+      ],
+      "invariants": [
+        "Components in one family must share geometry, typography, and alignment.",
+        "Primary, secondary, danger, loading, and disabled actions must remain distinct.",
+        "Field labels, values, help, and errors must remain readable and associated.",
+        "No component may overflow, overlap, or touch a section boundary."
+      ],
+      "exclusions": [
+        "Incompatible real-application states are juxtaposed intentionally.",
+        "The absence of a domain workflow is not a defect.",
+        "Different emphasis between variants is expected when it expresses role."
+      ]
+    },
+    "foundations": {
+      "intent": "Document Atlas foundations by comparing themes, semantic colors, three densities, and interactive states on one board.",
+      "intentional_traits": [
+        "Dark and light themes deliberately appear together with different visual mass.",
+        "Compact, normal, and comfortable density rows appear simultaneously.",
+        "Interactive states are grouped on a demonstration surface."
+      ],
+      "invariants": [
+        "Theme cards must retain identical geometry.",
+        "Density rows must differ in height while preserving alignment and padding.",
+        "Every semantic color must use readable content color.",
+        "No panel or control may touch or cross its boundary."
+      ],
+      "exclusions": [
+        "The brightness of the light-theme card is not itself a defect.",
+        "Showing three densities together is not inconsistent.",
+        "A geometrically consistent native scrollbar is not an artifact."
+      ]
+    },
+    "navigation": {
+      "intent": "Demonstrate Atlas navigation and overlay components, selected states, focus, and layered surfaces.",
+      "intentional_traits": [
+        "Menus, tooltips, tabs, or modals may be held open for capture.",
+        "Several navigation states may be juxtaposed.",
+        "Focus rings may be forced to make keyboard paths observable."
+      ],
+      "invariants": [
+        "The active layer must be identifiable without hiding essential content.",
+        "Selected, active, disabled, and focused items must remain distinct.",
+        "Overlays must remain in the viewport and preserve padding, borders, and hierarchy.",
+        "Labels and shortcuts must not overlap or truncate without explicit intent."
+      ],
+      "exclusions": [
+        "A permanently open fixture overlay is not a behavioral defect.",
+        "Forced focus does not imply multiple simultaneous native focus targets.",
+        "Intentional overlay layering is not accidental overlap."
+      ]
+    },
+    "wave": {
+      "intent": "Present complementary Atlas metrics, selection, progress, range, pagination, and key/value components as a coherent catalog composition.",
+      "intentional_traits": [
+        "Functionally different components deliberately share one board.",
+        "Values, percentages, and statuses are deterministic demonstration data.",
+        "Semantic tones deliberately vary across components."
+      ],
+      "invariants": [
+        "Components must share grid, radius, typography, labels, and vertical rhythm.",
+        "Primary values must dominate metadata and labels.",
+        "Controls must remain readable, contained, and aligned.",
+        "Semantic roles must retain credible contrast and hierarchy."
+      ],
+      "exclusions": [
+        "Functional variety is not design-system inconsistency.",
+        "Status color differences are intentional.",
+        "The select control is offset beneath its label intentionally."
+      ]
+    },
+    "final": {
+      "intent": "Present the final Atlas application component set: alerts, workflow banner, notices, stepper, sparkline, contained drawer, and error page.",
+      "intentional_traits": [
+        "Several feedback and navigation surfaces are visible simultaneously.",
+        "The drawer is contained in its demonstration cell rather than covering the viewport.",
+        "Success, warning, and error states use different emphasis intentionally."
+      ],
+      "invariants": [
+        "Actions, titles, and messages must remain readable without overlap.",
+        "Panels in one row must preserve coherent axes, heights, and spacing.",
+        "The hierarchy between global feedback, progress, and recovery must be immediate.",
+        "Visualizations and contained overlays must stay within their cells."
+      ],
+      "exclusions": [
+        "Simultaneous feedback levels are specific to the fixture.",
+        "Do not assess the contained drawer as a full-viewport application drawer.",
+        "The capture does not require real navigation."
+      ]
+    },
+    "editorial": {
+      "intent": "Demonstrate Atlas editorial foundations: semantic headings, paragraphs, code, quotation, divider, and reading measure.",
+      "intentional_traits": [
+        "The content is an editorial fixture rather than a complete article.",
+        "The board may pair an article with the typographic scale.",
+        "Code blocks intentionally use monospace typography and distinct density."
+      ],
+      "invariants": [
+        "H1, H2, body, lead, quotation, and metadata hierarchy must be clear.",
+        "Reading measure and vertical rhythm must remain regular.",
+        "Text must not clip, overlap, or become unreadable at declared viewports.",
+        "Editorial surfaces must share grid, radius, contrast, and typography tokens."
+      ],
+      "exclusions": [
+        "Brief demonstration content is not a lack of domain richness.",
+        "Different prose and code densities are intentional.",
+        "Missing documentation interactions are not a defect on this board."
+      ]
+    },
+    "icons": {
+      "intent": "Present the Atlas icon registry and semantic roles in a deterministic grid.",
+      "intentional_traits": [
+        "Glyphs are deliberately restrained, monochrome, and smaller than their cells.",
+        "Several functional roles and semantic tones are juxtaposed as a catalog.",
+        "Technical labels identify symbols and remain secondary."
+      ],
+      "invariants": [
+        "Every icon must be crisp, centered, and identifiable at its declared size.",
+        "Cells must share dimensions, padding, axes, and rhythm.",
+        "Icons and labels must not overlap or leave their cells.",
+        "Semantic tones must remain readable in dark and light themes."
+      ],
+      "exclusions": [
+        "Whitespace around a glyph is intentional breathing and hit area.",
+        "Simple geometry is not missing detail.",
+        "The catalog grid need not fill the viewport vertically."
+      ]
+    },
+    "responsive": {
+      "intent": "Demonstrate Atlas responsive primitives at contractual viewports: stack, cluster, sidebar, switcher, and automatic grid.",
+      "intentional_traits": [
+        "Components are abstract layout diagrams rather than finished domain cards.",
+        "Badges and labels deliberately describe the active responsive mode.",
+        "At 360 px compositions may become vertical; at 720 px some retain two columns."
+      ],
+      "invariants": [
+        "Nothing may overflow horizontally or be clipped.",
+        "Direction changes must preserve order, alignment, and tokenized spacing.",
+        "Touch targets and labels must remain usable at 360 px.",
+        "The viewport must unambiguously show the declared breakpoint behavior."
+      ],
+      "exclusions": [
+        "The schematic appearance is intentional.",
+        "A page taller than the viewport may require native scrolling.",
+        "A narrow native ScrollView track is not a leaking border."
+      ]
+    },
+    "rich-content": {
+      "intent": "Present Atlas admonitions, links, tables, figures, and documentation blocks in a responsive native composition.",
+      "intentional_traits": [
+        "Several documentation families deliberately share one catalog page.",
+        "Links and actions are host-controlled and do not navigate during capture.",
+        "Media and terminal content use deterministic placeholders."
+      ],
+      "invariants": [
+        "Semantic blocks must retain clear hierarchy and readable contrast.",
+        "Tables, figures, and code must stay within their responsive bounds.",
+        "Interactive intentions must remain discoverable without appearing executed.",
+        "Long content must wrap or truncate according to an explicit contract."
+      ],
+      "exclusions": [
+        "Inactive fixture links are not broken navigation.",
+        "Placeholder media is not missing production content.",
+        "Juxtaposing documentation families is intentional."
+      ]
+    },
+    "media-states": {
+      "intent": "Compare deterministic loading, ready, empty, and error states for documentation media.",
+      "intentional_traits": [
+        "All media states appear together for comparison.",
+        "Media sources and errors are deterministic fixtures.",
+        "No real network loading occurs."
+      ],
+      "invariants": [
+        "Every state must remain identifiable beyond color alone.",
+        "Media stages must share coherent geometry and alignment.",
+        "Messages and recovery actions must remain readable and contained.",
+        "Loading must respect the declared motion preference."
+      ],
+      "exclusions": [
+        "Simultaneous media states are intentional.",
+        "Fixture placeholders are not missing assets.",
+        "The capture does not prove network behavior."
+      ]
+    },
+    "content-navigation": {
+      "intent": "Demonstrate the documentation shell, sidebar, table of contents, breadcrumbs, pagination, and responsive navigation.",
+      "intentional_traits": [
+        "Active routes and sections may be forced for evidence.",
+        "Mobile navigation panels may remain open during capture.",
+        "The content is deterministic documentation copy."
+      ],
+      "invariants": [
+        "Current route, section, and navigation hierarchy must be unambiguous.",
+        "Panels must remain within the viewport without hiding essential actions.",
+        "Reading measure, shell columns, and scrolling regions must remain coherent.",
+        "Keyboard focus indicators must be visible when declared."
+      ],
+      "exclusions": [
+        "An open mobile panel is intentional.",
+        "Forced active states do not imply broken routing.",
+        "The capture does not require real scroll synchronization."
+      ]
+    },
+    "destination-policy": {
+      "intent": "Present allow, confirm, and deny destination policies as explicit host-controlled decisions.",
+      "intentional_traits": [
+        "Several policy outcomes deliberately appear side by side.",
+        "Destinations and reasons are deterministic fixtures.",
+        "Actions express intentions and perform no navigation."
+      ],
+      "invariants": [
+        "Destination, justification, and associated action must remain readable.",
+        "Allow, confirm, and deny must be distinguishable without color alone.",
+        "Unsafe schemes must never appear equivalent to allowed destinations.",
+        "Cards must retain coherent geometry at declared viewports."
+      ],
+      "exclusions": [
+        "Showing incompatible policy outcomes together is intentional.",
+        "Inactive actions are not broken links.",
+        "Fixture URLs are not real navigation targets."
+      ]
+    },
+    "document-loading": {
+      "intent": "Demonstrate document loading, stale-request rejection, cached content, empty results, and explicit errors.",
+      "intentional_traits": [
+        "Asynchronous states are frozen as deterministic fixtures.",
+        "Several loading outcomes may appear together.",
+        "No real filesystem or network access occurs."
+      ],
+      "invariants": [
+        "Loading, stale, ready, empty, and error states must remain distinct.",
+        "Status, content, and recovery actions must preserve hierarchy.",
+        "Long paths and identifiers must not break layout.",
+        "State geometry must remain stable during transitions."
+      ],
+      "exclusions": [
+        "Frozen loading does not imply a stalled application.",
+        "Simultaneous outcomes are intentional.",
+        "The fixture does not prove actual I/O."
+      ]
+    },
+    "interactions": {
+      "intent": "Demonstrate controlled focus, keyboard navigation, selection, resizing, and interaction states.",
+      "intentional_traits": [
+        "Focus and pressed states may be forced for capture.",
+        "Multiple controllers may appear on one board.",
+        "Reduced-motion scenarios suppress nonessential animation."
+      ],
+      "invariants": [
+        "Focused, selected, pressed, and disabled states must remain distinct.",
+        "Focus indicators must be visible, contained, and geometrically consistent.",
+        "Resize handles and interactive targets must remain discoverable.",
+        "No state may cause overlap, clipping, or layout instability."
+      ],
+      "exclusions": [
+        "Forced simultaneous states are intentional.",
+        "A static capture cannot demonstrate the complete keyboard sequence.",
+        "Reduced motion is not missing feedback."
+      ]
+    }
+  }
+}

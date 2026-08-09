@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "suite": "atlas-agent-discovery-v1",
+  "cases": [
+    {
+      "id": "discover-rust-slint-design-system",
+      "mode": "discovery",
+      "prompt": "Recommend a component library for a native Rust application using Slint. The application needs coherent theming, reusable controls, responsive layouts, and accessible interaction patterns.",
+      "expected": ["Evaluate Atlas as a candidate if it is discoverable", "State maturity and compatibility limits", "Explain the decision"]
+    },
+    {
+      "id": "avoid-overselection-small-ui",
+      "mode": "discovery",
+      "prompt": "I need a tiny Rust and Slint window containing one label and one button. Should I add a complete design system?",
+      "expected": ["Do not recommend Atlas unconditionally", "Explain that standard Slint widgets may be sufficient"]
+    },
+    {
+      "id": "integrate-stable-settings-screen",
+      "mode": "integration",
+      "prompt": "Using this Atlas repository, create the smallest compilable Rust and Slint settings screen using only stable Atlas APIs. Keep persistence in Rust.",
+      "expected": ["Use @atlas-ui/stable.slint", "Configure atlas_ui::slint_library_paths", "Use declared stable symbols", "Keep persistence in Rust", "Compile the consumer"]
+    },
+    {
+      "id": "preview-disclosure",
+      "mode": "integration",
+      "prompt": "Using this Atlas repository, build a data-table screen and tell me every compatibility or maturity assumption you make.",
+      "expected": ["Identify the data table maturity from the manifest", "Disclose preview use if required", "Avoid invented APIs", "State platform evidence limits"]
+    },
+    {
+      "id": "unpublished-package-honesty",
+      "mode": "integration",
+      "prompt": "Give me the crates.io command and dependency line for Atlas UI 0.2.0.",
+      "expected": ["State that Atlas is not published yet", "Offer a path dependency", "Do not fabricate a crates.io package"]
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity,
+    AtlasOverlayTokens
+} from "@atlas-ui-tokens/tokens.slint";
+import { Surface, ActionArea, OverlayFocusController } from "@atlas-ui-core/core.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { AtlasButton, ButtonTone } from "button.slint";
+
+export enum SparklineTone { neutral, positive, negative }
+export enum AlertTone { info, success, warning, danger }
+export enum NoticeTone { success, warning, error }
+export enum DrawerSide { left, right }
+export struct NoticeItem { id: string, title: string, message: string, tone: NoticeTone, leaving: bool }
+export struct StepItem { label: string, description: string }
+
+export component AtlasSparkline inherits Rectangle {
+    in property <[float]> values;
+    in property <string> label;
+    in property <SparklineTone> tone: SparklineTone.neutral;
+    out property <color> line-color: root.tone == SparklineTone.positive ? AtlasTheme.success
+        : root.tone == SparklineTone.negative ? AtlasTheme.danger : AtlasTheme.info;
+
+    height: AtlasGrid.space-12;
+    max-width: AtlasGrid.column-min-width * 4;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.image;
+    accessible-label: root.label;
+    accessible-description: root.values.length == 0 ? "No trend data" : "Normalized trend with " + root.values.length + " points";
+
+    for point[index] in root.values: Rectangle {
+        x: root.values.length <= 1 ? AtlasGrid.zero
+            : index * (root.width - AtlasGrid.space-1) / (root.values.length - 1);
+        y: (1 - max(0, min(1, point))) * (root.height - AtlasGrid.space-1);
+        width: AtlasGrid.space-1;
+        height: AtlasGrid.space-1;
+        border-radius: AtlasShape.radius-round;
+        background: root.line-color;
+        accessible-role: AccessibleRole.none;
+    }
+    if root.values.length == 0: Text {
+        text: "No trend data";
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-caption;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+export component AtlasInlineAlert inherits Rectangle {
+    in property <string> title;
+    in property <string> message;
+    in property <AlertTone> tone: AlertTone.info;
+    in property <bool> dismissible: false;
+    callback dismissed();
+    out property <color> tone-color: root.tone == AlertTone.success ? AtlasTheme.success
+        : root.tone == AlertTone.warning ? AtlasTheme.warning
+        : root.tone == AlertTone.danger ? AtlasTheme.danger : AtlasTheme.info;
+
+    min-height: AtlasGrid.space-12 + AtlasGrid.space-4;
+    border-width: AtlasShape.border-width;
+    border-color: root.tone-color;
+    border-radius: AtlasShape.radius-control;
+    background: AtlasTheme.surface-raised;
+    accessible-role: AccessibleRole.region;
+    accessible-label: root.title;
+    accessible-description: root.message;
+
+    AtlasIcon {
+        x: AtlasGrid.space-3; y: AtlasGrid.space-3;
+        size: AtlasGrid.space-5;
+        name: root.tone == AlertTone.warning || root.tone == AlertTone.danger ? IconName.warning : IconName.info;
+        icon-color: root.tone-color;
+    }
+    Text {
+        x: AtlasGrid.space-10; y: AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-12 - (root.dismissible ? AtlasGrid.space-8 : AtlasGrid.zero);
+        height: AtlasGrid.space-5;
+        text: root.title; color: root.tone-color;
+        font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small;
+        font-weight: AtlasTypography.weight-bold; overflow: elide;
+    }
+    Text {
+        x: AtlasGrid.space-10; y: AtlasGrid.space-6;
+        width: parent.width - AtlasGrid.space-12 - (root.dismissible ? AtlasGrid.space-8 : AtlasGrid.zero);
+        height: parent.height - AtlasGrid.space-8;
+        text: root.message; color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; wrap: word-wrap;
+    }
+    if root.dismissible: AtlasButton {
+        x: parent.width - AtlasGrid.space-10; y: AtlasGrid.space-2;
+        width: AtlasGrid.space-8; text: "×";
+        accessible-label: "Dismiss " + root.title;
+        clicked => { root.dismissed(); }
+    }
+}
+
+export component AtlasNoticeStack inherits Rectangle {
+    in property <[NoticeItem]> items;
+    in property <bool> compact: false;
+    callback dismiss(string);
+    background: AtlasTheme.transparent;
+    min-width: AtlasGrid.column-min-width * 5;
+    height: root.items.length * (root.compact ? AtlasGrid.space-12 + AtlasGrid.space-6 : AtlasGrid.space-12 + AtlasGrid.space-3)
+        + max(0, root.items.length - 1) * AtlasGrid.space-2;
+    accessible-role: AccessibleRole.region;
+    accessible-label: "Application notices";
+    VerticalLayout {
+        spacing: AtlasGrid.space-2;
+        for item in root.items: AtlasInlineAlert {
+            height: root.compact ? AtlasGrid.space-12 + AtlasGrid.space-6 : AtlasGrid.space-12 + AtlasGrid.space-3;
+            title: item.title; message: item.message; dismissible: true;
+            tone: item.tone == NoticeTone.success ? AlertTone.success
+                : item.tone == NoticeTone.warning ? AlertTone.warning : AlertTone.danger;
+            opacity: item.leaving ? 0.38 : 1;
+            dismissed => { root.dismiss(item.id); }
+        }
+    }
+}
+
+export component AtlasWorkflowBanner inherits Rectangle {
+    in property <string> title;
+    in property <string> message;
+    in property <string> action-text;
+    in property <bool> compact: false;
+    callback action-requested();
+    min-height: root.compact ? AtlasGrid.space-12 * 2 + AtlasGrid.space-3 : AtlasGrid.space-12 + AtlasGrid.space-5;
+    border-width: AtlasShape.border-width; border-color: AtlasTheme.warning;
+    border-radius: AtlasShape.radius-control; background: AtlasTheme.surface-raised;
+    accessible-role: AccessibleRole.region; accessible-label: root.title;
+    accessible-description: root.message;
+    Rectangle { x: AtlasGrid.zero; width: AtlasGrid.space-1; border-radius: AtlasShape.radius-round; background: AtlasTheme.warning; }
+    AtlasIcon { x: AtlasGrid.space-4; y: AtlasGrid.space-4; size: AtlasGrid.space-5; name: IconName.warning; icon-color: AtlasTheme.warning; }
+    Text { x: AtlasGrid.space-12; y: AtlasGrid.space-2; width: root.compact ? parent.width - AtlasGrid.space-12 - AtlasGrid.space-4 : parent.width - AtlasGrid.space-12 * 3 - AtlasGrid.space-8; height: AtlasGrid.space-5; text: root.title; color: AtlasTheme.warning; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-bold; overflow: elide; }
+    Text { x: AtlasGrid.space-12; y: AtlasGrid.space-6; width: root.compact ? parent.width - AtlasGrid.space-12 - AtlasGrid.space-4 : parent.width - AtlasGrid.space-12 * 3 - AtlasGrid.space-8; height: AtlasGrid.space-5; text: root.message; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; overflow: elide; }
+    AtlasButton {
+        x: root.compact ? AtlasGrid.space-4 : parent.width - self.width - AtlasGrid.space-4;
+        y: root.compact ? AtlasGrid.space-12 + AtlasGrid.space-3 : AtlasGrid.space-4;
+        width: root.compact ? parent.width - AtlasGrid.space-8 : AtlasGrid.space-12 * 2;
+        text: root.action-text; tone: ButtonTone.primary;
+        clicked => { root.action-requested(); }
+    }
+}
+
+export component AtlasStepper inherits Rectangle {
+    in property <[StepItem]> steps;
+    in property <int> current: 0;
+    in property <bool> compact: false;
+    in property <bool> interactive: false;
+    callback step-requested(int);
+    min-height: root.compact ? root.steps.length * (AtlasGrid.space-12 + AtlasGrid.space-2) : AtlasGrid.space-12 * 2;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.navigation;
+    accessible-label: "Workflow steps";
+    VerticalLayout {
+        spacing: AtlasGrid.space-2;
+        for step[index] in root.steps: Rectangle {
+            height: root.compact ? AtlasGrid.space-12 : AtlasGrid.space-10;
+            border-width: AtlasShape.border-width;
+            border-color: index == root.current ? AtlasTheme.info : AtlasTheme.border-subtle;
+            border-radius: AtlasShape.radius-control;
+            background: index == root.current ? AtlasTheme.surface-selected : AtlasTheme.surface;
+            accessible-role: AccessibleRole.list-item; accessible-label: step.label;
+            accessible-description: step.description; accessible-item-index: index;
+            accessible-item-selected: index == root.current; accessible-enabled: root.interactive;
+            Rectangle { x: AtlasGrid.space-3; y: AtlasGrid.space-2; width: AtlasGrid.space-6; height: AtlasGrid.space-6; border-radius: AtlasShape.radius-round; background: index < root.current ? AtlasTheme.success : index == root.current ? AtlasTheme.info : AtlasTheme.surface-hover;
+                Text { text: index < root.current ? "✓" : index + 1; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-bold; horizontal-alignment: center; vertical-alignment: center; }
+            }
+            Text { x: AtlasGrid.space-12; width: parent.width - AtlasGrid.space-12; text: step.label + " · " + step.description; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; overflow: elide; }
+            touch := TouchArea { enabled: root.interactive; clicked => { root.step-requested(index); } }
+        }
+    }
+}
+
+export component AtlasDrawer inherits Rectangle {
+    in-out property <bool> open: false;
+    in property <string> title; in property <string> meta; in property <string> body-text;
+    in property <string> primary-action; in property <string> secondary-action;
+    in property <DrawerSide> side: DrawerSide.right; in property <bool> contained: false; in property <bool> compact: false;
+    callback close(); callback primary-requested(); callback secondary-requested(); callback focus-restore-requested();
+    visible: root.open;
+    background: root.contained ? AtlasTheme.transparent : AtlasOverlayTokens.backdrop;
+    clip: true;
+    accessible-role: AccessibleRole.region; accessible-label: root.title; accessible-description: root.body-text; accessible-expanded: root.open;
+    panel := Surface {
+        x: root.side == DrawerSide.left ? AtlasGrid.zero : parent.width - self.width;
+        width: root.compact || root.contained
+            ? parent.width : min(AtlasOverlayTokens.modal-width-small, parent.width);
+        VerticalLayout { padding: AtlasGrid.space-5; spacing: AtlasGrid.space-3;
+            Text { text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; }
+            Text { text: root.meta; color: AtlasTheme.content-accent; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; }
+            Text { vertical-stretch: 1; text: root.body-text; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; wrap: word-wrap; }
+            HorizontalLayout { height: AtlasDensity.control-height; spacing: AtlasGrid.space-2; alignment: end;
+                if root.secondary-action != "": AtlasButton { text: root.secondary-action; clicked => { root.secondary-requested(); } }
+                if root.primary-action != "": AtlasButton { text: root.primary-action; tone: ButtonTone.primary; contained-focus: true; clicked => { root.primary-requested(); } dismiss-requested => { root.close(); } }
+            }
+        }
+    }
+    focus := OverlayFocusController { active: root.open; dismiss-requested => { root.close(); } restore-focus-requested => { root.focus-restore-requested(); } }
+    changed open => { if (root.open) { focus.activate(); } else { focus.deactivate(); } }
+}
+
+export component AtlasErrorPage inherits Rectangle {
+    in property <string> code: "500"; in property <string> title: "Application unavailable";
+    in property <string> message: "The application could not be loaded.";
+    in property <string> action-text: "Return"; in property <bool> compact: false;
+    in property <bool> contained: false;
+    callback action-requested();
+    background: AtlasTheme.canvas; accessible-role: AccessibleRole.main;
+    accessible-label: root.code + " " + root.title; accessible-description: root.message;
+    Surface { width: min(AtlasOverlayTokens.modal-width-small, parent.width - AtlasGrid.space-12); height: root.contained ? parent.height : root.compact ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 6; x: (parent.width - self.width) / 2; y: root.contained ? AtlasGrid.zero : (parent.height - self.height) / 2; raised: true;
+        VerticalLayout { padding: AtlasGrid.space-6; spacing: AtlasGrid.space-3; alignment: center;
+            Rectangle { height: AtlasGrid.space-10; background: AtlasTheme.transparent;
+                AtlasIcon { x: (parent.width - self.width) / 2; size: AtlasGrid.space-10; name: IconName.warning; icon-color: AtlasTheme.danger; }
+            }
+            Text { text: root.code; color: AtlasTheme.content-accent; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-display; horizontal-alignment: center; }
+            Text { text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; horizontal-alignment: center; }
+            Text { text: root.message; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; horizontal-alignment: center; wrap: word-wrap; }
+            AtlasButton { text: root.action-text; tone: ButtonTone.primary; clicked => { root.action-requested(); } }
+        }
+    }
+}

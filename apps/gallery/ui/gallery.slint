@@ -1,0 +1,2139 @@
+import { ScrollView } from "std-widgets.slint";
+import {
+    AtlasPalette, AtlasTheme, AtlasGrid, AtlasShape, AtlasDensity, AtlasTypography,
+    Density, AtlasButton, ButtonTone, AtlasTextField, AtlasCheckbox,
+    AtlasSwitch, SwitchTone, AtlasBadge, BadgeTone, AtlasIcon, IconName, IconTone, Surface,
+    AtlasTab, TabVariant, AtlasTooltip, TooltipTone, TooltipPlacement, AtlasMenu, MenuItem,
+    AtlasModal, ModalSize, ContentFrame, LayoutGridOverlay
+    , AtlasDataTable, AtlasSkeleton, AtlasEmptyState, AtlasErrorState,
+    DataColumn, DataRow, DataViewState, CellEditorKind, ColumnPin
+    , AtlasPanel, AtlasMetricCard, AtlasSelectField, AtlasProgressBar, ProgressTone,
+    AtlasRangeControl, AtlasPagination, AtlasKeyValueList, KeyValueItem, ValueTone
+    , AtlasSparkline, SparklineTone, AtlasInlineAlert, AlertTone, AtlasNoticeStack,
+    NoticeItem, NoticeTone, AtlasWorkflowBanner, AtlasStepper, StepItem,
+    AtlasDrawer, DrawerSide, AtlasErrorPage
+    , AtlasHeading, AtlasParagraph, AtlasStyledText, AtlasSelectableText, AtlasInlineCode, AtlasCodeBlock,
+    AtlasBlockQuote, AtlasDivider, HeadingLevel, EditorialTone, EditorialEmphasis
+    , AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
+    AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane, AtlasResizeHandle, AtlasStickyRegion,
+    LayoutGap, SplitOrientation, StickyEdge
+    , AtlasAdmonition, AtlasCallout, AtlasLink, AtlasLinkCard, AtlasRichText, AtlasDocumentList,
+    AtlasCaption, AtlasCrossReference, CaptionKind,
+    AtlasFootnoteReference, AtlasFootnoteList,
+    AtlasDocumentTable, AtlasFigure, MediaState,
+    AtlasTerminalBlock, AtlasContentTabs, AdmonitionTone,
+    DocumentTableColumn, DocumentTableRow, ContentTabItem
+    , AtlasDocumentationShell, DocumentationNavItem, BreadcrumbItem, TocItem, FooterLink
+    , AtlasAnchorAction, AtlasDocumentSearch, AtlasCommandPalette,
+    DocumentSearchResult, CommandPaletteItem
+    , AtlasRoadmapContentTemplate, RoadmapStatusRow, RoadmapStatusTone
+    , AtlasSettingsTemplate, AtlasDashboardTemplate
+    , AtlasThemeControl
+} from "@atlas-ui/components.slint";
+import {
+    AtlasSettings as GallerySettings, ThemeMode as GalleryThemeMode
+} from "@atlas-ui/components.slint";
+export {
+    AtlasSettings, ThemeMode, Density, MotionPreference, TypographyScale
+} from "@atlas-ui/components.slint";
+
+component SectionLabel inherits Text {
+    color: AtlasTheme.content-accent;
+    font-family: AtlasTypography.font-sans;
+    font-size: AtlasTypography.size-body-small;
+    font-weight: AtlasTypography.weight-bold;
+    vertical-alignment: center;
+}
+
+component ColorSwatch inherits Rectangle {
+    in property <string> label;
+    in property <color> swatch;
+    in property <color> foreground: AtlasTheme.content-primary;
+
+    height: AtlasGrid.space-12;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-small;
+    background: swatch;
+    Text {
+        x: AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-4;
+        text: root.label;
+        color: root.foreground;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-label;
+        font-weight: AtlasTypography.weight-semibold;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+}
+
+component ThemePreview inherits Rectangle {
+    in property <bool> light: false;
+    private property <color> preview-canvas: light ? AtlasTheme.light-canvas : AtlasTheme.dark-canvas;
+    private property <color> preview-surface: light ? AtlasTheme.light-surface : AtlasTheme.dark-surface;
+    private property <color> preview-border: light ? AtlasTheme.light-border-subtle : AtlasTheme.dark-border-subtle;
+
+    height: AtlasGrid.space-12 * 3;
+    background: preview-canvas;
+    border-width: AtlasShape.border-width;
+    border-color: preview-border;
+    border-radius: AtlasShape.radius-surface;
+    Rectangle {
+        x: AtlasGrid.space-4;
+        y: AtlasGrid.space-4;
+        width: parent.width - AtlasGrid.space-8;
+        height: parent.height - AtlasGrid.space-8;
+        background: root.preview-surface;
+        border-width: AtlasShape.border-width;
+        border-color: root.preview-border;
+        border-radius: AtlasShape.radius-control;
+        Text {
+            x: AtlasGrid.space-4;
+            y: AtlasGrid.space-4;
+            width: parent.width - AtlasGrid.space-8;
+            height: AtlasGrid.space-6;
+            text: root.light ? "LIGHT THEME" : "DARK THEME";
+            color: root.light ? AtlasPalette.neutral-950 : AtlasPalette.neutral-50;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-title-small;
+            font-weight: AtlasTypography.weight-bold;
+            vertical-alignment: center;
+        }
+        Text {
+            x: AtlasGrid.space-4;
+            y: AtlasGrid.space-12;
+            width: parent.width - AtlasGrid.space-8;
+            height: AtlasGrid.space-5;
+            text: "Canvas → surface → content → border";
+            color: root.light ? AtlasPalette.neutral-600 : AtlasPalette.neutral-300;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            vertical-alignment: center;
+        }
+    }
+}
+
+component DensityPreview inherits Rectangle {
+    in property <string> label;
+    in property <Density> preview-density: Density.normal;
+
+    height: (root.preview-density == Density.compact
+        ? AtlasDensity.control-height-compact
+        : root.preview-density == Density.comfortable
+            ? AtlasDensity.control-height-comfortable
+            : AtlasDensity.control-height-normal) + AtlasGrid.space-4;
+    background: AtlasTheme.transparent;
+    HorizontalLayout {
+        spacing: AtlasGrid.space-4;
+        Text {
+            width: AtlasGrid.column-min-width * 2;
+            text: root.label;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-mono;
+            font-size: AtlasTypography.size-body-small;
+            vertical-alignment: center;
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+            background: AtlasTheme.transparent;
+            AtlasButton {
+                width: AtlasGrid.column-min-width * 2 + AtlasGrid.space-8;
+                text: "Default action";
+                density: root.preview-density;
+                tone: ButtonTone.primary;
+            }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+            background: AtlasTheme.transparent;
+            AtlasButton {
+                width: AtlasGrid.column-min-width * 2 + AtlasGrid.space-8;
+                text: "Secondary";
+                density: root.preview-density;
+            }
+        }
+    }
+}
+
+component InteractionStatePreview inherits Rectangle {
+    in property <string> state-name;
+    in property <string> detail;
+    in property <bool> selected: false;
+    in property <bool> disabled: false;
+    in property <bool> focus-visible: false;
+
+    height: AtlasDensity.control-height-comfortable + AtlasGrid.space-6;
+    background: root.selected ? AtlasTheme.surface-selected : AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: root.focus-visible ? AtlasTheme.focus-ring : AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-control;
+    opacity: root.disabled ? 0.55 : 1;
+
+    VerticalLayout {
+        padding: AtlasGrid.space-3;
+        spacing: AtlasGrid.space-1;
+        Text {
+            text: root.state-name;
+            color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            font-weight: AtlasTypography.weight-semibold;
+        }
+        Text {
+            text: root.detail;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-mono;
+            font-size: AtlasTypography.size-caption;
+        }
+    }
+}
+
+component EditorialArticlePreview inherits Rectangle {
+    min-height: AtlasGrid.space-12 * 13;
+    background: AtlasTheme.transparent;
+    VerticalLayout { spacing: AtlasGrid.space-4;
+        AtlasHeading {
+            height: AtlasTypography.line-display * 2;
+            text: "Designing native interfaces with a web-quality rhythm";
+            level: HeadingLevel.h1; anchor-id: "editorial-foundations";
+        }
+        AtlasParagraph {
+            height: AtlasTypography.line-lead * 2;
+            text: "Atlas separates editorial hierarchy from application composition. Typography remains semantic, responsive and independent from domain content.";
+            lead: true; muted: true;
+        }
+        AtlasInlineCode { width: AtlasGrid.column-min-width * 3; height: AtlasGrid.space-6; code: "cargo add atlas-ui"; }
+        AtlasDivider { height: AtlasGrid.space-6; label: "FOUNDATIONS"; }
+        AtlasHeading { height: AtlasTypography.line-heading; text: "Readable by construction"; level: HeadingLevel.h2; }
+        AtlasParagraph {
+            height: AtlasTypography.line-body * 3;
+            text: "A bounded measure, deliberate hierarchy and shared spacing tokens make long-form native content predictable. Applications provide meaning; Atlas owns presentation and accessibility contracts.";
+        }
+        AtlasBlockQuote {
+            height: AtlasGrid.space-12 * 2;
+            quote: "A component library becomes valuable when consistency is easier than improvisation.";
+            attribution: "Atlas design principle";
+        }
+        AtlasCodeBlock {
+            height: AtlasGrid.space-12 * 2;
+            language: "rust";
+            code: "let document = DocumentModel::from_blocks(blocks);\nui.set_document(document.into());";
+        }
+    }
+}
+
+component EditorialScalePreview inherits Rectangle {
+    min-height: AtlasGrid.space-12 * 8;
+    background: AtlasTheme.transparent;
+    VerticalLayout { spacing: AtlasGrid.space-3;
+        AtlasHeading { height: AtlasTypography.line-heading; text: "Type scale"; level: HeadingLevel.h2; }
+        AtlasHeading { height: AtlasTypography.line-heading; text: "Heading level 3"; level: HeadingLevel.h3; }
+        AtlasHeading { height: AtlasTypography.line-heading-small; text: "Heading level 4"; level: HeadingLevel.h4; }
+        AtlasHeading { height: AtlasTypography.line-heading-small; text: "Heading level 5"; level: HeadingLevel.h5; }
+        AtlasHeading { height: AtlasTypography.line-body; text: "Heading level 6"; level: HeadingLevel.h6; }
+        AtlasDivider { height: AtlasGrid.space-6; }
+        AtlasParagraph { height: AtlasTypography.line-body * 3; text: "Body text keeps a stable reading measure and wraps naturally when the viewport narrows. Secondary content remains legible without competing with the primary hierarchy."; muted: true; }
+        AtlasHeading { height: AtlasTypography.line-heading-small; text: "Semantic tones"; level: HeadingLevel.h4; }
+        AtlasHeading { height: AtlasTypography.line-body; text: "Accent heading"; level: HeadingLevel.h6; tone: EditorialTone.accent; }
+        AtlasHeading { height: AtlasTypography.line-body; text: "Danger heading"; level: HeadingLevel.h6; tone: EditorialTone.danger; }
+    }
+}
+
+component IconPreview inherits Rectangle {
+    in property <IconName> icon-name;
+    in property <IconTone> tone: IconTone.primary;
+    in property <string> label;
+    height: AtlasGrid.space-12 * 2;
+    background: AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-control;
+    AtlasIcon {
+        x: (parent.width - self.width) / 2; y: AtlasGrid.space-4;
+        size: AtlasGrid.space-6; name: root.icon-name;
+        tone: root.tone;
+        decorative: false;
+        accessible-name: root.label + " icon";
+    }
+    Text {
+        x: AtlasGrid.space-2; y: AtlasGrid.space-12;
+        width: parent.width - AtlasGrid.space-4; height: AtlasGrid.space-5;
+        text: root.label; color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption;
+        horizontal-alignment: center; overflow: elide;
+    }
+}
+
+component RecipeCard inherits Rectangle {
+    in property <string> label;
+    min-width: AtlasGrid.column-min-width * 2;
+    min-height: AtlasGrid.space-12 * 2;
+    background: AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-control;
+    Text {
+        x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-6;
+        text: root.label; color: AtlasTheme.content-primary;
+        font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small;
+        font-weight: AtlasTypography.weight-semibold; vertical-alignment: center;
+        horizontal-alignment: center; overflow: elide;
+    }
+}
+
+export component Gallery inherits Window {
+    in property <bool> show-grid: false;
+    in property <string> preview-page: "foundations";
+
+    title: "Atlas UI · Foundation system";
+    preferred-width: 1080px;
+    preferred-height: 900px;
+    background: AtlasTheme.canvas;
+
+    frame := ContentFrame { reference-width: root.width; }
+
+    ScrollView {
+        viewport-width: root.width;
+        VerticalLayout {
+            x: frame.content-x;
+            width: frame.content-width;
+            padding-top: AtlasGrid.space-8;
+            padding-bottom: AtlasGrid.space-8;
+            spacing: AtlasGrid.space-6;
+
+            Text {
+                height: AtlasTypography.line-display;
+                text: root.preview-page == "rich-content" ? "ATLAS UI RICH CONTENT"
+                    : root.preview-page == "responsive" ? (root.width < AtlasGrid.breakpoint-compact ? "ATLAS UI RESPONSIVE" : "ATLAS UI RESPONSIVE RECIPES")
+                    : root.preview-page == "icons" ? "ATLAS UI VECTOR ICONS"
+                    : root.preview-page == "typography-stress"
+                        ? (root.width < AtlasGrid.breakpoint-compact ? "TYPOGRAPHY STRESS" : "ATLAS UI TYPOGRAPHY STRESS")
+                    : root.preview-page == "editorial" ? "ATLAS UI EDITORIAL SYSTEM"
+                    : root.preview-page == "final" ? "ATLAS UI FINAL MIGRATION"
+                    : root.preview-page == "wave" ? "ATLAS UI COMPONENT WAVE"
+                    : root.preview-page == "data" ? "ATLAS UI DATA SYSTEM"
+                    : root.preview-page == "navigation" ? "ATLAS UI OVERLAYS & NAVIGATION"
+                    : root.preview-page == "components" ? "ATLAS UI COMPONENTS"
+                    : root.preview-page == "interactions" ? "ATLAS UI INTERACTIONS" : "ATLAS UI FOUNDATIONS";
+                color: AtlasTheme.content-primary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-display;
+                font-weight: AtlasTypography.weight-bold;
+            }
+            Text {
+                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
+                height: self.visible ? AtlasTypography.line-body : AtlasGrid.zero;
+                text: root.preview-page == "components"
+                    ? "Shared foundations → consistent contracts → production-ready composition"
+                    : root.preview-page == "interactions"
+                    ? "Input modality → observable state → accessible intent → visual component"
+                    : "Primitive palette → semantic theme → geometry → component roles";
+                color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body;
+            }
+
+            if root.preview-page == "foundations": VerticalLayout {
+            spacing: AtlasGrid.space-6;
+            SectionLabel { visible: root.preview-page == "foundations"; text: "THEME MATRIX"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            HorizontalLayout {
+                visible: root.preview-page == "foundations";
+                height: self.visible ? AtlasGrid.space-12 * 3 : AtlasGrid.zero;
+                spacing: AtlasGrid.gutter-normal;
+                ThemePreview { horizontal-stretch: 1; }
+                ThemePreview { horizontal-stretch: 1; light: true; }
+            }
+
+            SectionLabel { visible: root.preview-page == "foundations"; text: "ACTIVE SEMANTIC COLORS"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            HorizontalLayout {
+                visible: root.preview-page == "foundations";
+                height: self.visible ? AtlasGrid.space-12 : AtlasGrid.zero;
+                spacing: AtlasGrid.space-2;
+                ColorSwatch { horizontal-stretch: 1; label: "canvas"; swatch: AtlasTheme.canvas; foreground: AtlasTheme.content-primary; }
+                ColorSwatch { horizontal-stretch: 1; label: "surface"; swatch: AtlasTheme.surface; foreground: AtlasTheme.content-primary; }
+                ColorSwatch { horizontal-stretch: 1; label: "content"; swatch: AtlasTheme.content-primary; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "accent"; swatch: AtlasTheme.content-accent; foreground: AtlasTheme.on-accent; }
+                ColorSwatch { horizontal-stretch: 1; label: "success"; swatch: AtlasTheme.success; foreground: AtlasTheme.on-success; }
+                ColorSwatch { horizontal-stretch: 1; label: "warning"; swatch: AtlasTheme.warning; foreground: AtlasTheme.on-warning; }
+                ColorSwatch { horizontal-stretch: 1; label: "danger"; swatch: AtlasTheme.danger; foreground: AtlasTheme.on-danger; }
+                ColorSwatch { horizontal-stretch: 1; label: "info"; swatch: AtlasTheme.info; foreground: AtlasTheme.on-info; }
+            }
+
+            SectionLabel { visible: root.preview-page == "foundations"; text: "DENSITY MATRIX"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            Surface {
+                visible: root.preview-page == "foundations";
+                height: self.visible
+                    ? AtlasDensity.control-height-compact
+                        + AtlasDensity.control-height-normal
+                        + AtlasDensity.control-height-comfortable
+                        + AtlasGrid.space-12 * 2 + AtlasGrid.space-6
+                    : AtlasGrid.zero;
+                raised: true;
+                VerticalLayout {
+                    padding: AtlasGrid.space-4;
+                    spacing: AtlasGrid.space-2;
+                    HorizontalLayout {
+                        height: AtlasGrid.space-4;
+                        spacing: AtlasGrid.space-4;
+                        Text {
+                            width: AtlasGrid.column-min-width * 2;
+                            text: "DENSITY";
+                            color: AtlasTheme.content-secondary;
+                            font-family: AtlasTypography.font-sans;
+                            font-size: AtlasTypography.size-label;
+                            font-weight: AtlasTypography.weight-bold;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: "PRIMARY";
+                            color: AtlasTheme.content-secondary;
+                            font-family: AtlasTypography.font-sans;
+                            font-size: AtlasTypography.size-label;
+                            font-weight: AtlasTypography.weight-bold;
+                            horizontal-alignment: center;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: "SECONDARY";
+                            color: AtlasTheme.content-secondary;
+                            font-family: AtlasTypography.font-sans;
+                            font-size: AtlasTypography.size-label;
+                            font-weight: AtlasTypography.weight-bold;
+                            horizontal-alignment: center;
+                        }
+                    }
+                    DensityPreview { label: "compact"; preview-density: Density.compact; }
+                    DensityPreview { label: "normal"; preview-density: Density.normal; }
+                    DensityPreview { label: "comfortable"; preview-density: Density.comfortable; }
+                }
+            }
+
+            SectionLabel { visible: root.preview-page == "foundations"; text: "INTERACTION STATES"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            Surface {
+                visible: root.preview-page == "foundations";
+                height: self.visible ? AtlasDensity.control-height-comfortable + AtlasGrid.space-8 : AtlasGrid.zero;
+                raised: true;
+                HorizontalLayout {
+                    padding: AtlasGrid.space-4;
+                    spacing: AtlasGrid.space-3;
+                    alignment: center;
+                    Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+                    AtlasButton { width: root.width < AtlasGrid.content-standard ? AtlasGrid.column-min-width + AtlasGrid.space-10 : AtlasGrid.column-min-width * 2; text: "Neutral"; }
+                    AtlasButton { width: root.width < AtlasGrid.content-standard ? AtlasGrid.column-min-width + AtlasGrid.space-10 : AtlasGrid.column-min-width * 2; text: "Primary"; tone: ButtonTone.primary; }
+                    AtlasButton { width: root.width < AtlasGrid.content-standard ? AtlasGrid.column-min-width + AtlasGrid.space-10 : AtlasGrid.column-min-width * 2; text: "Danger"; tone: ButtonTone.danger; }
+                    AtlasButton { width: root.width < AtlasGrid.content-standard ? AtlasGrid.column-min-width + AtlasGrid.space-10 : AtlasGrid.column-min-width * 2; text: "Disabled"; enabled: false; }
+                    AtlasButton { width: root.width < AtlasGrid.content-standard ? AtlasGrid.column-min-width * 2 : AtlasGrid.column-min-width * 2 + AtlasGrid.space-8; text: "Keyboard focus"; preview-focus-visible: true; }
+                    Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+                }
+            }
+
+            }
+
+            if root.preview-page == "interactions": VerticalLayout {
+            spacing: AtlasGrid.space-6;
+            SectionLabel { visible: root.preview-page == "interactions"; text: "ACTION AREA STATE CONTRACT"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            HorizontalLayout {
+                visible: root.preview-page == "interactions";
+                height: self.visible ? AtlasDensity.control-height-comfortable + AtlasGrid.space-6 : AtlasGrid.zero;
+                spacing: AtlasGrid.space-3;
+                InteractionStatePreview { horizontal-stretch: 1; state-name: "Rest"; detail: "focus=false · pressed=false"; }
+                InteractionStatePreview { horizontal-stretch: 1; state-name: "Selected"; detail: "selected=true"; selected: true; }
+                InteractionStatePreview { horizontal-stretch: 1; state-name: "Focus visible"; detail: "modality=keyboard"; focus-visible: true; }
+                InteractionStatePreview { horizontal-stretch: 1; state-name: "Disabled"; detail: "enabled=false"; disabled: true; }
+            }
+
+            SectionLabel { visible: root.preview-page == "interactions"; text: "ACTIVATION CONTRACT"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            Surface {
+                visible: root.preview-page == "interactions";
+                height: self.visible ? AtlasDensity.control-height-comfortable + AtlasGrid.space-8 : AtlasGrid.zero;
+                raised: true;
+                HorizontalLayout {
+                    padding: AtlasGrid.space-4;
+                    spacing: AtlasGrid.space-3;
+                    alignment: center;
+                    AtlasButton { text: "Pointer / Enter / Space"; tone: ButtonTone.primary; preview-focus-visible: true; }
+                    AtlasButton { text: "Selected action"; selected: true; }
+                    AtlasButton { text: "Unavailable"; enabled: false; }
+                    Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+                }
+            }
+
+            SectionLabel { visible: root.preview-page == "interactions"; text: "CONTROLLED GROUPS"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            Surface {
+                visible: root.preview-page == "interactions";
+                height: self.visible ? AtlasGrid.space-12 * 2 : AtlasGrid.zero;
+                raised: true;
+                VerticalLayout {
+                    padding: AtlasGrid.space-4;
+                    spacing: AtlasGrid.space-3;
+                    Text {
+                        text: "SelectionController  →  single · additive · range intentions";
+                        color: AtlasTheme.content-primary;
+                        font-family: AtlasTypography.font-mono;
+                        font-size: AtlasTypography.size-body-small;
+                    }
+                    Text {
+                        text: "RovingFocusController →  previous · next · first · last · wrap";
+                        color: AtlasTheme.content-secondary;
+                        font-family: AtlasTypography.font-mono;
+                        font-size: AtlasTypography.size-body-small;
+                    }
+                }
+            }
+
+            }
+
+            Text {
+                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
+                height: self.visible ? self.preferred-height : AtlasGrid.zero;
+                text: root.preview-page == "interactions"
+                    ? "Accessible role + name + default action · reduced motion resolves durations to zero"
+                    : "Grid unit 4 · semantic tokens · no arbitrary component literals";
+                color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-mono;
+                font-size: AtlasTypography.size-caption;
+            }
+        }
+    }
+
+    if root.preview-page == "components": Rectangle {
+        x: frame.content-x;
+        y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width;
+        height: parent.height - self.y - AtlasGrid.space-8;
+        background: AtlasTheme.canvas;
+        VerticalLayout {
+            spacing: AtlasGrid.space-5;
+            Text {
+                text: "Shared foundations → consistent contracts → production-ready composition";
+                color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body;
+                height: AtlasGrid.space-5;
+            }
+            SectionLabel { text: "BUTTONS"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasDensity.control-height-comfortable;
+                spacing: AtlasGrid.space-3;
+                AtlasButton { text: "Primary action"; tone: ButtonTone.primary; }
+                AtlasButton { text: "With icon"; show-icon: true; icon-name: IconName.check; }
+                AtlasButton { text: "Danger"; tone: ButtonTone.danger; }
+                AtlasButton { text: "Loading"; loading: true; }
+                AtlasButton { text: "Disabled"; enabled: false; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            SectionLabel { text: "TEXT FIELDS"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasGrid.space-12 * 2;
+                spacing: AtlasGrid.space-4;
+                AtlasTextField { horizontal-stretch: 1; label: "Project name"; value: "Atlas UI"; hint: "Visible to the whole workspace"; required: true; }
+                AtlasTextField { horizontal-stretch: 1; label: "Repository"; value: "atlas/ui-library"; mono: true; }
+                AtlasTextField { horizontal-stretch: 1; label: "Identifier"; value: "invalid value"; error: "Use lowercase letters and hyphens"; }
+                AtlasTextField { horizontal-stretch: 1; label: "Unavailable"; value: "Read only"; enabled: false; }
+            }
+            SectionLabel { text: "CHOICES"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasGrid.space-12;
+                spacing: AtlasGrid.space-6;
+                AtlasCheckbox { width: AtlasGrid.column-min-width * 3; label: "Unchecked option"; }
+                AtlasCheckbox { width: AtlasGrid.column-min-width * 4; label: "Checked option"; description: "Supporting description"; checked: true; preview-focus-visible: true; }
+                AtlasCheckbox { width: AtlasGrid.column-min-width * 3; label: "Disabled option"; enabled: false; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            HorizontalLayout {
+                height: AtlasDensity.pointer-target-min;
+                spacing: AtlasGrid.space-6;
+                AtlasSwitch { width: AtlasGrid.column-min-width * 3; label: "Enabled"; inactive-label: "Disabled"; checked: true; }
+                AtlasSwitch { width: AtlasGrid.column-min-width * 4; label: "Operator active"; inactive-label: "Operator paused"; tone: SwitchTone.operator; }
+                AtlasSwitch { width: AtlasGrid.column-min-width * 3; label: "Safety override"; tone: SwitchTone.safety; checked: true; preview-focus-visible: true; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            SectionLabel { text: "STATUS BADGES"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasGrid.space-6;
+                spacing: AtlasGrid.space-2;
+                AtlasBadge { text: "Neutral"; }
+                AtlasBadge { text: "Healthy"; tone: BadgeTone.healthy; dot: true; }
+                AtlasBadge { text: "Warning"; tone: BadgeTone.warning; dot: true; }
+                AtlasBadge { text: "Danger"; tone: BadgeTone.danger; dot: true; }
+                AtlasBadge { text: "Information"; tone: BadgeTone.info; }
+                AtlasBadge { text: "Live"; tone: BadgeTone.live; dot: true; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+        }
+    }
+
+    if root.preview-page == "navigation": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        VerticalLayout {
+            spacing: AtlasGrid.space-5;
+            Text {
+                text: "Focus boundaries → roving navigation → accessible transient surfaces";
+                color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body; height: AtlasGrid.space-5;
+            }
+            SectionLabel { text: "TABS · ROVING FOCUS CONTRACT"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasDensity.row-height; spacing: AtlasGrid.space-2;
+                AtlasTab { text: "Overview"; selected: true; active-in-roving-group: true; index: 0; count: 4; preview-focus-visible: true; }
+                AtlasTab { text: "Activity"; index: 1; count: 4; }
+                AtlasTab { text: "Settings"; dirty: true; index: 2; count: 4; variant: TabVariant.view; }
+                AtlasTab { text: "Disabled"; enabled: false; index: 3; count: 4; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            HorizontalLayout {
+                vertical-stretch: 1; spacing: AtlasGrid.space-5;
+                Rectangle {
+                    horizontal-stretch: 1; border-width: AtlasShape.border-width;
+                    border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
+                    background: AtlasTheme.surface;
+                    SectionLabel { x: AtlasGrid.space-4; y: AtlasGrid.space-4; text: "CONTEXT MENU"; height: AtlasGrid.space-4; }
+                    menu := AtlasMenu {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-10;
+                        items: [
+                            { id: "open", label: "Open project", shortcut: "Enter", enabled: true, danger: false },
+                            { id: "rename", label: "Rename", shortcut: "F2", enabled: true, danger: false },
+                            { id: "archive", label: "Archive", shortcut: "", enabled: false, danger: false },
+                            { id: "delete", label: "Delete", shortcut: "⌫", enabled: true, danger: true }
+                        ];
+                        active-index: 1;
+                    }
+                    SectionLabel { x: AtlasGrid.space-4; y: menu.y + menu.height + AtlasGrid.space-4; text: "TOOLTIP"; height: AtlasGrid.space-4; }
+                    AtlasTooltip {
+                        x: AtlasGrid.space-12 * 3; y: menu.y + menu.height + AtlasGrid.space-4;
+                        text: "Short contextual guidance that is also available to assistive technologies.";
+                        tone: TooltipTone.warning; placement: TooltipPlacement.bottom; force-open: true;
+                    }
+                }
+                Rectangle {
+                    horizontal-stretch: 2; border-width: AtlasShape.border-width;
+                    border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
+                    background: AtlasTheme.surface;
+                    AtlasModal {
+                        x: AtlasGrid.space-3; y: AtlasGrid.space-3;
+                        width: parent.width - AtlasGrid.space-6; height: parent.height - AtlasGrid.space-6;
+                        open: true; contained: true; size: ModalSize.small; danger: true;
+                        title: "Delete this environment?"; meta: "IRREVERSIBLE ACTION";
+                        description: "This preview demonstrates a contained modal, its semantic danger state and the shared focus boundary.";
+                        cancel-text: "Keep environment"; confirm-text: "Delete";
+                    }
+                }
+            }
+        }
+    }
+
+    if root.preview-page == "data": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        VerticalLayout { spacing: AtlasGrid.space-5;
+            Text { text: "Virtualized models → controlled intentions → desktop table → responsive cards"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body; height: AtlasGrid.space-5; }
+            SectionLabel { text: "DATA TABLE · FROZEN HEADER · SELECTION · EXPANSION"; height: AtlasGrid.space-4; }
+            GridLayout {
+                vertical-stretch: 1;
+                spacing: AtlasGrid.space-5;
+                AtlasDataTable {
+                    row: 0; col: 0;
+                    horizontal-stretch: 3; vertical-stretch: 1;
+                    label: "Deployment environments"; focused-row: 1;
+                    compact: root.width < AtlasGrid.breakpoint-compact;
+                    columns: [
+                        { id: "name", label: "ENVIRONMENT", width: AtlasGrid.column-min-width * 3, min-width: AtlasGrid.column-min-width * 2, max-width: AtlasGrid.column-min-width * 5, grow: 2, resizable: true, sortable: true, filterable: true, editable: true, editor: CellEditorKind.text, pin: ColumnPin.start },
+                        { id: "region", label: "REGION", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.choice, pin: ColumnPin.none },
+                        { id: "status", label: "STATUS", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: false, sortable: true, filterable: true, editable: true, editor: CellEditorKind.choice, pin: ColumnPin.end }
+                    ];
+                    rows: [
+                        { id: "production", selected: true, expanded: false, disabled: false, detail: "", cells: [{ column-id: "name", text: "Production", accessible-text: "Production environment", tooltip: "", editable: true }, { column-id: "region", text: "eu-west-3", accessible-text: "Europe West 3", tooltip: "", editable: false }, { column-id: "status", text: "Healthy", accessible-text: "Healthy", tooltip: "", editable: true }] },
+                        { id: "staging", selected: false, expanded: true, disabled: false, detail: "Last deployment 8 minutes ago · revision a4f92c1", cells: [{ column-id: "name", text: "Staging", accessible-text: "Staging environment", tooltip: "", editable: true }, { column-id: "region", text: "us-east-1", accessible-text: "US East 1", tooltip: "", editable: false }, { column-id: "status", text: "Deploying", accessible-text: "Deployment in progress", tooltip: "", editable: true }] },
+                        { id: "preview", selected: false, expanded: false, disabled: true, detail: "", cells: [{ column-id: "name", text: "Pull request preview with a truncated name", accessible-text: "Pull request preview", tooltip: "Full preview environment name", editable: false }, { column-id: "region", text: "local", accessible-text: "Local", tooltip: "", editable: false }, { column-id: "status", text: "Paused", accessible-text: "Paused", tooltip: "", editable: false }] }
+                    ];
+                }
+                VerticalLayout {
+                    row: root.width < AtlasGrid.breakpoint-wide ? 1 : 0;
+                    col: root.width < AtlasGrid.breakpoint-wide ? 0 : 1;
+                    horizontal-stretch: 1; spacing: AtlasGrid.space-3;
+                    AtlasSkeleton { height: AtlasGrid.space-12 * 2; lines: 3; }
+                    AtlasEmptyState { height: AtlasGrid.space-12 * 2; title: "No matching rows"; message: "Clear active filters to see all environments."; }
+                    AtlasErrorState { height: AtlasGrid.space-12 * 2; title: "Sync failed"; message: "The cached rows remain available."; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "wave": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4; width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        VerticalLayout { spacing: AtlasGrid.space-5;
+            Text { text: "Composed primitives → bounded inputs → reusable information surfaces"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body; height: AtlasGrid.space-5; }
+            HorizontalLayout { height: AtlasGrid.space-12 * 3; spacing: AtlasGrid.space-4;
+                AtlasMetricCard { horizontal-stretch: 1; label: "Availability"; value: "99.98%"; meta: "+0.12% this month"; tone: ValueTone.positive; }
+                AtlasMetricCard { horizontal-stretch: 1; label: "Monthly spend"; value: "€ 12,480"; meta: "72% of budget"; tone: ValueTone.accent; }
+                AtlasSelectField { horizontal-stretch: 1; label: "Environment"; value: "Production"; hint: "Bounded option set"; required: true; }
+            }
+            AtlasProgressBar { label: "Deployment"; value: 72; meta: "72 / 100"; tone: ProgressTone.success; }
+            AtlasRangeControl { label: "Traffic allocation"; value: 65; unit: "%"; }
+            AtlasPagination { page: 4; page-count: 12; }
+            AtlasKeyValueList { title: "Runtime facts"; items: [{ label: "Region", value: "eu-west-3", tone: ValueTone.neutral, mono: true }, { label: "Health", value: "Operational", tone: ValueTone.positive, mono: false }, { label: "Error budget", value: "18 min", tone: ValueTone.negative, mono: true }]; }
+        }
+    }
+    if root.preview-page == "final": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        VerticalLayout { spacing: AtlasGrid.space-4;
+            Text { text: "Feedback → workflow navigation → contextual overlay → fatal recovery"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body; height: AtlasGrid.space-5; }
+            HorizontalLayout { height: AtlasGrid.space-12 * 2; spacing: AtlasGrid.space-4;
+                AtlasInlineAlert { horizontal-stretch: 1; title: "Configuration saved"; message: "The deployment configuration is now active."; tone: AlertTone.success; dismissible: true; }
+                AtlasWorkflowBanner { horizontal-stretch: 1; title: "Workflow paused"; message: "Review the failed validation before continuing."; action-text: "Resume"; }
+            }
+            HorizontalLayout { height: AtlasGrid.space-12 * 3; spacing: AtlasGrid.space-4;
+                AtlasNoticeStack { horizontal-stretch: 1; items: [{ id: "n1", title: "Build completed", message: "Artifacts are ready.", tone: NoticeTone.success, leaving: false }, { id: "n2", title: "Budget warning", message: "Usage reached 82%.", tone: NoticeTone.warning, leaving: false }]; }
+                AtlasStepper { horizontal-stretch: 1; current: 1; interactive: true; steps: [{ label: "Configure", description: "Complete" }, { label: "Validate", description: "Current" }, { label: "Deploy", description: "Upcoming" }]; }
+                Rectangle { horizontal-stretch: 1; border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
+                    Text { x: AtlasGrid.space-4; y: AtlasGrid.space-3; text: "REQUEST TREND"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
+                    AtlasSparkline { x: AtlasGrid.space-4; y: AtlasGrid.space-8; width: parent.width - AtlasGrid.space-8; label: "Request trend"; tone: SparklineTone.positive; values: [0.15, 0.35, 0.28, 0.62, 0.55, 0.82, 0.9]; }
+                }
+            }
+            HorizontalLayout { height: AtlasGrid.space-12 * 6; spacing: AtlasGrid.space-4;
+                Rectangle { horizontal-stretch: 1; clip: true; border-radius: AtlasShape.radius-surface;
+                    AtlasDrawer { open: true; contained: true; side: DrawerSide.right; title: "Environment details"; meta: "production · eu-west-3"; body-text: "Contextual information remains attached to the current screen without becoming a blocking confirmation."; primary-action: "Open"; secondary-action: "Close"; }
+                }
+                Rectangle { horizontal-stretch: 1; clip: true; border-radius: AtlasShape.radius-surface;
+                    AtlasErrorPage { compact: true; contained: true; code: "503"; title: "Service unavailable"; message: "Try again when connectivity is restored."; action-text: "Retry"; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "editorial": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        if root.width >= AtlasGrid.breakpoint-wide: HorizontalLayout {
+            spacing: AtlasGrid.space-8;
+            EditorialArticlePreview { width: min(AtlasTypography.measure-readable, parent.width - AtlasGrid.column-min-width * 5); }
+            EditorialScalePreview { horizontal-stretch: 1; }
+        }
+        if root.width < AtlasGrid.breakpoint-wide: ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-8;
+                EditorialArticlePreview { width: min(parent.width, AtlasTypography.measure-compact); height: AtlasGrid.space-12 * 13; }
+                EditorialScalePreview { height: AtlasGrid.space-12 * 8; }
+            }
+        }
+    }
+    if root.preview-page == "typography-stress": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasTypography.block-gap-normal;
+                AtlasParagraph {
+                    height: AtlasTypography.line-lead * 2;
+                    text: "Bounded scale · shared vertical rhythm · semantic emphasis · explicit underline · mono roles";
+                    lead: true; muted: true;
+                }
+                AtlasHeading { height: AtlasTypography.line-display; text: "A resilient editorial scale"; level: HeadingLevel.h1; }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 4;
+                    text: "Atlas keeps readable hierarchy when text grows. Verbose translations, Arabic, Japanese, and identifiers_without_break_opportunities remain governed by the same measure and rhythm.";
+                }
+                AtlasDivider { label: "Semantic inline styles"; }
+                AtlasStyledText {
+                    height: AtlasTypography.line-body;
+                    text: "Regular text uses the shared body role.";
+                }
+                AtlasStyledText {
+                    height: AtlasTypography.line-body;
+                    text: "Emphasis is semantic and italicized.";
+                    emphasis: EditorialEmphasis.emphasis;
+                }
+                AtlasStyledText {
+                    height: AtlasTypography.line-body;
+                    text: "Strong content uses the shared bold weight.";
+                    emphasis: EditorialEmphasis.strong;
+                }
+                AtlasStyledText {
+                    height: AtlasTypography.line-body + AtlasTypography.underline-offset;
+                    text: "Underlined actions retain a visible non-color signal.";
+                    underlined: true; tone: EditorialTone.accent;
+                }
+                AtlasStyledText {
+                    height: AtlasTypography.mono-line-block * 2;
+                    text: "atlas::typography::mono_role / revision_2026_08_09";
+                    mono: true; tone: EditorialTone.secondary;
+                }
+                AtlasCodeBlock {
+                    height: AtlasGrid.space-12 * 3;
+                    language: "rust";
+                    code: "let scale = TypographyScale::Large;\nassert!(layout.remains_bounded());";
+                    copy-enabled: false;
+                }
+            }
+        }
+    }
+    if root.preview-page == "icons": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-8;
+        background: AtlasTheme.transparent;
+        VerticalLayout { spacing: AtlasGrid.space-5;
+            AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Original 24 × 24 monochrome vectors · semantic tones · decorative or explicitly named · checksummed rendering"; muted: true; }
+            GridLayout { vertical-stretch: 1; spacing: AtlasGrid.space-4;
+                Row {
+                    IconPreview { icon-name: IconName.add; label: "add"; }
+                    IconPreview { icon-name: IconName.back; label: "back"; }
+                    IconPreview { icon-name: IconName.check; label: "check"; tone: IconTone.success; }
+                    IconPreview { icon-name: IconName.close; label: "close"; tone: IconTone.danger; }
+                    IconPreview { icon-name: IconName.info; label: "info"; tone: IconTone.info; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.lock; label: "lock"; tone: IconTone.secondary; }
+                    IconPreview { icon-name: IconName.logs; label: "logs"; }
+                    IconPreview { icon-name: IconName.menu; label: "menu"; }
+                    IconPreview { icon-name: IconName.profile; label: "profile"; }
+                    IconPreview { icon-name: IconName.refresh; label: "refresh"; tone: IconTone.accent; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.search; label: "search"; }
+                    IconPreview { icon-name: IconName.shield; label: "shield"; }
+                    IconPreview { icon-name: IconName.warning; label: "warning"; tone: IconTone.warning; }
+                    IconPreview { icon-name: IconName.chevron-down; label: "chevron-down"; }
+                    IconPreview { icon-name: IconName.none; label: "none"; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "responsive": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout { width: parent.width - AtlasGrid.space-2; spacing: AtlasGrid.space-6;
+                AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Tokenized gaps · intrinsic children · controlled breakpoints · no application-specific geometry"; muted: true; }
+                AtlasHeading { height: AtlasTypography.line-heading-small; text: "Stack and cluster"; level: HeadingLevel.h4; }
+                AtlasStack { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 + AtlasGrid.space-6 : AtlasGrid.space-12 * 3; gap: LayoutGap.compact;
+                    RecipeCard { height: AtlasGrid.space-10; label: "Vertical rhythm"; }
+                    AtlasCluster { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 + AtlasGrid.space-6 : AtlasGrid.space-12; gap: LayoutGap.compact;
+                        AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "Wrap aware"; tone: BadgeTone.healthy; }
+                        AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "Intrinsic"; tone: BadgeTone.info; }
+                        AtlasButton { width: AtlasGrid.column-min-width * 2; text: "Action"; }
+                    }
+                    RecipeCard { height: AtlasGrid.space-10; label: "Shared gap tokens"; }
+                }
+                AtlasHeading { height: AtlasTypography.line-heading-small; text: "Sidebar and switcher"; level: HeadingLevel.h4; }
+                AtlasSidebar { height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 4 + AtlasGrid.space-2 : AtlasGrid.space-12 * 2; reference-width: root.width; gap: LayoutGap.compact;
+                    RecipeCard { flex-basis: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 2 : AtlasGrid.column-min-width * 3; flex-grow: 0; label: "Navigation"; }
+                    RecipeCard { flex-grow: 1; label: root.width < AtlasGrid.breakpoint-wide ? "Main content · stacked" : "Main content · adjacent"; }
+                }
+                AtlasSwitcher { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 : AtlasGrid.space-12; reference-width: root.width; gap: LayoutGap.compact;
+                    AtlasButton { flex-grow: 1; text: "Previous"; }
+                    AtlasButton { flex-grow: 1; text: "Save draft"; }
+                    AtlasButton { flex-grow: 1; text: "Publish"; tone: ButtonTone.primary; }
+                }
+                AtlasHeading { height: AtlasTypography.line-heading-small; text: "Auto grid"; level: HeadingLevel.h4; }
+                grid := AtlasAutoGrid { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 13 : root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 7 : AtlasGrid.space-12 * 4 + AtlasGrid.space-6; reference-width: root.width; gap: LayoutGap.compact;
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 1"; }
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 2"; }
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 3"; }
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 4"; }
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 5"; }
+                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 6"; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "rich-content": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout { width: parent.width - AtlasGrid.space-2; spacing: AtlasGrid.space-5;
+                AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Semantic documentation blocks · controlled actions · responsive composition · no Markdown parsing in the visual layer"; muted: true; }
+                AtlasCluster { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 2 + AtlasGrid.space-4; gap: LayoutGap.normal;
+                    AtlasAdmonition { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5; compact: true; title: "Compatibility note"; body: "Atlas wraps preview Slint capabilities so applications keep a stable public contract."; }
+                    AtlasAdmonition { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5; compact: true; title: "Migration required"; body: "Re-run keyboard, platform and visual matrices before approving a new baseline."; tone: AdmonitionTone.warning; }
+                }
+                AtlasCluster { height: AtlasDensity.pointer-target-min; gap: LayoutGap.compact;
+                    AtlasLink { width: AtlasGrid.column-min-width * 4; text: "Read the compatibility guide"; destination: "/compatibility"; }
+                    AtlasLink { width: AtlasGrid.column-min-width * 3; text: "Open Slint release"; destination: "https://github.com/slint-ui/slint/releases"; external: true; }
+                }
+                AtlasDocumentTable {
+                    height: AtlasGrid.space-10 * 4;
+                    accessible-name: "Slint capability status";
+                    columns: [
+                        { title: "Capability", width: AtlasGrid.column-min-width * 4 },
+                        { title: "Upstream", width: AtlasGrid.column-min-width * 2 },
+                        { title: "Atlas policy", width: AtlasGrid.column-min-width * 4 }
+                    ];
+                    rows: [
+                        { cells: ["Grid layouts", "Stable", "Use behind tokens"] },
+                        { cells: ["Flexbox layout", "Preview", "Wrap and monitor"] },
+                        { cells: ["Rich documents", "Limited", "Compose in Atlas"] }
+                    ];
+                }
+                AtlasSwitcher { height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 11 : AtlasGrid.space-12 * 5; reference-width: root.width; switch-below: AtlasGrid.breakpoint-wide; gap: LayoutGap.normal;
+                    AtlasFigure {
+                        flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5;
+                        source: @image-url("../../../crates/atlas-ui-icons/assets/shield.svg");
+                        colorize-media: true;
+                        alternative-text: "Atlas shield symbol";
+                        caption: "A deterministic vector figure with semantic caption.";
+                        credit: "Atlas original asset · CC0-1.0";
+                    }
+                    AtlasTerminalBlock {
+                        flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5;
+                        title: "Release audit";
+                        command: "node ai/check_slint_release.mjs";
+                        output: "github_latest: 1.17.1\nupdate_available: false";
+                    }
+                }
+                AtlasContentTabs {
+                    height: AtlasGrid.space-12 * 4;
+                    selected-id: "rust";
+                    tabs: [
+                        { id: "rust", label: "Rust", disabled: false },
+                        { id: "slint", label: "Slint", disabled: false },
+                        { id: "future", label: "Future", disabled: true }
+                    ];
+                    AtlasParagraph {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-4;
+                        width: parent.width - AtlasGrid.space-8;
+                        height: parent.height - AtlasGrid.space-8;
+                        text: "The selected tab is controlled by the host. Content stays arbitrary and composable while Atlas owns the tab-list presentation.";
+                    }
+                }
+            }
+        }
+    }
+    if root.preview-page == "media-states": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Document media states";
+                    level: HeadingLevel.h1;
+                    anchor-id: "media-states";
+                }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 2;
+                    text: "Host-resolved media · deterministic loading, ready, empty and error states · explicit retry intent";
+                    muted: true;
+                }
+                media-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.space-12 * 23
+                        : AtlasGrid.space-12 * 13;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1
+                        : root.width;
+                    gap: LayoutGap.normal;
+                    AtlasFigure {
+                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        state: MediaState.ready;
+                        media-id: "architecture-ready";
+                        source: @image-url("../../../crates/atlas-ui-icons/assets/shield.svg");
+                        colorize-media: true;
+                        alternative-text: "Atlas shield architecture diagram";
+                        caption: "Ready · host supplied a deterministic vector.";
+                        credit: "Atlas original asset · CC0-1.0";
+                    }
+                    AtlasFigure {
+                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        state: MediaState.loading;
+                        media-id: "architecture-loading";
+                        alternative-text: "Architecture diagram loading";
+                        caption: "Loading · dimensions remain stable.";
+                        credit: "Source resolution owned by the host";
+                    }
+                    AtlasFigure {
+                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        state: MediaState.empty;
+                        media-id: "architecture-empty";
+                        alternative-text: "Architecture diagram not provided";
+                        empty-title: "No diagram provided";
+                        empty-message: "The document remains understandable without this optional visual.";
+                        caption: "Empty · alternative content remains explicit.";
+                        credit: "Optional media";
+                    }
+                    AtlasFigure {
+                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        state: MediaState.error;
+                        media-id: "architecture-error";
+                        alternative-text: "Architecture diagram unavailable";
+                        error-title: "Diagram unavailable";
+                        error-message: "The host could not resolve the declared media source.";
+                        retry-label: "Request retry";
+                        caption: "Error · retry is an intention, never hidden I/O.";
+                        credit: "Failure fixture";
+                    }
+                }
+            }
+        }
+    }
+    if root.preview-page == "content-navigation": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                height: (AtlasTypography.line-display + AtlasGrid.space-2
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasTypography.line-body * 2 : AtlasTypography.line-body))
+                    + (AtlasTypography.line-heading + AtlasGrid.space-4
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 10 : AtlasGrid.space-12 * 6))
+                    + (AtlasTypography.line-heading + AtlasGrid.space-4
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 15 : AtlasGrid.space-12 * 6))
+                    + AtlasTypography.block-gap-spacious * 2;
+                spacing: AtlasTypography.block-gap-spacious;
+                VerticalLayout {
+                    height: AtlasTypography.line-display + AtlasGrid.space-2
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasTypography.line-body * 2 : AtlasTypography.line-body);
+                    spacing: AtlasGrid.space-2;
+                    AtlasHeading {
+                        height: AtlasTypography.line-display;
+                        text: "Content navigation";
+                        level: HeadingLevel.h1;
+                        anchor-id: "content-navigation";
+                    }
+                    AtlasParagraph {
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasTypography.line-body * 2 : AtlasTypography.line-body;
+                        text: "Whole-card keyboard targets · explicit internal and external destinations · composable callouts";
+                        muted: true;
+                    }
+                }
+                VerticalLayout {
+                    height: AtlasTypography.line-heading + AtlasGrid.space-4
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 10 : AtlasGrid.space-12 * 6);
+                    spacing: AtlasGrid.space-4;
+                    AtlasHeading {
+                        height: AtlasTypography.line-heading;
+                        text: "Link cards";
+                        level: HeadingLevel.h2;
+                        anchor-id: "link-cards";
+                    }
+                    link-grid := AtlasAutoGrid {
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 10
+                            : AtlasGrid.space-12 * 6;
+                        reference-width: root.width;
+                        gap: LayoutGap.normal;
+                        AtlasLinkCard {
+                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            eyebrow: "FOUNDATIONS"; title: "Design tokens";
+                            description: "Semantic colors, spacing, density and typography contracts.";
+                            destination: "/foundations/tokens"; icon-name: IconName.shield;
+                            preview-focus-visible: root.width >= AtlasGrid.breakpoint-wide;
+                            selected: root.width >= AtlasGrid.breakpoint-wide;
+                        }
+                        AtlasLinkCard {
+                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            eyebrow: "GUIDE"; title: "Responsive recipes";
+                            description: "Compose predictable native layouts across standard viewports.";
+                            destination: "/guides/responsive"; icon-name: IconName.menu;
+                        }
+                        AtlasLinkCard {
+                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            eyebrow: "UPSTREAM"; title: "Slint compatibility";
+                            description: "Review the pinned engine capabilities before upgrading.";
+                            destination: "slint-release"; external: true; icon-name: IconName.info;
+                        }
+                        AtlasLinkCard {
+                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            eyebrow: "PLANNED"; title: "Future renderer";
+                            description: "Disabled destinations remain readable and non-interactive.";
+                            destination: "/future/renderer"; enabled: false; icon-name: IconName.lock;
+                        }
+                    }
+                }
+                VerticalLayout {
+                    height: AtlasTypography.line-heading + AtlasGrid.space-4
+                        + (root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 15 : AtlasGrid.space-12 * 6);
+                    spacing: AtlasGrid.space-4;
+                    AtlasHeading {
+                        height: AtlasTypography.line-heading;
+                        text: "Composable callouts";
+                        level: HeadingLevel.h2;
+                        anchor-id: "callouts";
+                    }
+                    callout-grid := AtlasAutoGrid {
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasGrid.space-12 * 15
+                            : AtlasGrid.space-12 * 6;
+                        reference-width: root.width >= AtlasGrid.breakpoint-wide
+                            ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1
+                            : root.width;
+                        gap: LayoutGap.normal;
+                        AtlasCallout {
+                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            tone: AdmonitionTone.tip;
+                            title: "Recommended foundation";
+                            body: "Start with tokens and recipes before composing a product-specific template.";
+                            action-id: "open-foundations"; action-label: "Open guide";
+                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "COMPOSABLE"; tone: BadgeTone.healthy; }
+                        }
+                        AtlasCallout {
+                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            tone: AdmonitionTone.caution;
+                            title: "External boundary";
+                            body: "The host must confirm policy before resolving a destination outside the application.";
+                            action-id: "review-policy"; action-label: "Review policy";
+                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "CONTROLLED"; tone: BadgeTone.warning; }
+                        }
+                        AtlasCallout {
+                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            tone: AdmonitionTone.note;
+                            title: "Slot content";
+                            body: "Applications may add badges or compact supporting content without restyling the frame.";
+                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "NO ACTION"; tone: BadgeTone.neutral; }
+                        }
+                        AtlasCallout {
+                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            compact: root.width < AtlasGrid.breakpoint-compact;
+                            tone: AdmonitionTone.danger;
+                            title: "Unavailable action";
+                            body: "Disabled callout actions stay visible but cannot emit an intention.";
+                            action-id: "blocked"; action-label: "Unavailable"; action-enabled: false;
+                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "DISABLED"; tone: BadgeTone.danger; }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if root.preview-page == "destination-policy": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Destination policy";
+                    level: HeadingLevel.h1;
+                    anchor-id: "destination-policy";
+                }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 2;
+                    text: "Pure Rust classification · exact host policy · explicit host decision before any external action";
+                    muted: true;
+                }
+                AtlasAdmonition {
+                    height: AtlasGrid.space-12 * 2;
+                    compact: true;
+                    title: "No implicit navigation";
+                    body: "Document content emits a destination. The policy returns navigate, open, confirm or deny; only the application host may execute it.";
+                    tone: AdmonitionTone.warning;
+                }
+                policy-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 15
+                        : AtlasGrid.space-12 * 8;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1
+                        : root.width;
+                    gap: LayoutGap.normal;
+                    AtlasCallout {
+                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        compact: true;
+                        tone: AdmonitionTone.note;
+                        title: "Internal route";
+                        body: "/guides/tokens#color · handled by application routing with destination focus.";
+                        action-id: "navigate-internal"; action-label: "Navigate";
+                    }
+                    AtlasCallout {
+                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        compact: true;
+                        tone: AdmonitionTone.tip;
+                        title: "Trusted web host";
+                        body: "docs.atlas.local · exact allow-list match; host may open the validated destination.";
+                        action-id: "allow-trusted"; action-label: "Allow";
+                    }
+                    AtlasCallout {
+                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        compact: true;
+                        tone: AdmonitionTone.caution;
+                        title: "External by default";
+                        body: "Valid Web and e-mail destinations require explicit user confirmation by default.";
+                        action-id: "confirm-external"; action-label: "Review destination";
+                    }
+                    AtlasCallout {
+                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        compact: true;
+                        tone: AdmonitionTone.danger;
+                        title: "Unsafe scheme";
+                        body: "Unsupported schemes, ambiguous network paths and credential-bearing URLs are rejected.";
+                        action-id: "deny-unsafe"; action-label: "Deny"; action-enabled: false;
+                    }
+                }
+            }
+        }
+    }
+    if root.preview-page == "document-loading": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Lazy document loading";
+                    level: HeadingLevel.h1;
+                    anchor-id: "document-loading";
+                }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 3;
+                    text: "Runtime-neutral async port · numbered requests · stale completion refusal · bounded shared cache";
+                    muted: true;
+                }
+                loading-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 18
+                        : AtlasGrid.space-12 * 10;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1
+                        : root.width;
+                    gap: LayoutGap.normal;
+                    Rectangle {
+                        width: loading-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (loading-grid.height - AtlasGrid.space-4 * 4) / 5
+                            : (loading-grid.height - AtlasGrid.space-4 * 2) / 3;
+                        background: AtlasTheme.transparent;
+                        AtlasEmptyState {
+                            width: parent.width; height: parent.height;
+                            title: "Empty result";
+                            message: "The resolved document contains no presentable content.";
+                        }
+                    }
+                    Rectangle {
+                        width: loading-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (loading-grid.height - AtlasGrid.space-4 * 4) / 5
+                            : (loading-grid.height - AtlasGrid.space-4 * 2) / 3;
+                        background: AtlasTheme.transparent;
+                        AtlasSkeleton {
+                            width: parent.width; height: parent.height;
+                            lines: 5;
+                            loading-label: "Loading document request 42";
+                        }
+                    }
+                    Rectangle {
+                        width: loading-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (loading-grid.height - AtlasGrid.space-4 * 4) / 5
+                            : (loading-grid.height - AtlasGrid.space-4 * 2) / 3;
+                        background: AtlasTheme.transparent;
+                        AtlasPanel {
+                            width: parent.width; height: parent.height;
+                            title: "Stale completion refused";
+                            meta: "request 41 · superseded by request 42";
+                            VerticalLayout {
+                                padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                                AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "STALE"; tone: BadgeTone.warning; }
+                                AtlasParagraph {
+                                    height: AtlasTypography.line-body * 2;
+                                    text: "Late content is discarded before it can replace the active document.";
+                                }
+                            }
+                        }
+                    }
+                    Rectangle {
+                        width: loading-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (loading-grid.height - AtlasGrid.space-4 * 4) / 5
+                            : (loading-grid.height - AtlasGrid.space-4 * 2) / 3;
+                        background: AtlasTheme.transparent;
+                        AtlasPanel {
+                            width: parent.width; height: parent.height;
+                            title: "Ready · cache hit";
+                            meta: "guide / en / v3 · shared allocation";
+                            VerticalLayout {
+                                padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                                AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "READY"; tone: BadgeTone.healthy; }
+                                AtlasParagraph {
+                                    height: AtlasTypography.line-body * 3;
+                                    text: "The cached source is reused through Arc<str>; parsing and rendering remain separate stages.";
+                                }
+                            }
+                        }
+                    }
+                    Rectangle {
+                        width: loading-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (loading-grid.height - AtlasGrid.space-4 * 4) / 5
+                            : (loading-grid.height - AtlasGrid.space-4 * 2) / 3;
+                        background: AtlasTheme.transparent;
+                        AtlasErrorState {
+                            width: parent.width; height: parent.height;
+                            title: "Source unavailable";
+                            message: "The configured adapter failed explicitly. Atlas never switches to a fixture or remote source.";
+                            retry-label: "Retry explicitly";
+                        }
+                    }
+                }
+                AtlasCallout {
+                    height: AtlasGrid.space-12 * 3;
+                    compact: true;
+                    tone: AdmonitionTone.caution;
+                    title: "Budgets and obsolescence";
+                    body: "Default limits: 64 revisions, 8 MiB cache, 512 KiB per source. A newer route or cancellation makes every late completion stale.";
+                    AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "BOUNDED"; tone: BadgeTone.warning; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "markdown-presentation": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Markdown presentation";
+                    level: HeadingLevel.h1;
+                    anchor-id: "markdown-presentation";
+                }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 3;
+                    text: "Nested inline semantics and accessible lists · parser-independent models · controlled link intentions";
+                    muted: true;
+                }
+                AtlasPanel {
+                    width: min(parent.width, AtlasTypography.measure-readable);
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 4 : AtlasGrid.space-12 * 3;
+                    title: "Rich inline paragraph";
+                    meta: "text · emphasis · strong · code · link";
+                    AtlasRichText {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-12;
+                        width: parent.width - AtlasGrid.space-8;
+                        height: AtlasTypography.line-body * 3;
+                        accessible-text: "Build predictable native interfaces with semantic tokens, cargo test and the responsive guide.";
+                        fragments: [
+                            { text: "Build ", emphasis: false, strong: false, code: false, destination: "", line-break-after: false },
+                            { text: "predictable ", emphasis: false, strong: true, code: false, destination: "", line-break-after: false },
+                            { text: "native interfaces ", emphasis: true, strong: false, code: false, destination: "", line-break-after: false },
+                            { text: "with semantic tokens, ", emphasis: false, strong: false, code: false, destination: "", line-break-after: false },
+                            { text: "cargo test", emphasis: false, strong: false, code: true, destination: "", line-break-after: false },
+                            { text: " and the ", emphasis: false, strong: false, code: false, destination: "", line-break-after: false },
+                            { text: "responsive guide", emphasis: false, strong: false, code: false, destination: "/guides/responsive", line-break-after: false },
+                            { text: ".", emphasis: false, strong: false, code: false, destination: "", line-break-after: false },
+                        ];
+                    }
+                }
+                list-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 10 : AtlasGrid.space-12 * 5;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1 : root.width;
+                    gap: LayoutGap.normal;
+                    AtlasPanel {
+                        flex-basis: list-grid.item-basis; flex-grow: 1;
+                        title: "Ordered workflow";
+                        meta: "stable numeric markers";
+                        AtlasDocumentList {
+                            x: AtlasGrid.space-4; y: AtlasGrid.space-12;
+                            width: parent.width - AtlasGrid.space-8;
+                            height: parent.height - AtlasGrid.space-12 - AtlasGrid.space-3;
+                            accessible-name: "Release workflow";
+                            items: [
+                                { marker: "1.", text: "Parse into semantic Rust blocks." },
+                                { marker: "2.", text: "Map styled fragments without parser types." },
+                                { marker: "3.", text: "Render and route through host intentions." },
+                            ];
+                        }
+                    }
+                    AtlasPanel {
+                        flex-basis: list-grid.item-basis; flex-grow: 1;
+                        title: "Unordered guarantees";
+                        meta: "explicit bullet markers";
+                        AtlasDocumentList {
+                            x: AtlasGrid.space-4; y: AtlasGrid.space-12;
+                            width: parent.width - AtlasGrid.space-8;
+                            height: parent.height - AtlasGrid.space-12 - AtlasGrid.space-3;
+                            accessible-name: "Presentation guarantees";
+                            items: [
+                                { marker: "•", text: "Links never navigate silently." },
+                                { marker: "•", text: "Long text wraps within the reading measure." },
+                                { marker: "•", text: "Markers are announced with each item." },
+                            ];
+                        }
+                    }
+                }
+                AtlasCallout {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 3
+                        : AtlasGrid.space-12 * 2;
+                    compact: true;
+                    tone: AdmonitionTone.note;
+                    title: "Selection boundary";
+                    body: "The semantic source remains available to the host for native selection and copy adapters; presentation components never touch the clipboard.";
+                }
+            }
+        }
+    }
+    if root.preview-page == "reference-system": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Captions and references";
+                    level: HeadingLevel.h1;
+                    anchor-id: "reference-system";
+                }
+                AtlasParagraph {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasTypography.line-body * 2
+                        : AtlasTypography.line-body;
+                    text: "Independent numbering per kind · deterministic anchors · controlled focus navigation";
+                    muted: true;
+                }
+                reference-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 18 : AtlasGrid.space-12 * 9;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1 : root.width;
+                    gap: LayoutGap.normal;
+                    Rectangle {
+                        width: reference-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (reference-grid.height - AtlasGrid.space-4) / 2 : reference-grid.height;
+                        background: AtlasTheme.transparent;
+                        AtlasFigure {
+                            width: parent.width; height: parent.height - AtlasGrid.space-12 * 2;
+                            state: MediaState.ready;
+                            media-id: "layer-architecture";
+                            source: @image-url("../../../crates/atlas-ui-icons/assets/shield.svg");
+                            colorize-media: true;
+                            alternative-text: "Layered Atlas architecture shield";
+                            caption: "";
+                            credit: "";
+                        }
+                        AtlasCaption {
+                            y: parent.height - AtlasGrid.space-12 * 2;
+                            width: parent.width; height: AtlasGrid.space-12 * 2;
+                            kind: CaptionKind.figure; number: 1;
+                            reference-id: "figure-layer-architecture";
+                            text: "Layered architecture from tokens to document templates.";
+                            credit: "Atlas original vector · CC0-1.0";
+                        }
+                    }
+                    Rectangle {
+                        width: reference-grid.item-basis;
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? (reference-grid.height - AtlasGrid.space-4) / 2 : reference-grid.height;
+                        background: AtlasTheme.transparent;
+                        AtlasDocumentTable {
+                            width: parent.width; height: parent.height - AtlasGrid.space-12 * 2;
+                            compact: false;
+                            accessible-name: "Reference kind numbering";
+                            columns: [
+                                { title: "Kind", width: AtlasGrid.column-min-width * 2 },
+                                { title: "Sequence", width: AtlasGrid.column-min-width * 3 },
+                            ];
+                            rows: [
+                                { cells: ["Figure", "1, 2, 3…"] },
+                                { cells: ["Table", "1, 2, 3…"] },
+                                { cells: ["Note", "1, 2, 3…"] },
+                            ];
+                        }
+                        AtlasCaption {
+                            y: parent.height - AtlasGrid.space-12 * 2;
+                            width: parent.width; height: AtlasGrid.space-12 * 2;
+                            kind: CaptionKind.table; number: 1;
+                            reference-id: "table-reference-sequences";
+                            text: "Each reference kind owns an independent sequence.";
+                        }
+                    }
+                }
+                AtlasCallout {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 3;
+                    tone: AdmonitionTone.note;
+                    title: "Cross-reference intentions";
+                    body: "Activating a reference asks the host to scroll and focus its registered destination. Unknown identifiers fail before navigation.";
+                    AtlasCluster {
+                        width: parent.width; height: parent.height;
+                        gap: LayoutGap.compact;
+                        AtlasCrossReference {
+                            flex-basis: AtlasGrid.column-min-width * 3;
+                            kind: CaptionKind.figure; number: 1;
+                            reference-id: "figure-layer-architecture";
+                            text: "Open Figure 1";
+                            preview-focus-visible: root.width >= AtlasGrid.breakpoint-wide;
+                        }
+                        AtlasCrossReference {
+                            flex-basis: AtlasGrid.column-min-width * 3;
+                            kind: CaptionKind.table; number: 1;
+                            reference-id: "table-reference-sequences";
+                            text: "Open Table 1";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if root.preview-page == "footnotes": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width; spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Footnotes and citations";
+                    level: HeadingLevel.h1; anchor-id: "footnotes";
+                }
+                AtlasParagraph {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasTypography.line-body * 2
+                        : AtlasTypography.line-body;
+                    text: "Repeated callers · latest-caller return · source metadata · single-use focus transitions";
+                    muted: true;
+                }
+                AtlasPanel {
+                    width: min(parent.width, AtlasTypography.measure-readable);
+                    height: AtlasGrid.space-12 * 3 + AtlasGrid.space-6;
+                    title: "Calls in document content";
+                    meta: "Two callers share note 1";
+                    AtlasParagraph {
+                        x: AtlasGrid.space-4; y: AtlasGrid.space-12;
+                        width: parent.width - AtlasGrid.space-8;
+                        height: AtlasTypography.line-body * 3;
+                        text: "Platform accessibility depends on the selected backend. The same source can be cited again in the summary.";
+                    }
+                    AtlasFootnoteReference {
+                        x: AtlasGrid.space-4; y: parent.height - AtlasDensity.pointer-target-min;
+                        width: AtlasGrid.space-8;
+                        height: AtlasDensity.pointer-target-min;
+                        number: 1; note-id: "note-platform-accessibility";
+                        caller-id: "call-overview";
+                        preview-focus-visible: root.width >= AtlasGrid.breakpoint-wide;
+                    }
+                    AtlasFootnoteReference {
+                        x: AtlasGrid.space-12; y: parent.height - AtlasDensity.pointer-target-min;
+                        width: AtlasGrid.space-8;
+                        height: AtlasDensity.pointer-target-min;
+                        number: 1; note-id: "note-platform-accessibility";
+                        caller-id: "call-summary";
+                    }
+                    AtlasFootnoteReference {
+                        x: AtlasGrid.space-12 * 2; y: parent.height - AtlasDensity.pointer-target-min;
+                        width: AtlasGrid.space-8;
+                        height: AtlasDensity.pointer-target-min;
+                        number: 2; note-id: "note-cache-budget";
+                        caller-id: "call-performance";
+                    }
+                }
+                AtlasFootnoteList {
+                    width: min(parent.width, AtlasTypography.measure-readable);
+                    height: AtlasGrid.space-12 * 5 + AtlasGrid.space-8;
+                    compact: true;
+                    accessible-name: "Document notes";
+                    notes: [
+                        {
+                            id: "note-platform-accessibility", number: 1,
+                            text: "Accessibility support is determined by the selected Slint backend and platform integration.",
+                            citation: "Slint Team · Accessibility documentation · 2026",
+                            citation-destination: "slint-accessibility", caller-count: 2,
+                        },
+                        {
+                            id: "note-cache-budget", number: 2,
+                            text: "Atlas defaults to a bounded 8 MiB source cache with explicit per-document limits.",
+                            citation: "Atlas performance budgets · local contract",
+                            citation-destination: "", caller-count: 1,
+                        },
+                    ];
+                }
+                AtlasCallout {
+                    height: AtlasGrid.space-12 * 2;
+                    compact: true;
+                    tone: AdmonitionTone.tip;
+                    title: "Loop prevention";
+                    body: "Opening a note records the latest caller. Returning consumes that target once, so settlement cannot bounce focus back to the note.";
+                }
+            }
+        }
+    }
+    if root.preview-page == "selection-copy": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        ScrollView {
+            viewport-width: parent.width;
+            VerticalLayout {
+                width: parent.width; spacing: AtlasGrid.space-5;
+                AtlasHeading {
+                    height: AtlasTypography.line-display * 2;
+                    text: "Selection and copy";
+                    level: HeadingLevel.h1; anchor-id: "selection-copy";
+                }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 3;
+                    text: root.width < AtlasGrid.breakpoint-compact
+                        ? "Unicode character ranges\nExplicit clipboard port\nNo copy-selection fallback to copy-all"
+                        : "Unicode character ranges · explicit clipboard port · no copy-selection fallback to copy-all";
+                    muted: true;
+                }
+                selection-grid := AtlasAutoGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 8 : AtlasGrid.space-12 * 4;
+                    reference-width: root.width >= AtlasGrid.breakpoint-wide
+                        ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1 : root.width;
+                    gap: LayoutGap.normal;
+                    AtlasSelectableText {
+                        flex-basis: selection-grid.item-basis; flex-grow: 1;
+                        text: "Atlas selects 🙂 Unicode text safely, including واجهة and 品質, without slicing UTF-8 bytes.";
+                        selected-text: "Unicode text safely";
+                        selection-start: 16; selection-end: 35;
+                        selection-byte-start: 19; selection-byte-end: 38;
+                        selection-supported: true;
+                    }
+                    AtlasSelectableText {
+                        flex-basis: selection-grid.item-basis; flex-grow: 1;
+                        text: "When native rich selection is unavailable, Atlas preserves the source and offers only the explicit Copy all action.";
+                        selected-text: "";
+                        selection-supported: false;
+                    }
+                }
+                AtlasCallout {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 2 + AtlasGrid.space-6
+                        : AtlasGrid.space-12 * 2;
+                    compact: true;
+                    tone: AdmonitionTone.caution;
+                    title: "Clipboard boundary";
+                    body: "Components emit text after user intent. Only the host-provided ClipboardPort writes it; failure remains explicit and non-destructive.";
+                }
+            }
+        }
+    }
+    if root.preview-page == "layout-intrinsics": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        VerticalLayout {
+            spacing: AtlasGrid.space-4;
+            AtlasStickyRegion {
+                height: AtlasGrid.space-12 + AtlasGrid.space-2;
+                edge: StickyEdge.top;
+                elevated: true;
+                HorizontalLayout {
+                    padding-left: AtlasGrid.space-4; padding-right: AtlasGrid.space-4;
+                    padding-top: AtlasGrid.space-2; padding-bottom: AtlasGrid.space-2;
+                    spacing: AtlasGrid.space-3;
+                    AtlasHeading { horizontal-stretch: 1; text: "Layout workspace"; level: HeadingLevel.h3; }
+                    AtlasBadge { text: root.width < AtlasGrid.breakpoint-compact ? "STACKED" : "SPLIT"; tone: BadgeTone.info; }
+                }
+            }
+            split := AtlasSplitView {
+                vertical-stretch: 1;
+                reference-width: root.width;
+                orientation: SplitOrientation.horizontal;
+                gap: LayoutGap.none;
+                AtlasSplitPane {
+                    orientation: SplitOrientation.horizontal;
+                    preferred-extent: AtlasGrid.column-min-width * 4;
+                    min-extent: split.stacked
+                        ? AtlasGrid.space-12 * 4 + AtlasGrid.space-4
+                        : AtlasGrid.column-min-width * 2;
+                    max-extent: AtlasGrid.content-narrow;
+                    flexible: split.stacked;
+                    Rectangle {
+                        background: AtlasTheme.surface;
+                        border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+                        border-radius: AtlasShape.radius-control;
+                        VerticalLayout {
+                            padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                            SectionLabel { text: "PRIMARY PANE · 128—640"; }
+                            AtlasParagraph { text: "Navigation and filters keep an explicit intrinsic contract."; muted: true; }
+                            AtlasTextField { label: "Filter"; value: "layout"; }
+                            AtlasButton { text: "Apply constraints"; tone: ButtonTone.secondary; }
+                            Rectangle { height: AtlasGrid.space-2; background: AtlasTheme.transparent; }
+                        }
+                    }
+                }
+                AtlasResizeHandle {
+                    flex-basis: AtlasGrid.space-3; flex-grow: 0; flex-shrink: 0;
+                    visible: !split.stacked;
+                    orientation: SplitOrientation.horizontal;
+                    current-extent: AtlasGrid.column-min-width * 4;
+                    min-extent: AtlasGrid.column-min-width * 2;
+                    max-extent: AtlasGrid.content-narrow;
+                    preview-focus: true;
+                }
+                AtlasSplitPane {
+                    orientation: SplitOrientation.horizontal;
+                    preferred-extent: AtlasGrid.content-standard;
+                    min-extent: AtlasGrid.column-min-width * 3;
+                    max-extent: AtlasGrid.content-wide;
+                    flexible: true;
+                    Rectangle {
+                        background: AtlasTheme.surface-raised;
+                        border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+                        border-radius: AtlasShape.radius-control;
+                        VerticalLayout {
+                            padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                            SectionLabel { text: "FLEXIBLE CONTENT"; }
+                            AtlasIntrinsicFrame {
+                                height: AtlasGrid.space-12 * 2;
+                                available-width: parent.width;
+                                min-content-width: AtlasGrid.column-min-width * 2;
+                                max-content-width: AtlasGrid.content-standard;
+                                AtlasParagraph {
+                                    width: parent.width; height: parent.height;
+                                    text: "release/2026-08/atlas_intrinsic_layout_contract_without_break_opportunities_9f6c2a8e";
+                                }
+                            }
+                            AtlasInlineAlert {
+                                height: AtlasGrid.space-12 * 2;
+                                title: "No local magic numbers";
+                                message: "Min, max, resize step and responsive collapse all derive from shared geometry tokens.";
+                                tone: AlertTone.info;
+                            }
+                        }
+                    }
+                }
+            }
+            AtlasStickyRegion {
+                height: AtlasGrid.space-12 + AtlasGrid.space-2;
+                edge: StickyEdge.bottom;
+                elevated: true;
+                HorizontalLayout {
+                    padding-left: AtlasGrid.space-4; padding-right: AtlasGrid.space-4;
+                    padding-top: AtlasGrid.space-2; padding-bottom: AtlasGrid.space-2;
+                    spacing: AtlasGrid.space-3;
+                    AtlasParagraph { horizontal-stretch: 1; text: "Controlled resize · keyboard 16 px · reset with Enter"; muted: true; }
+                    AtlasButton { text: "Save layout"; tone: ButtonTone.primary; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "settings-template": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        AtlasSettingsTemplate {
+            width: parent.width; height: parent.height;
+            reference-width: root.width;
+            title: "Workspace settings";
+            summary: "A controlled, responsive settings composition built only from shared Atlas fields and actions.";
+            active-section-id: "appearance"; dirty: true;
+            sections: [
+                { id: "profile", label: "Profile", description: "Identity and account", disabled: false },
+                { id: "appearance", label: "Appearance", description: "Theme and density", disabled: false },
+                { id: "notifications", label: "Notifications", description: "Notice preferences", disabled: false },
+                { id: "advanced", label: "Advanced", description: "Restricted configuration", disabled: true },
+            ];
+            VerticalLayout {
+                padding: AtlasGrid.space-5; spacing: AtlasGrid.space-4;
+                AtlasSelectField { label: "Theme"; value: "System"; hint: "Follow the platform appearance."; }
+                AtlasSwitch { label: "Compact density"; inactive-label: "Normal density"; checked: false; }
+                AtlasCheckbox { label: "Reduce motion"; description: "Disable non-essential transitions."; checked: true; }
+            }
+        }
+    }
+    if root.preview-page == "dashboard-template": Rectangle {
+        x: frame.content-x; y: AtlasGrid.space-8;
+        width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        AtlasDashboardTemplate {
+            width: parent.width; height: parent.height;
+            reference-width: root.width;
+            title: "Delivery overview";
+            summary: "Metrics, activity and product-specific content share one predictable responsive skeleton.";
+            updated-label: "Updated from deterministic fixture · no remote action";
+            metrics: [
+                { id: "coverage", label: "Coverage", value: "94%", meta: "+3% this cycle", tone: ValueTone.positive },
+                { id: "risks", label: "Open risks", value: "7", meta: "2 require review", tone: ValueTone.negative },
+                { id: "components", label: "Components", value: "31", meta: "legacy migration complete", tone: ValueTone.accent },
+            ];
+            activity: [
+                { id: "release", title: "Release candidate validated", detail: "Quality gate and visual scenarios passed.", time: "09:42" },
+                { id: "review", title: "Baseline review requested", detail: "Human approval remains pending.", time: "08:15" },
+                { id: "tokens", title: "Token audit completed", detail: "No visual literals outside foundations.", time: "Yesterday" },
+            ];
+            AtlasInlineAlert {
+                width: parent.width - AtlasGrid.space-3; height: AtlasGrid.space-12 * 2;
+                title: "Preview API";
+                message: "Platform validation remains required before stabilization.";
+                tone: AlertTone.info;
+            }
+        }
+    }
+    if root.preview-page == "documentation-shell"
+            || root.preview-page == "documentation-keyboard"
+            || root.preview-page == "documentation-scroll-sync"
+            || root.preview-page == "documentation-viewport": AtlasDocumentationShell {
+        product-name: root.preview-page == "documentation-keyboard"
+            ? "Atlas UI · Keyboard paths"
+            : root.preview-page == "documentation-scroll-sync"
+                ? "Atlas UI · Scroll synchronization"
+                : root.preview-page == "documentation-viewport"
+                    ? "Atlas UI · Document viewport"
+                : "Atlas UI";
+        route-id: "responsive";
+        active-section-id: root.preview-page == "documentation-scroll-sync"
+            ? (root.width >= AtlasGrid.breakpoint-wide ? "accessibility" : "recipes")
+            : "recipes";
+        navigation-open: root.width < AtlasGrid.breakpoint-compact;
+        toc-open: root.preview-page == "documentation-keyboard"
+            && root.width >= AtlasGrid.breakpoint-compact
+            && root.width < AtlasGrid.breakpoint-wide;
+        preview-skip-focus: root.preview-page == "documentation-keyboard"
+            && root.width >= AtlasGrid.breakpoint-wide;
+        preview-content-focus: (root.preview-page == "documentation-scroll-sync"
+                || root.preview-page == "documentation-viewport")
+            && root.width < AtlasGrid.breakpoint-wide;
+        content-height: root.preview-page == "documentation-viewport"
+            ? root.height + AtlasGrid.space-12 * 8
+            : AtlasGrid.zero;
+        content-scroll-y: root.preview-page == "documentation-viewport"
+            ? AtlasGrid.space-12 * 4
+            : AtlasGrid.zero;
+        preview-scrollbar-active: root.preview-page == "documentation-viewport";
+        preview-back-to-top-focus: root.preview-page == "documentation-keyboard"
+            && root.width >= AtlasGrid.breakpoint-wide;
+        preview-navigation-focus-id: root.preview-page == "documentation-keyboard" ? "responsive" : "";
+        preview-toc-focus-id: root.preview-page == "documentation-keyboard" ? "recipes" : "";
+        navigation-items: [
+            { id: "foundations", label: "Foundations", depth: 0, expanded: true, has-children: true, disabled: false },
+            { id: "tokens", label: "Design tokens", depth: 1, expanded: false, has-children: false, disabled: false },
+            { id: "components", label: "Components", depth: 0, expanded: true, has-children: true, disabled: false },
+            { id: "responsive", label: "Responsive composition", depth: 1, expanded: false, has-children: false, disabled: false },
+            { id: "future", label: "Future API", depth: 1, expanded: false, has-children: false, disabled: true }
+        ];
+        breadcrumbs: [
+            { id: "home", label: "Documentation" },
+            { id: "components", label: "Components" },
+            { id: "responsive", label: "Responsive composition" }
+        ];
+        toc-items: [
+            { id: "overview", label: "Overview", depth: 0 },
+            { id: "recipes", label: "Layout recipes", depth: 0 },
+            { id: "accessibility", label: "Accessibility", depth: 0 },
+            { id: "api", label: "API reference", depth: 0 }
+        ];
+        footer-links: [
+            { id: "license", label: "License" },
+            { id: "github", label: "GitHub" }
+        ];
+        previous-id: "editorial"; previous-label: "Editorial";
+        next-id: "rich-content"; next-label: "Rich content";
+        show-back-to-top: root.width >= AtlasGrid.breakpoint-wide;
+        Rectangle {
+            background: AtlasTheme.transparent;
+            VerticalLayout {
+                spacing: root.width < AtlasGrid.breakpoint-compact
+                    ? AtlasGrid.space-3
+                    : AtlasGrid.space-4;
+                AtlasBadge {
+                    width: root.preview-page == "documentation-scroll-sync"
+                            || root.preview-page == "documentation-viewport"
+                        ? AtlasGrid.column-min-width * 4
+                        : AtlasGrid.column-min-width * 2;
+                    text: root.preview-page == "documentation-scroll-sync"
+                        ? (root.width >= AtlasGrid.breakpoint-wide
+                            ? "USER SCROLL · REPLACE ANCHOR"
+                            : "RESTORE · NO HISTORY PUSH")
+                        : root.preview-page == "documentation-viewport"
+                            ? "FIXED HEADER · INDEPENDENT SCROLL"
+                        : "PREVIEW";
+                    tone: BadgeTone.info;
+                }
+                AtlasHeading {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasTypography.line-display * 2
+                        : AtlasTypography.line-display;
+                    text: "Responsive composition"; level: HeadingLevel.h1; anchor-id: "overview";
+                }
+                if root.preview-page == "documentation-keyboard": AtlasAnchorAction {
+                    height: AtlasGrid.space-10;
+                    width: AtlasGrid.space-12;
+                    anchor-id: "overview";
+                    label: "Copy overview deep link";
+                    revealed: true;
+                    preview-focus-visible: root.width >= AtlasGrid.breakpoint-wide;
+                }
+                AtlasParagraph {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasTypography.line-lead * 4
+                        : AtlasTypography.line-lead * 2;
+                    text: "Build native documentation interfaces from shared layout recipes, semantic content blocks and controlled navigation contracts.";
+                    lead: true; muted: true;
+                }
+                AtlasAdmonition {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 3
+                        : AtlasGrid.space-12 * 2;
+                    compact: root.width >= AtlasGrid.breakpoint-compact;
+                    title: "Stable application boundary";
+                    body: "The shell emits navigation and scroll intentions. Rust remains responsible for routes, history and persistence.";
+                }
+                AtlasHeading { height: AtlasTypography.line-heading; text: "Layout recipes"; level: HeadingLevel.h2; anchor-id: "recipes"; }
+                AtlasDocumentTable {
+                    height: AtlasGrid.space-10 * 4;
+                    columns: [
+                        { title: "Recipe", width: AtlasGrid.column-min-width * 3 },
+                        { title: "Purpose", width: AtlasGrid.column-min-width * 5 }
+                    ];
+                    rows: [
+                        { cells: ["AtlasStack", "Vertical rhythm"] },
+                        { cells: ["AtlasSidebar", "Intrinsic side content"] },
+                        { cells: ["AtlasSwitcher", "Controlled stacking"] }
+                    ];
+                }
+            }
+        }
+    }
+    if root.preview-page == "document-tools": Rectangle {
+        background: AtlasTheme.canvas;
+        Rectangle {
+            x: frame.content-x; y: AtlasGrid.space-8;
+            width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+            background: AtlasTheme.transparent;
+            VerticalLayout {
+                spacing: AtlasGrid.space-5;
+                AtlasHeading { height: AtlasTypography.line-display; text: "Find anything"; level: HeadingLevel.h1; }
+                AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Deterministic full-text results and controlled commands supplied by the Rust document layer."; muted: true; }
+                AtlasDocumentSearch {
+                    height: AtlasGrid.space-12 * 8;
+                    query: "responsive grid";
+                    results: [
+                        { id: "r1", route: "/components/responsive#auto-grid", title: "Responsive composition", section: "Auto grid", excerpt: "Build intrinsic grids with shared breakpoints and tokenized gaps." },
+                        { id: "r2", route: "/foundations/grid", title: "Layout grid", section: "Geometry", excerpt: "Use the four-pixel base grid for predictable native layouts." }
+                    ];
+                }
+                AtlasAnchorAction { width: AtlasGrid.space-12; anchor-id: "auto-grid"; label: "Copy Auto grid deep link"; revealed: true; }
+            }
+        }
+        AtlasCommandPalette {
+            open: root.width >= AtlasGrid.breakpoint-compact;
+            query: "theme";
+            active-index: 0;
+            commands: [
+                { id: "theme-dark", label: "Use dark theme", group: "Appearance", shortcut: "Enter", disabled: false },
+                { id: "theme-light", label: "Use light theme", group: "Appearance", shortcut: "", disabled: false },
+                { id: "open-api", label: "Open API reference", group: "Navigation", shortcut: "", disabled: false },
+                { id: "future", label: "Future command", group: "Preview", shortcut: "", disabled: true }
+            ];
+        }
+    }
+    if root.preview-page == "web-proof": AtlasDocumentationShell {
+        product-name: "Atlas UI Reference";
+        route-id: "quality-roadmap";
+        active-section-id: "status";
+        navigation-items: [
+            { id: "overview", label: "Overview", depth: 0, expanded: false, has-children: false, disabled: false },
+            { id: "governance", label: "Governance", depth: 0, expanded: true, has-children: true, disabled: false },
+            { id: "quality-roadmap", label: "Quality roadmap", depth: 1, expanded: false, has-children: false, disabled: false },
+            { id: "releases", label: "Release policy", depth: 1, expanded: false, has-children: false, disabled: false },
+            { id: "reference", label: "API reference", depth: 0, expanded: false, has-children: false, disabled: false }
+        ];
+        breadcrumbs: [
+            { id: "home", label: "Documentation" },
+            { id: "governance", label: "Governance" },
+            { id: "quality-roadmap", label: "Quality roadmap" }
+        ];
+        toc-items: [
+            { id: "overview", label: "Overview", depth: 0 },
+            { id: "status", label: "Current status", depth: 0 },
+            { id: "roadmap", label: "Delivery roadmap", depth: 0 },
+            { id: "verification", label: "Verification", depth: 0 }
+        ];
+        footer-links: [
+            { id: "license", label: "License" },
+            { id: "compatibility", label: "Compatibility" }
+        ];
+        previous-id: "governance"; previous-label: "Governance";
+        next-id: "releases"; next-label: "Release policy";
+        show-back-to-top: root.width >= AtlasGrid.breakpoint-wide;
+        AtlasRoadmapContentTemplate {
+            reference-width: root.width;
+            eyebrow: "QUALITY PROGRAM";
+            title: "Native UI quality and release roadmap";
+            summary: "A reusable documentation template that turns technical status, delivery phases and verification evidence into a responsive native document.";
+            notice-title: "Preview contract";
+            notice-body: "Platform evidence and human-reviewed baselines remain required before the public API can move from preview to stable.";
+            status-rows: [
+                { label: "Design system", owner: "UI platform", status: "Healthy", detail: "Semantic tokens and shared recipes", tone: RoadmapStatusTone.positive },
+                { label: "Accessibility", owner: "Quality", status: "In progress", detail: "Desktop screen-reader matrix pending", tone: RoadmapStatusTone.warning },
+                { label: "Compatibility", owner: "Runtime", status: "Monitored", detail: "Slint 1.17.1 exact pin", tone: RoadmapStatusTone.neutral },
+                { label: "Visual proof", owner: "Release", status: "Review", detail: "Human baseline approval required", tone: RoadmapStatusTone.warning }
+            ];
+            status-table-rows: [
+                { cells: ["Design system", "UI platform", "Healthy", "Semantic tokens and shared recipes"] },
+                { cells: ["Accessibility", "Quality", "In progress", "Desktop screen-reader matrix pending"] },
+                { cells: ["Compatibility", "Runtime", "Monitored", "Slint 1.17.1 exact pin"] },
+                { cells: ["Visual proof", "Release", "Review", "Human baseline approval required"] }
+            ];
+            phases: [
+                { label: "Foundations", description: "Tokens, geometry and interaction complete" },
+                { label: "Components", description: "Shared catalogue and content complete" },
+                { label: "Documentation", description: "Shell, Markdown and search complete" },
+                { label: "Platform proof", description: "Current validation phase" },
+                { label: "Stable API", description: "Requires all release gates" }
+            ];
+            current-phase: 3;
+            audit-command: "sh scripts/quality-gate.sh";
+            audit-output: "format · check · clippy · tests\nAPI · contrast · assets · visual identities\nstatus: passing";
+        }
+    }
+    if root.preview-page == "content-stress": Rectangle {
+        background: AtlasTheme.canvas;
+        Rectangle {
+            x: frame.content-x; y: AtlasGrid.space-6;
+            width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+            background: AtlasTheme.transparent;
+            clip: true;
+            ScrollView {
+                viewport-width: parent.width;
+                VerticalLayout {
+                    width: parent.width; spacing: AtlasGrid.space-5;
+                    AtlasHeading {
+                        height: AtlasTypography.line-display * 2;
+                        text: "Internationalized content resilience";
+                        level: HeadingLevel.h1;
+                        anchor-id: "health-status";
+                    }
+                    AtlasParagraph {
+                        height: root.width < AtlasGrid.breakpoint-compact ? AtlasTypography.line-body * 5 : AtlasTypography.line-body * 4;
+                        text: "This deliberately long sentence verifies that more expansive translations remain readable without changing fundamental component dimensions or hiding essential actions.";
+                        lead: true;
+                    }
+                    AtlasAdmonition {
+                        height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 : AtlasGrid.space-12 * 2;
+                        compact: root.width < AtlasGrid.breakpoint-compact;
+                        title: "ملاحظة حول إمكانية الوصول";
+                        body: "يجب أن تبقى الواجهة قابلة للقراءة عند استخدام نصوص طويلة ومتعددة اللغات.\n品質保証の内容も同じレイアウト契約を使用します。";
+                    }
+                    AtlasHeading {
+                        height: root.width < AtlasGrid.breakpoint-compact
+                            ? AtlasTypography.line-heading * 2
+                            : AtlasTypography.line-heading;
+                        text: "Identifiers and truncation";
+                        level: HeadingLevel.h2;
+                    }
+                    AtlasInlineCode {
+                        width: parent.width;
+                        height: AtlasGrid.space-8;
+                        code: "atlas_component_identifier_without_break_opportunities_0123456789_abcdefghijklmnopqrstuvwxyz";
+                    }
+                    AtlasDocumentTable {
+                        height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 11 : AtlasGrid.space-10 * 4;
+                        compact: root.width < AtlasGrid.breakpoint-compact;
+                        accessible-name: "Localized status table";
+                        columns: [
+                            { title: "Language", width: AtlasGrid.column-min-width * 2 },
+                            { title: "Translated status", width: AtlasGrid.column-min-width * 3 },
+                            { title: "Description", width: AtlasGrid.column-min-width * 6 }
+                        ];
+                        rows: [
+                            { cells: ["English", "Validation in progress", "Expanded string that simulates a substantially longer translation"] },
+                            { cells: ["العربية", "قيد التحقق", "واجهة موثوقة وقابلة للوصول"] },
+                            { cells: ["日本語", "検証中", "長い文章でも予測可能なレイアウト"] }
+                        ];
+                    }
+                    AtlasHeading { height: AtlasTypography.line-heading; text: "Document states"; level: HeadingLevel.h2; }
+                    AtlasSwitcher {
+                        height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 9 : AtlasGrid.space-12 * 3;
+                        reference-width: root.width; gap: LayoutGap.compact;
+                        AtlasSkeleton { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; lines: 3; }
+                        AtlasEmptyState { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; title: "No content"; message: "The requested translation does not contain any sections yet."; }
+                        AtlasErrorState { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; title: "Content unavailable"; message: "The localized document could not be prepared."; retry-label: "Try again"; }
+                    }
+                    Rectangle { height: AtlasGrid.space-12; background: AtlasTheme.transparent; }
+                }
+            }
+        }
+    }
+    if root.preview-page == "theme-runtime": Rectangle {
+        background: AtlasTheme.canvas;
+        Rectangle {
+            x: frame.content-x; y: AtlasGrid.space-8;
+            width: frame.content-width; height: parent.height - AtlasGrid.space-12;
+            background: AtlasTheme.transparent;
+            VerticalLayout {
+                spacing: AtlasGrid.space-6;
+                AtlasHeading { height: AtlasTypography.line-display; text: "System theme contract"; level: HeadingLevel.h1; }
+                AtlasParagraph {
+                    height: AtlasTypography.line-body * 3;
+                    text: "The selected preference remains System while the resolved semantic palette follows a live platform appearance signal.";
+                    muted: true;
+                }
+                AtlasThemeControl {
+                    width: min(parent.width, AtlasGrid.column-min-width * 7);
+                    selected: GalleryThemeMode.system;
+                    label: "Persisted appearance preference";
+                }
+                AtlasPanel {
+                    width: min(parent.width, AtlasGrid.content-narrow);
+                    height: AtlasGrid.space-12 * 2;
+                    title: GallerySettings.resolved-theme-mode == GalleryThemeMode.dark ? "Resolved dark palette" : "Resolved light palette";
+                    meta: "preference=system · platform signal applied live";
+                    VerticalLayout {
+                        padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                        AtlasBadge { width: AtlasGrid.column-min-width * 3; text: GallerySettings.system-dark ? "SYSTEM DARK" : "SYSTEM LIGHT"; tone: BadgeTone.info; }
+                        AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Semantic canvas, surface, content, border and focus tokens update together."; }
+                    }
+                }
+                AtlasAdmonition {
+                    width: min(parent.width, AtlasGrid.content-narrow);
+                    height: AtlasGrid.space-12 * 2;
+                    compact: true;
+                    title: "Persistence boundary";
+                    body: "The component emits a preference request. Only the host-provided Rust store may persist it after explicit user intent.";
+                }
+            }
+        }
+    }
+
+    LayoutGridOverlay { visible: root.show-grid; }
+}

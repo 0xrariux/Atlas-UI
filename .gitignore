@@ -1,0 +1,120 @@
+# -----------------------------------------------------------------------------
+# Atlas — unpublished internal files
+# -----------------------------------------------------------------------------
+/ai/
+/.agents/
+/.codex/
+
+# -----------------------------------------------------------------------------
+# Rust / Cargo
+# Cargo.lock remains tracked: Atlas contains applications and examples.
+# -----------------------------------------------------------------------------
+/target/
+**/target/
+*.rlib
+*.rmeta
+*.dSYM/
+*.pdb
+*.profraw
+*.profdata
+
+# Machine-specific Cargo configuration (shared configuration remains tracked).
+/.cargo/config.local.toml
+/.cargo/credentials
+/.cargo/credentials.toml
+
+# -----------------------------------------------------------------------------
+# Generated captures
+# Baselines, metadata, schemas, and scenarios remain tracked.
+# -----------------------------------------------------------------------------
+/screenshots/results/
+/screenshots/diffs/
+/screenshots/performance/
+/screenshots/reviews/
+/screenshots/review-runs/
+/screenshots/tmp/
+/screenshots/**/*.tmp
+
+# -----------------------------------------------------------------------------
+# Secrets and local configuration
+# Documentation examples remain allowed with !*.example / !*.sample.
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+secrets/
+.secrets/
+credentials.json
+credentials.local.json
+
+# -----------------------------------------------------------------------------
+# Editors and IDEs
+# -----------------------------------------------------------------------------
+/.idea/
+/.vscode/
+/.fleet/
+/.zed/
+*.iml
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------------------------
+# Operating systems
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+
+# -----------------------------------------------------------------------------
+# Logs, caches, coverage, and temporary files
+# -----------------------------------------------------------------------------
+*.log
+*.log.*
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+.cache/
+.pytest_cache/
+.coverage
+coverage/
+lcov.info
+htmlcov/
+
+# -----------------------------------------------------------------------------
+# Frontend toolchains that may be used for documentation
+# -----------------------------------------------------------------------------
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+dist/
+.docusaurus/
+.vercel/
+.netlify/
+
+# -----------------------------------------------------------------------------
+# Archives and packages generated locally
+# -----------------------------------------------------------------------------
+*.crate
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+/artifacts/
+/release-artifacts/

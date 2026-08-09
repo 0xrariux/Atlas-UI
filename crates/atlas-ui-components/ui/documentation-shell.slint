@@ -1,0 +1,467 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity,
+    AtlasElevation
+} from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, AtlasScrollViewport, FocusRing } from "@atlas-ui-core/core.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { AtlasButton, ButtonTone } from "button.slint";
+
+export struct DocumentationNavItem {
+    id: string,
+    label: string,
+    depth: int,
+    expanded: bool,
+    has-children: bool,
+    disabled: bool,
+}
+export struct BreadcrumbItem { id: string, label: string }
+export struct TocItem { id: string, label: string, depth: int }
+export struct FooterLink { id: string, label: string }
+
+component ShellNavRow inherits Rectangle {
+    in property <DocumentationNavItem> item;
+    in property <bool> active: false;
+    in property <bool> compact: false;
+    in property <bool> preview-focus-visible: false;
+    callback activated(string);
+    callback expansion-requested(string);
+    callback keyboard-navigation-requested(string, int);
+
+    height: AtlasDensity.row-height;
+    background: root.active ? AtlasTheme.surface-selected : action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+    border-radius: AtlasShape.radius-control;
+    opacity: root.item.disabled ? 0.55 : 1;
+    if root.item.has-children: AtlasIcon {
+        x: AtlasGrid.space-2 + root.item.depth * AtlasGrid.space-3;
+        size: AtlasGrid.space-4;
+        name: IconName.chevron-down;
+        icon-color: AtlasTheme.content-secondary;
+    }
+    Text {
+        x: AtlasGrid.space-8 + root.item.depth * AtlasGrid.space-3;
+        width: parent.width - self.x - AtlasGrid.space-3;
+        text: root.item.label;
+        color: root.active ? AtlasTheme.content-accent : AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body-small;
+        font-weight: root.active ? AtlasTypography.weight-semibold : AtlasTypography.weight-regular;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+    action := ActionArea {
+        enabled: !root.item.disabled;
+        selected: root.active;
+        accessible-role: AccessibleRole.list-item;
+        accessible-label: root.item.label;
+        accessible-expanded: root.item.has-children ? root.item.expanded : false;
+        accessible-action-default => {
+            if (root.item.has-children) { root.expansion-requested(root.item.id); }
+            else { root.activated(root.item.id); }
+        }
+        activated => {
+            if (root.item.has-children) { root.expansion-requested(root.item.id); }
+            else { root.activated(root.item.id); }
+        }
+        navigation-requested(direction) => {
+            root.keyboard-navigation-requested(root.item.id, direction);
+        }
+    }
+    FocusRing {
+        width: parent.width; height: parent.height;
+        active: action.focus-visible || root.preview-focus-visible;
+    }
+}
+
+component ShellToc inherits Rectangle {
+    in property <[TocItem]> items;
+    in property <string> active-id;
+    in property <string> preview-focus-id;
+    callback section-requested(string);
+    callback keyboard-navigation-requested(string, int);
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.navigation;
+    accessible-label: "On this page";
+    VerticalLayout {
+        spacing: AtlasGrid.space-1;
+        Text {
+            height: AtlasGrid.space-8;
+            text: "ON THIS PAGE";
+            color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            font-weight: AtlasTypography.weight-bold;
+        }
+        for item in root.items: Rectangle {
+            height: AtlasGrid.space-8;
+            background: item.id == root.active-id ? AtlasTheme.surface-selected : AtlasTheme.transparent;
+            border-radius: AtlasShape.radius-small;
+            Text {
+                x: AtlasGrid.space-2 + item.depth * AtlasGrid.space-3;
+                width: parent.width - self.x - AtlasGrid.space-2;
+                text: item.label;
+                color: item.id == root.active-id ? AtlasTheme.content-accent : AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-caption;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+            action := ActionArea {
+                selected: item.id == root.active-id;
+                accessible-role: AccessibleRole.list-item;
+                accessible-label: item.label;
+                activated => { root.section-requested(item.id); }
+                accessible-action-default => { root.section-requested(item.id); }
+                navigation-requested(direction) => {
+                    root.keyboard-navigation-requested(item.id, direction);
+                }
+            }
+            FocusRing {
+                width: parent.width; height: parent.height;
+                active: action.focus-visible || item.id == root.preview-focus-id;
+            }
+        }
+    }
+}
+
+export component AtlasDocumentationShell inherits Rectangle {
+    in property <string> product-name: "Atlas";
+    in property <string> route-id;
+    in property <string> active-section-id;
+    in property <[DocumentationNavItem]> navigation-items;
+    in property <[BreadcrumbItem]> breadcrumbs;
+    in property <[TocItem]> toc-items;
+    in property <[FooterLink]> footer-links;
+    in property <string> previous-id;
+    in property <string> previous-label;
+    in property <string> next-id;
+    in property <string> next-label;
+    in-out property <bool> navigation-open: false;
+    in-out property <bool> toc-open: false;
+    in property <bool> show-back-to-top: false;
+    in property <length> content-height: AtlasGrid.zero;
+    in-out property <length> content-scroll-y: AtlasGrid.zero;
+    in property <bool> preview-scrollbar-active: false;
+    in property <bool> preview-skip-focus: false;
+    in property <bool> preview-content-focus: false;
+    in property <bool> preview-back-to-top-focus: false;
+    in property <string> preview-navigation-focus-id;
+    in property <string> preview-toc-focus-id;
+    out property <bool> compact: root.width < AtlasGrid.breakpoint-wide;
+    callback navigate-requested(string);
+    callback expansion-requested(string);
+    callback section-requested(string);
+    callback navigation-open-requested(bool);
+    callback toc-open-requested(bool);
+    callback skip-to-content-requested();
+    callback back-to-top-requested();
+    callback navigation-focus-requested(string, int);
+    callback toc-focus-requested(string, int);
+    callback navigation-focus-restore-requested();
+    callback toc-focus-restore-requested();
+    callback content-scrolled(length);
+    callback route-transition-focus-requested(string);
+    background: AtlasTheme.canvas;
+    accessible-role: AccessibleRole.main;
+    accessible-label: root.product-name + " documentation";
+
+    topbar := Rectangle {
+        x: AtlasGrid.zero; y: AtlasGrid.zero;
+        width: parent.width;
+        height: AtlasGrid.space-12 + AtlasGrid.space-4;
+        background: AtlasTheme.surface;
+        border-width: AtlasShape.border-width;
+        border-color: AtlasTheme.border-subtle;
+        drop-shadow-blur: AtlasElevation.level-1-blur;
+        drop-shadow-offset-y: AtlasElevation.level-1-y;
+        drop-shadow-color: AtlasTheme.overlay-backdrop;
+        HorizontalLayout {
+            padding-left: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
+            padding-right: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
+            padding-top: AtlasGrid.space-3;
+            padding-bottom: AtlasGrid.space-3;
+            spacing: AtlasGrid.space-3;
+            skip-link := AtlasButton {
+                width: root.compact ? AtlasGrid.zero : AtlasGrid.column-min-width * 2;
+                horizontal-stretch: root.compact ? 1 : 0;
+                text: "Skip to content";
+                accessible-label: "Skip to main content";
+                preview-focus-visible: root.preview-skip-focus;
+                clicked => {
+                    content-focus.focus();
+                    root.skip-to-content-requested();
+                }
+            }
+            if !root.compact: Text {
+                horizontal-stretch: 1;
+                text: root.product-name;
+                color: AtlasTheme.content-primary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-title-small;
+                font-weight: AtlasTypography.weight-bold;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+            if root.compact: navigation-trigger := AtlasButton {
+                horizontal-stretch: 1;
+                text: "Menu"; show-icon: true; icon-name: IconName.menu;
+                clicked => { root.navigation-open-requested(!root.navigation-open); }
+            }
+            if root.compact: toc-trigger := AtlasButton {
+                horizontal-stretch: 1;
+                text: "Contents";
+                clicked => { root.toc-open-requested(!root.toc-open); }
+            }
+        }
+    }
+
+    if !root.compact: Rectangle {
+        x: AtlasGrid.space-4; y: topbar.height + AtlasGrid.space-4;
+        width: AtlasGrid.column-min-width * 4;
+        height: parent.height - self.y - AtlasGrid.space-4;
+        background: AtlasTheme.transparent;
+        accessible-role: AccessibleRole.navigation;
+        accessible-label: "Documentation navigation";
+        VerticalLayout {
+            spacing: AtlasGrid.space-1;
+            for item in root.navigation-items: ShellNavRow {
+                item: item; active: item.id == root.route-id;
+                preview-focus-visible: item.id == root.preview-navigation-focus-id;
+                activated(id) => { root.request-route(id); }
+                expansion-requested(id) => { root.expansion-requested(id); }
+                keyboard-navigation-requested(id, direction) => {
+                    root.navigation-focus-requested(id, direction);
+                }
+            }
+        }
+    }
+
+    private property <length> main-x: root.compact ? AtlasGrid.page-margin-compact
+        : AtlasGrid.column-min-width * 4 + AtlasGrid.space-10;
+    private property <length> toc-width: root.compact ? AtlasGrid.zero : AtlasGrid.column-min-width * 3;
+    private property <length> main-width: root.width - root.main-x - root.toc-width
+        - (root.compact ? AtlasGrid.page-margin-compact : AtlasGrid.space-10);
+
+    content-target := Rectangle {
+        x: root.main-x; y: topbar.height + AtlasGrid.space-3;
+        width: root.main-width; height: AtlasGrid.space-8;
+        background: AtlasTheme.transparent;
+        accessible-role: AccessibleRole.navigation;
+        accessible-label: "Breadcrumb";
+        HorizontalLayout {
+            spacing: AtlasGrid.space-2;
+            for crumb[index] in root.breadcrumbs: Rectangle {
+                min-width: label.preferred-width + AtlasGrid.space-5;
+                background: AtlasTheme.transparent;
+                label := Text {
+                    text: crumb.label + (index < root.breadcrumbs.length - 1 ? " /" : "");
+                    color: index == root.breadcrumbs.length - 1 ? AtlasTheme.content-primary : AtlasTheme.content-accent;
+                    font-family: AtlasTypography.font-sans;
+                    font-size: AtlasTypography.size-caption;
+                    vertical-alignment: center;
+                }
+                ActionArea {
+                    enabled: index < root.breadcrumbs.length - 1;
+                    accessible-role: AccessibleRole.button;
+                    accessible-label: crumb.label;
+                    activated => { root.request-route(crumb.id); }
+                }
+            }
+            Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+        }
+    }
+
+    scroll-viewport := AtlasScrollViewport {
+        x: root.main-x + AtlasGrid.space-2;
+        y: topbar.height + AtlasGrid.space-12 + AtlasGrid.space-2;
+        width: root.main-width - AtlasGrid.space-4;
+        height: parent.height - self.y - AtlasGrid.space-12 * 2 - AtlasGrid.space-2;
+        content-height: max(self.height, root.content-height);
+        viewport-y <=> root.content-scroll-y;
+        preview-scrollbar-active: root.preview-scrollbar-active;
+        scrolled(offset) => { root.content-scrolled(offset); }
+        content-layer := Rectangle {
+            x: AtlasGrid.space-2;
+            width: parent.width - AtlasGrid.space-4;
+            height: max(scroll-viewport.height, root.content-height);
+            background: AtlasTheme.transparent;
+            accessible-role: AccessibleRole.main;
+            accessible-label: "Document content";
+            content-focus := FocusScope {
+                focus-on-tab-navigation: false;
+                accessible-role: AccessibleRole.none;
+            }
+            @children
+        }
+    }
+    FocusRing {
+        x: scroll-viewport.x; y: scroll-viewport.y;
+        width: scroll-viewport.width; height: scroll-viewport.height;
+        active: content-focus.has-focus || root.preview-content-focus;
+    }
+
+    if !root.compact: ShellToc {
+        x: parent.width - root.toc-width - AtlasGrid.space-4;
+        y: topbar.height + AtlasGrid.space-12;
+        width: root.toc-width; height: parent.height - self.y - AtlasGrid.space-4;
+        items: root.toc-items; active-id: root.active-section-id;
+        preview-focus-id: root.preview-toc-focus-id;
+        section-requested(id) => { root.section-requested(id); }
+        keyboard-navigation-requested(id, direction) => {
+            root.toc-focus-requested(id, direction);
+        }
+    }
+
+    Rectangle {
+        x: root.main-x;
+        y: parent.height - AtlasGrid.space-12 * 2 - AtlasGrid.space-2;
+        width: root.main-width; height: AtlasGrid.space-10;
+        background: AtlasTheme.canvas;
+        HorizontalLayout {
+            spacing: AtlasGrid.space-3;
+            if root.previous-id != "": AtlasButton {
+                horizontal-stretch: 1; text: "Previous · " + root.previous-label;
+                clicked => { root.request-route(root.previous-id); }
+            }
+            if root.next-id != "": AtlasButton {
+                horizontal-stretch: 1; text: "Next · " + root.next-label; tone: ButtonTone.primary;
+                clicked => { root.request-route(root.next-id); }
+            }
+        }
+    }
+
+    Rectangle {
+        x: root.main-x; y: parent.height - AtlasGrid.space-12;
+        width: root.main-width; height: AtlasGrid.space-12;
+        background: AtlasTheme.canvas;
+        border-width: AtlasShape.border-width;
+        border-color: AtlasTheme.border-subtle;
+        accessible-role: AccessibleRole.navigation;
+        accessible-label: "Documentation footer";
+        if !root.compact: HorizontalLayout {
+            padding-left: AtlasGrid.space-4; padding-right: AtlasGrid.space-4;
+            padding-top: AtlasGrid.space-1; padding-bottom: AtlasGrid.space-1;
+            spacing: AtlasGrid.space-3;
+            Text {
+                horizontal-stretch: 1;
+                text: root.product-name + " documentation";
+                color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-caption;
+                vertical-alignment: center;
+            }
+            for link in root.footer-links: AtlasButton {
+                text: link.label;
+                clicked => { root.request-route(link.id); }
+            }
+        }
+        if root.compact: HorizontalLayout {
+            padding-left: AtlasGrid.space-3; padding-right: AtlasGrid.space-3;
+            padding-top: AtlasGrid.space-1; padding-bottom: AtlasGrid.space-1;
+            spacing: AtlasGrid.space-3;
+            for link in root.footer-links: AtlasButton {
+                horizontal-stretch: 1;
+                text: link.label;
+                clicked => { root.request-route(link.id); }
+            }
+        }
+    }
+
+    if root.compact && root.navigation-open: Rectangle {
+        x: AtlasGrid.zero; y: topbar.height;
+        width: parent.width; height: parent.height - topbar.height;
+        background: AtlasTheme.overlay-backdrop;
+        z: 20;
+        Rectangle {
+            x: AtlasGrid.zero; y: AtlasGrid.zero;
+            width: parent.width;
+            height: parent.height;
+            background: AtlasTheme.surface;
+            VerticalLayout {
+                padding: AtlasGrid.space-4; spacing: AtlasGrid.space-1;
+                AtlasButton {
+                    text: "Close navigation";
+                    contained-focus: true;
+                    clicked => {
+                        root.navigation-open-requested(false);
+                        root.navigation-focus-restore-requested();
+                    }
+                    dismiss-requested => {
+                        root.navigation-open-requested(false);
+                        root.navigation-focus-restore-requested();
+                    }
+                }
+                for item in root.navigation-items: ShellNavRow {
+                    item: item; active: item.id == root.route-id; compact: true;
+                    preview-focus-visible: item.id == root.preview-navigation-focus-id;
+                    activated(id) => { root.request-route(id); }
+                    expansion-requested(id) => { root.expansion-requested(id); }
+                    keyboard-navigation-requested(id, direction) => {
+                        root.navigation-focus-requested(id, direction);
+                    }
+                }
+            }
+        }
+    }
+
+    if root.compact && root.toc-open: Rectangle {
+        x: AtlasGrid.zero; y: topbar.height;
+        width: parent.width; height: parent.height - topbar.height;
+        background: AtlasTheme.overlay-backdrop;
+        z: 20;
+        Rectangle {
+            x: max(AtlasGrid.zero, parent.width - AtlasGrid.column-min-width * 5); y: AtlasGrid.zero;
+            width: min(parent.width, AtlasGrid.column-min-width * 5);
+            height: parent.height;
+            background: AtlasTheme.surface;
+            VerticalLayout {
+                padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
+                AtlasButton {
+                    text: "Close contents";
+                    contained-focus: true;
+                    clicked => {
+                        root.toc-open-requested(false);
+                        root.toc-focus-restore-requested();
+                    }
+                    dismiss-requested => {
+                        root.toc-open-requested(false);
+                        root.toc-focus-restore-requested();
+                    }
+                }
+                ShellToc {
+                    vertical-stretch: 1;
+                    items: root.toc-items; active-id: root.active-section-id;
+                    preview-focus-id: root.preview-toc-focus-id;
+                    section-requested(id) => { root.section-requested(id); }
+                    keyboard-navigation-requested(id, direction) => {
+                        root.toc-focus-requested(id, direction);
+                    }
+                }
+            }
+        }
+    }
+
+    if root.show-back-to-top: AtlasButton {
+        x: parent.width - self.width - AtlasGrid.space-4;
+        y: parent.height - AtlasGrid.space-12 * 3;
+        width: AtlasGrid.column-min-width * 2;
+        text: "Back to top";
+        preview-focus-visible: root.preview-back-to-top-focus;
+        clicked => {
+            scroll-viewport.scroll-to(AtlasGrid.zero);
+            content-focus.focus();
+            root.back-to-top-requested();
+        }
+    }
+
+    function request-route(id: string) {
+        root.navigate-requested(id);
+        root.route-transition-focus-requested(id);
+    }
+
+    public function restore-route(offset: length, focus-content: bool) {
+        scroll-viewport.scroll-to(offset);
+        if (focus-content) { content-focus.focus(); }
+    }
+    public function focus-content() { content-focus.focus(); }
+    public function focus-skip-link() { skip-link.focus-from-keyboard(); }
+}

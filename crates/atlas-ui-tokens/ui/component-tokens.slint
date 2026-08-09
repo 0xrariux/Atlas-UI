@@ -1,0 +1,70 @@
+import { AtlasTheme } from "semantic.slint";
+import { AtlasDensity } from "density.slint";
+import { AtlasGrid, AtlasShape } from "geometry.slint";
+
+// Role tokens are the final layer consumed by interactive controls.
+export global AtlasControlTokens {
+    out property <length> height: AtlasDensity.control-height;
+    out property <length> padding-x: AtlasDensity.control-padding-x;
+    out property <length> gap: AtlasDensity.control-gap;
+    out property <length> radius: AtlasShape.radius-control;
+    out property <length> border-width: AtlasShape.border-width;
+    out property <length> focus-width: AtlasShape.focus-width;
+    out property <length> focus-offset: AtlasShape.focus-offset;
+    out property <float> disabled-opacity: 0.82;
+    out property <color> background: AtlasTheme.surface;
+    out property <color> background-hover: AtlasTheme.surface-hover;
+    out property <color> background-pressed: AtlasTheme.surface-pressed;
+    out property <color> background-selected: AtlasTheme.surface-selected;
+    out property <color> foreground: AtlasTheme.content-primary;
+    out property <color> foreground-disabled: AtlasTheme.content-disabled;
+    out property <color> primary-background: AtlasTheme.action-primary;
+    out property <color> primary-background-hover: AtlasTheme.action-primary-hover;
+    out property <color> primary-background-pressed: AtlasTheme.action-primary-pressed;
+    out property <color> primary-foreground: AtlasTheme.on-action-primary;
+    out property <color> border: AtlasTheme.border-strong;
+    out property <color> focus: AtlasTheme.focus-ring;
+}
+
+export global AtlasFieldTokens {
+    out property <color> background: AtlasTheme.canvas;
+    out property <color> border: AtlasTheme.border-strong;
+    out property <color> border-focus: AtlasTheme.focus-ring;
+    out property <color> border-invalid: AtlasTheme.danger;
+    out property <color> label: AtlasTheme.content-secondary;
+    out property <color> message: AtlasTheme.content-secondary;
+    out property <color> message-invalid: AtlasTheme.danger;
+}
+
+export global AtlasStatusTokens {
+    out property <color> background: AtlasTheme.surface-raised;
+    out property <color> neutral: AtlasTheme.content-secondary;
+    out property <color> healthy: AtlasTheme.success;
+    out property <color> warning: AtlasTheme.warning;
+    out property <color> danger: AtlasTheme.danger;
+    out property <color> info: AtlasTheme.info;
+    out property <color> live: AtlasTheme.content-accent;
+}
+
+export global AtlasOverlayTokens {
+    out property <color> backdrop: AtlasTheme.overlay-backdrop;
+    out property <color> background: AtlasTheme.surface-raised;
+    out property <color> border: AtlasTheme.border-strong;
+    out property <length> tooltip-width: AtlasDensity.control-height-comfortable * 6;
+    out property <length> menu-width: AtlasDensity.control-height-comfortable * 5;
+    out property <length> modal-width-small: AtlasDensity.control-height-comfortable * 10;
+    out property <length> modal-width-normal: AtlasDensity.control-height-comfortable * 13;
+    out property <length> modal-width-wide: AtlasDensity.control-height-comfortable * 20;
+}
+
+// Shared viewport geometry keeps scroll affordances consistent while leaving
+// content measurement and scroll ownership with the host component.
+export global AtlasViewportTokens {
+    out property <length> scrollbar-hit-width: AtlasGrid.space-4;
+    out property <length> scrollbar-thumb-width: AtlasGrid.space-1;
+    out property <length> scrollbar-thumb-min-height: AtlasDensity.pointer-target-min;
+    out property <length> page-overlap: AtlasGrid.space-8;
+    out property <color> scrollbar-track: AtlasTheme.transparent;
+    out property <color> scrollbar-thumb: AtlasTheme.border-strong;
+    out property <color> scrollbar-thumb-active: AtlasTheme.content-accent;
+}

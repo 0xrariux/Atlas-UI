@@ -1,0 +1,30 @@
+{
+  "identity": {
+    "schema_version": 1,
+    "id": "documentation-shell.light.compact.mobile-nav",
+    "page": "documentation-shell",
+    "fixture": "documentation-shell-v1",
+    "theme": "light",
+    "density": "compact",
+    "motion": "reduced",
+    "grid": false,
+    "viewport": {
+      "width": 360,
+      "height": 800
+    },
+    "renderer": "software",
+    "scale_factor": 1
+  },
+  "image": {
+    "width": 360,
+    "height": 800
+  },
+  "platform": "darwin",
+  "architecture": "arm64",
+  "approval": {
+    "status": "approved",
+    "reviewer": "Project maintainer",
+    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
+    "approved_at": "2026-08-09T15:46:21.508Z"
+  }
+}

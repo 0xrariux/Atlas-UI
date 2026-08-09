@@ -1,0 +1,106 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasViewportTokens
+} from "@atlas-ui-tokens/tokens.slint";
+
+// Tokenized vertical viewport used by long documents and application panels.
+// viewport-y is an external positive offset; Flickable keeps its native
+// negative coordinate private so Rust contracts never depend on that detail.
+export component AtlasScrollViewport inherits Rectangle {
+    in property <length> content-height: root.height;
+    in-out property <length> viewport-y: AtlasGrid.zero;
+    in property <bool> enabled: true;
+    in property <bool> show-scrollbar: true;
+    in property <bool> preview-scrollbar-active: false;
+    out property <length> viewport-height: root.height;
+    out property <length> maximum-y: max(AtlasGrid.zero, root.content-height - root.height);
+    out property <bool> scrollable: root.maximum-y > AtlasGrid.zero;
+    callback scrolled(length);
+
+    background: AtlasTheme.transparent;
+    clip: true;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: "Scrollable content";
+    forward-focus: keyboard;
+
+    flickable := Flickable {
+        width: parent.width - (root.show-scrollbar && root.scrollable
+            ? AtlasViewportTokens.scrollbar-hit-width
+            : AtlasGrid.zero);
+        height: parent.height;
+        viewport-width: self.width;
+        viewport-height: max(self.height, root.content-height);
+        viewport-y: -min(root.maximum-y, max(AtlasGrid.zero, root.viewport-y));
+        interactive: root.enabled;
+        flicked => {
+            root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, -self.viewport-y));
+            root.scrolled(root.viewport-y);
+        }
+        @children
+    }
+
+    private property <length> thumb-height: !root.scrollable ? root.height
+        : min(root.height, max(
+            AtlasViewportTokens.scrollbar-thumb-min-height,
+            root.height * root.height / root.content-height
+        ));
+    private property <length> thumb-travel: max(AtlasGrid.zero, root.height - root.thumb-height);
+    private property <length> thumb-y: root.maximum-y > AtlasGrid.zero
+        ? root.viewport-y / root.maximum-y * root.thumb-travel
+        : AtlasGrid.zero;
+
+    if root.show-scrollbar && root.scrollable: track := Rectangle {
+        x: parent.width - AtlasViewportTokens.scrollbar-hit-width;
+        width: AtlasViewportTokens.scrollbar-hit-width;
+        height: parent.height;
+        background: AtlasViewportTokens.scrollbar-track;
+        accessible-role: AccessibleRole.slider;
+        accessible-label: "Document scroll position";
+        Rectangle {
+            x: (parent.width - self.width) / 2;
+            y: root.thumb-y;
+            width: AtlasViewportTokens.scrollbar-thumb-width;
+            height: root.thumb-height;
+            border-radius: AtlasShape.radius-round;
+            background: drag.pressed || root.preview-scrollbar-active
+                ? AtlasViewportTokens.scrollbar-thumb-active
+                : AtlasViewportTokens.scrollbar-thumb;
+        }
+        drag := TouchArea {
+            mouse-cursor: MouseCursor.pointer;
+            clicked => { root.scroll-to-track-position(self.mouse-y); }
+            moved => { root.scroll-to-track-position(self.mouse-y); }
+        }
+    }
+
+    keyboard := FocusScope {
+        focus-on-tab-navigation: false;
+        key-pressed(event) => {
+            if (!root.enabled || !root.scrollable) { return reject; }
+            if (event.text == Key.PageDown) {
+                root.scroll-to(root.viewport-y + root.height - AtlasViewportTokens.page-overlap);
+                return accept;
+            }
+            if (event.text == Key.PageUp) {
+                root.scroll-to(root.viewport-y - root.height + AtlasViewportTokens.page-overlap);
+                return accept;
+            }
+            if (event.text == Key.Home) { root.scroll-to(AtlasGrid.zero); return accept; }
+            if (event.text == Key.End) { root.scroll-to(root.maximum-y); return accept; }
+            return reject;
+        }
+    }
+
+    function scroll-to-track-position(position: length) {
+        if (root.thumb-travel <= AtlasGrid.zero) { return; }
+        root.scroll-to(
+            (position - root.thumb-height / 2) / root.thumb-travel * root.maximum-y
+        );
+    }
+
+    public function scroll-to(offset: length) {
+        root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, offset));
+        root.scrolled(root.viewport-y);
+    }
+
+    public function focus-from-keyboard() { keyboard.focus(); }
+}

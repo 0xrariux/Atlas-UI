@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atlas visual pre-review",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "scenario_id": { "type": "string", "minLength": 1 },
+    "verdict": { "type": "string", "enum": ["needs-correction", "acceptable-for-human-review", "invalid-comparison"] },
+    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "observations": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "classification": { "type": "string", "enum": ["defect", "quality-opportunity", "context-required"] },
+          "consensus_key": { "type": "string", "minLength": 1 },
+          "component_or_zone": { "type": "string", "minLength": 1 },
+          "problem": { "type": "string", "minLength": 1 },
+          "visible_evidence": { "type": "string", "minLength": 1 },
+          "expected_result": { "type": "string", "minLength": 1 },
+          "severity": { "type": "string", "enum": ["blocking", "high", "significant", "medium", "minor"] },
+          "scope": {
+            "type": "object", "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["local", "probably-shared", "needs-verification"] },
+              "target": { "type": "string", "minLength": 1 },
+              "needs_verification": { "type": "boolean" }
+            },
+            "required": ["kind", "target", "needs_verification"]
+          },
+          "probable_source_layer": { "type": "string", "enum": ["token", "layout-grid", "primitive", "component", "template", "fixture", "unknown"] },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "violated_contract": { "type": "string" },
+          "auto_correction_eligible": { "type": "boolean" },
+          "recapture_required": { "type": "boolean" }
+        },
+        "required": ["id", "classification", "consensus_key", "component_or_zone", "problem", "visible_evidence", "expected_result", "severity", "scope", "probable_source_layer", "confidence", "violated_contract", "auto_correction_eligible", "recapture_required"]
+      }
+    },
+    "main_strengths": { "type": "array", "maxItems": 3, "items": { "type": "string", "minLength": 1 } },
+    "priority_issues": { "type": "array", "maxItems": 3, "items": { "type": "string", "minLength": 1 } },
+    "human_summary": { "type": "string", "minLength": 1 }
+  },
+  "required": ["scenario_id", "verdict", "score", "observations", "main_strengths", "priority_issues", "human_summary"]
+}

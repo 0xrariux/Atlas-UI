@@ -1,0 +1,148 @@
+import { ScrollView } from "std-widgets.slint";
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing, AtlasAutoGrid, LayoutGap } from "@atlas-ui-core/core.slint";
+import { AtlasHeading, AtlasParagraph, HeadingLevel } from "editorial.slint";
+import { AtlasButton, ButtonTone } from "button.slint";
+import { AtlasBadge, BadgeTone } from "badge.slint";
+import { AtlasMetricCard, ValueTone } from "migration-wave.slint";
+
+export struct SettingsSectionItem { id: string, label: string, description: string, disabled: bool }
+export struct DashboardMetricItem { id: string, label: string, value: string, meta: string, tone: ValueTone }
+export struct DashboardActivityItem { id: string, title: string, detail: string, time: string }
+
+export component AtlasSettingsTemplate inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <string> title: "Settings";
+    in property <string> summary;
+    in property <[SettingsSectionItem]> sections;
+    in property <string> active-section-id;
+    in property <bool> dirty: false;
+    in property <bool> saving: false;
+    out property <bool> compact: root.reference-width < AtlasGrid.breakpoint-compact;
+    callback section-requested(string);
+    callback save-requested();
+    callback discard-requested();
+
+    background: AtlasTheme.canvas;
+    accessible-role: AccessibleRole.main;
+    accessible-label: root.title;
+    ScrollView {
+        viewport-width: parent.width;
+        VerticalLayout {
+            width: parent.width;
+            spacing: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
+            AtlasHeading { height: root.compact ? AtlasTypography.line-display * 2 : AtlasTypography.line-display; text: root.title; level: HeadingLevel.h1; }
+            AtlasParagraph { height: root.compact ? AtlasTypography.line-body * 2 : AtlasTypography.line-body; text: root.summary; muted: true; }
+            if root.compact: Rectangle {
+                height: root.sections.length * AtlasDensity.pointer-target-min;
+                background: AtlasTheme.transparent;
+                VerticalLayout {
+                    spacing: AtlasGrid.space-1;
+                    for section in root.sections: Rectangle {
+                        height: AtlasDensity.pointer-target-min;
+                        background: section.id == root.active-section-id ? AtlasTheme.surface-selected : AtlasTheme.surface;
+                        border-radius: AtlasShape.radius-control;
+                        opacity: section.disabled ? 0.55 : 1;
+                        Text { x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-6; text: section.label; color: section.id == root.active-section-id ? AtlasTheme.content-accent : AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; }
+                        ActionArea { enabled: !section.disabled; accessible-role: AccessibleRole.button; accessible-label: section.label; accessible-description: section.description; activated => { root.section-requested(section.id); } }
+                    }
+                }
+            }
+            if !root.compact: Rectangle {
+                height: AtlasDensity.pointer-target-min;
+                background: AtlasTheme.transparent;
+                HorizontalLayout {
+                    spacing: AtlasGrid.space-2;
+                    for section in root.sections: AtlasButton {
+                        text: section.label; selected: section.id == root.active-section-id; enabled: !section.disabled;
+                        clicked => { root.section-requested(section.id); }
+                    }
+                    Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+                }
+            }
+            Rectangle {
+                height: AtlasGrid.space-12 * 5 + AtlasGrid.space-3;
+                background: AtlasTheme.surface;
+                border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+                border-radius: AtlasShape.radius-surface;
+                @children
+            }
+            Rectangle {
+                height: AtlasDensity.pointer-target-min + AtlasGrid.space-4;
+                background: AtlasTheme.transparent;
+                HorizontalLayout {
+                    spacing: AtlasGrid.space-2;
+                    Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+                    AtlasBadge { width: AtlasGrid.column-min-width + AtlasGrid.space-4; text: root.dirty ? "UNSAVED" : "SAVED"; tone: root.dirty ? BadgeTone.warning : BadgeTone.healthy; }
+                    AtlasButton { text: "Discard"; enabled: root.dirty && !root.saving; clicked => { root.discard-requested(); } }
+                    AtlasButton { text: root.saving ? "Saving…" : "Save changes"; tone: ButtonTone.primary; enabled: root.dirty && !root.saving; loading: root.saving; clicked => { root.save-requested(); } }
+                }
+            }
+        }
+    }
+}
+
+export component AtlasDashboardTemplate inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <string> eyebrow: "DASHBOARD";
+    in property <string> title;
+    in property <string> summary;
+    in property <string> updated-label;
+    in property <[DashboardMetricItem]> metrics;
+    in property <[DashboardActivityItem]> activity;
+    in property <bool> refreshing: false;
+    out property <bool> compact: root.reference-width < AtlasGrid.breakpoint-compact;
+    callback refresh-requested();
+    callback metric-requested(string);
+    callback activity-requested(string);
+
+    background: AtlasTheme.canvas;
+    accessible-role: AccessibleRole.main;
+    accessible-label: root.title;
+    ScrollView {
+        viewport-width: parent.width;
+        VerticalLayout {
+            width: parent.width - AtlasGrid.space-3;
+            spacing: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
+            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: root.eyebrow; tone: BadgeTone.info; }
+            AtlasHeading { height: root.compact ? AtlasTypography.line-display * 2 : AtlasTypography.line-display; text: root.title; level: HeadingLevel.h1; }
+            AtlasParagraph { height: root.compact ? AtlasTypography.line-body * 2 : AtlasTypography.line-body; text: root.summary; muted: true; }
+            AtlasButton { width: root.compact ? parent.width : AtlasGrid.column-min-width * 3; text: root.refreshing ? "Refreshing…" : "Refresh"; loading: root.refreshing; enabled: !root.refreshing; clicked => { root.refresh-requested(); } }
+            metric-grid := AtlasAutoGrid {
+                height: root.compact
+                    ? root.metrics.length * (AtlasGrid.space-12 * 2 + AtlasGrid.space-4)
+                    : AtlasGrid.space-12 * 3;
+                reference-width: root.reference-width; gap: LayoutGap.normal;
+                for metric in root.metrics: AtlasMetricCard {
+                    flex-basis: metric-grid.item-basis; flex-grow: 1;
+                    compact: root.compact;
+                    label: metric.label; value: metric.value; meta: metric.meta; tone: metric.tone;
+                    TouchArea { clicked => { root.metric-requested(metric.id); } }
+                }
+            }
+            AtlasHeading { height: AtlasTypography.line-heading; text: "Recent activity"; level: HeadingLevel.h2; }
+            Rectangle {
+                height: root.activity.length * (root.compact
+                    ? AtlasGrid.space-12 + AtlasGrid.space-3
+                    : AtlasGrid.space-12 + AtlasGrid.space-8);
+                background: AtlasTheme.surface;
+                border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
+                border-radius: AtlasShape.radius-surface;
+                VerticalLayout {
+                    for item in root.activity: Rectangle {
+                        height: root.compact
+                            ? AtlasGrid.space-12 + AtlasGrid.space-3
+                            : AtlasGrid.space-12 + AtlasGrid.space-8;
+                        border-width: AtlasGrid.zero; background: AtlasTheme.transparent;
+                        Text { x: AtlasGrid.space-4; y: AtlasGrid.space-3; width: parent.width - (root.compact ? AtlasGrid.column-min-width + AtlasGrid.space-8 : AtlasGrid.column-min-width * 3); text: item.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-semibold; overflow: elide; }
+                        Text { x: AtlasGrid.space-4; y: AtlasGrid.space-8; width: parent.width - (root.compact ? AtlasGrid.space-8 : AtlasGrid.column-min-width * 3); text: item.detail; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; overflow: elide; }
+                        Text { x: parent.width - (root.compact ? AtlasGrid.column-min-width : AtlasGrid.column-min-width * 2); y: AtlasGrid.space-3; width: (root.compact ? AtlasGrid.column-min-width : AtlasGrid.column-min-width * 2) - AtlasGrid.space-4; text: item.time; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; horizontal-alignment: right; }
+                        ActionArea { accessible-role: AccessibleRole.button; accessible-label: item.title; accessible-description: item.detail; activated => { root.activity-requested(item.id); } }
+                    }
+                }
+            }
+            Text { height: root.compact ? AtlasTypography.line-body * 2 : AtlasGrid.space-5; text: root.updated-label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; wrap: word-wrap; }
+            Rectangle { height: AtlasGrid.space-12 * 2; background: AtlasTheme.transparent; @children }
+        }
+    }
+}

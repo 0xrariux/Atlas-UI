@@ -1,0 +1,59 @@
+import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+
+export enum IconName {
+    none, add, back, check, close, info, lock, logs, menu, profile,
+    refresh, search, shield, warning, chevron-down
+}
+export enum IconTone { primary, secondary, accent, success, warning, danger, info }
+export enum IconSize { compact, normal, large }
+
+// Deterministic monochrome vectors. Color is applied by Slint so every asset
+// follows the active semantic theme without embedding palette decisions.
+export component AtlasIcon inherits Rectangle {
+    in property <IconName> name: IconName.none;
+    in property <IconSize> icon-size: IconSize.normal;
+    in property <IconTone> tone: IconTone.primary;
+    in property <length> size: root.icon-size == IconSize.compact ? AtlasGrid.space-3
+        : root.icon-size == IconSize.large ? AtlasGrid.space-6 : AtlasGrid.space-4;
+    in property <color> icon-color: root.tone == IconTone.secondary ? AtlasTheme.content-secondary
+        : root.tone == IconTone.accent ? AtlasTheme.content-accent
+        : root.tone == IconTone.success ? AtlasTheme.success
+        : root.tone == IconTone.warning ? AtlasTheme.warning
+        : root.tone == IconTone.danger ? AtlasTheme.danger
+        : root.tone == IconTone.info ? AtlasTheme.info : AtlasTheme.content-primary;
+    in property <bool> decorative: true;
+    in property <string> accessible-name;
+    out property <bool> accessibility-valid: root.decorative || root.accessible-name != "";
+
+    width: root.size;
+    height: root.size;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.none;
+
+    Image {
+        width: parent.width; height: parent.height;
+        image-fit: contain;
+        colorize: root.icon-color;
+        source: root.name == IconName.add ? @image-url("../assets/add.svg")
+            : root.name == IconName.back ? @image-url("../assets/back.svg")
+            : root.name == IconName.check ? @image-url("../assets/check.svg")
+            : root.name == IconName.close ? @image-url("../assets/close.svg")
+            : root.name == IconName.info ? @image-url("../assets/info.svg")
+            : root.name == IconName.lock ? @image-url("../assets/lock.svg")
+            : root.name == IconName.logs ? @image-url("../assets/logs.svg")
+            : root.name == IconName.menu ? @image-url("../assets/menu.svg")
+            : root.name == IconName.profile ? @image-url("../assets/profile.svg")
+            : root.name == IconName.refresh ? @image-url("../assets/refresh.svg")
+            : root.name == IconName.search ? @image-url("../assets/search.svg")
+            : root.name == IconName.shield ? @image-url("../assets/shield.svg")
+            : root.name == IconName.warning ? @image-url("../assets/warning.svg")
+            : root.name == IconName.chevron-down ? @image-url("../assets/chevron-down.svg")
+            : @image-url("../assets/none.svg");
+    }
+    if !root.decorative: Rectangle {
+        background: AtlasTheme.transparent;
+        accessible-role: AccessibleRole.image;
+        accessible-label: root.accessible-name;
+        accessible-description: !root.accessibility-valid ? "Missing accessible icon name" : "";
+    }
+}

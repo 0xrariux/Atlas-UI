@@ -1,0 +1,9 @@
+import { AtlasSettings, MotionPreference } from "settings.slint";
+
+export global AtlasMotion {
+    out property <duration> instant: 0ms;
+    out property <duration> fast: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 100ms;
+    out property <duration> normal: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 180ms;
+    out property <duration> slow: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 280ms;
+}
+

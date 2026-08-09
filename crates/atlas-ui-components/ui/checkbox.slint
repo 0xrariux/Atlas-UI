@@ -1,0 +1,54 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+
+export component AtlasCheckbox inherits Rectangle {
+    in-out property <bool> checked: false;
+    in property <string> label;
+    in property <string> description;
+    in property <bool> enabled: true;
+    in property <string> automation-id;
+    in property <bool> preview-focus-visible: false;
+    callback toggled(bool);
+
+    accessible-role: AccessibleRole.checkbox;
+    accessible-label: root.label;
+    accessible-description: root.description;
+    accessible-id: root.automation-id;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
+    accessible-action-default => { action.trigger(); }
+
+    height: max(AtlasDensity.pointer-target-min, root.description == "" ? AtlasGrid.space-6 : AtlasGrid.space-10);
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+
+    box := Rectangle {
+        x: AtlasGrid.space-1; y: (parent.height - AtlasGrid.space-5) / 2;
+        width: AtlasGrid.space-5; height: AtlasGrid.space-5;
+        border-width: AtlasShape.border-width;
+        border-color: root.checked ? AtlasTheme.success : AtlasTheme.border-strong;
+        border-radius: AtlasShape.radius-small;
+        background: root.checked ? AtlasTheme.surface-selected : AtlasTheme.canvas;
+        AtlasIcon { name: root.checked ? IconName.check : IconName.none; size: AtlasTypography.size-body; icon-color: AtlasTheme.content-primary; }
+        FocusRing {
+            x: -(AtlasShape.focus-offset + AtlasShape.focus-width); y: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            width: parent.width + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            height: parent.height + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            active: action.focus-visible || root.preview-focus-visible;
+        }
+    }
+    VerticalLayout {
+        x: AtlasGrid.space-12 + AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-12 - AtlasGrid.space-2;
+        alignment: center; spacing: AtlasGrid.space-1;
+        Text { text: root.label; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-semibold; overflow: elide; }
+        Text { visible: root.description != ""; text: root.description; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; overflow: elide; }
+    }
+    action := ActionArea {
+        enabled: root.enabled;
+        accessible-name: root.label; action-description: root.description; automation-id: root.automation-id;
+        activated => { root.checked = !root.checked; root.toggled(root.checked); }
+    }
+}

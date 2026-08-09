@@ -1,0 +1,32 @@
+import { AtlasTheme, AtlasGrid, AtlasDensity, AtlasTypography, ThemeMode } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasButton } from "button.slint";
+
+export component AtlasThemeControl inherits Rectangle {
+    in property <ThemeMode> selected: ThemeMode.system;
+    in property <bool> enabled: true;
+    in property <string> label: "Theme";
+    callback preference-requested(ThemeMode);
+
+    height: AtlasDensity.row-height + AtlasGrid.space-5;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.tab-list;
+    accessible-label: root.label;
+    Text {
+        x: AtlasGrid.zero; y: AtlasGrid.zero;
+        width: parent.width;
+        height: AtlasGrid.space-4;
+        text: root.label;
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-caption;
+    }
+    HorizontalLayout {
+        x: AtlasGrid.zero; y: AtlasGrid.space-5;
+        width: parent.width;
+        height: AtlasDensity.row-height;
+        spacing: AtlasGrid.space-1;
+        AtlasButton { horizontal-stretch: 1; text: "System"; enabled: root.enabled; selected: root.selected == ThemeMode.system; clicked => { root.preference-requested(ThemeMode.system); } }
+        AtlasButton { horizontal-stretch: 1; text: "Light"; enabled: root.enabled; selected: root.selected == ThemeMode.light; clicked => { root.preference-requested(ThemeMode.light); } }
+        AtlasButton { horizontal-stretch: 1; text: "Dark"; enabled: root.enabled; selected: root.selected == ThemeMode.dark; clicked => { root.preference-requested(ThemeMode.dark); } }
+    }
+}

@@ -1,0 +1,65 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+
+export enum SwitchTone { neutral, operator, safety }
+
+export component AtlasSwitch inherits Rectangle {
+    in-out property <bool> checked: false;
+    in property <string> label;
+    in property <string> inactive-label;
+    in property <SwitchTone> tone: SwitchTone.neutral;
+    in property <bool> enabled: true;
+    in property <string> automation-id;
+    in property <bool> preview-focus-visible: false;
+    callback toggled(bool);
+
+    accessible-role: AccessibleRole.switch;
+    accessible-label: root.label;
+    accessible-id: root.automation-id;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
+    accessible-action-default => { action.trigger(); }
+
+    height: AtlasDensity.pointer-target-min;
+    min-width: switch-label.preferred-width + AtlasGrid.space-12 + AtlasGrid.space-6;
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+
+    track := Rectangle {
+        x: AtlasGrid.space-1; y: (parent.height - AtlasGrid.space-6) / 2;
+        width: AtlasGrid.space-10; height: AtlasGrid.space-6;
+        border-width: AtlasShape.border-width;
+        border-color: root.tone == SwitchTone.safety && root.checked ? AtlasTheme.danger
+            : root.tone == SwitchTone.operator && !root.checked ? AtlasTheme.warning
+            : root.checked ? AtlasTheme.success : AtlasTheme.border-strong;
+        border-radius: AtlasShape.radius-round;
+        background: root.checked ? AtlasTheme.surface-selected : AtlasTheme.surface;
+        Rectangle {
+            x: root.checked ? parent.width - self.width - AtlasGrid.space-1 : AtlasGrid.space-1;
+            y: AtlasGrid.space-1; width: AtlasGrid.space-4; height: AtlasGrid.space-4;
+            border-radius: AtlasShape.radius-round;
+            background: root.checked ? AtlasTheme.success : AtlasTheme.content-secondary;
+        }
+        FocusRing {
+            x: -(AtlasShape.focus-offset + AtlasShape.focus-width); y: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            width: parent.width + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            height: parent.height + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            active: action.focus-visible || root.preview-focus-visible;
+            radius: AtlasShape.radius-round;
+        }
+    }
+    switch-label := Text {
+        x: AtlasGrid.space-12 + AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-12 - AtlasGrid.space-2;
+        text: root.checked || root.inactive-label == "" ? root.label : root.inactive-label;
+        color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-semibold;
+        vertical-alignment: center; overflow: elide;
+    }
+    action := ActionArea {
+        enabled: root.enabled;
+        accessible-name: root.label; automation-id: root.automation-id;
+        activated => { root.checked = !root.checked; root.toggled(root.checked); }
+    }
+}
