@@ -87,6 +87,7 @@ changes.
 ## Documentation
 
 - [Overview and scope](docs/OVERVIEW.md)
+- [Public roadmap](ROADMAP.md)
 - [Architecture and layers](docs/ARCHITECTURE.md)
 - [Slint relationship and version tracking](docs/SLINT_INTEGRATION.md)
 - [Component catalog](docs/COMPONENTS.md)
