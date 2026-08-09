@@ -61,6 +61,7 @@ jobs:
           shared-key: atlas-${{ matrix.name }}-rust-1.92
 
       - name: Check formatting
+        if: runner.os == 'Linux'
         run: cargo fmt --all -- --check
 
       - name: Compile every target
