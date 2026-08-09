@@ -6,7 +6,10 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
-readme = "../../README.md"
+documentation = "https://docs.rs/atlas-ui/0.2.0"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
 keywords = ["slint", "gui", "ui", "design-system", "components"]
 categories = ["gui"]
 

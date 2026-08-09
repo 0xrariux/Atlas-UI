@@ -7,7 +7,7 @@ release evidence for it.
 
 | Dimension | Version or target | Status | Evidence or constraint |
 |---|---|---|---|
-| Atlas | `0.2.0` | Experimental | Stable and preview facades are separated; the release remains blocked until visual baselines are approved |
+| Atlas | `0.2.0` | Experimental | Stable and preview facades are separated; all 72 release baselines are approved |
 | Rust | `1.88` | Required | Workspace MSRV |
 | Rust edition | `2024` | Required | Workspace package edition |
 | Slint | `1.17.1` | Pinned | Workspace dependencies use exact versions for `slint` and `slint-build` |

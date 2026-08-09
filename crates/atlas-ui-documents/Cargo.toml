@@ -6,6 +6,10 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
+documentation = "https://docs.rs/atlas-ui-documents/0.2.0"
+repository.workspace = true
+homepage.workspace = true
+readme = false
 
 [dependencies]
 pulldown-cmark.workspace = true
