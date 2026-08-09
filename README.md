@@ -37,11 +37,11 @@ contracts, and reusable catalog built on top of it.
 
 ## Vision
 
-Atlas aims to bring Rust and Slint the kind of systematic visual-development
-layer that CSS and tools such as Tailwind CSS provide to the web—without
-recreating CSS, adopting utility-class syntax, or introducing a web runtime.
-Slint remains the language and rendering foundation; Atlas turns its primitives
-into a coherent system for building interfaces repeatedly and at scale.
+Atlas aims to give Rust and Slint applications a systematic visual-development
+foundation: shared design decisions, reusable interface contracts, and
+composable building blocks that remain coherent as products grow. Slint stays
+the language and rendering foundation; Atlas organizes its primitives into a
+consistent system for building distinctive interfaces repeatedly and at scale.
 
 The goal is to make a modern interface an engineering outcome rather than a
 collection of one-off styling decisions. Shared tokens define color,
