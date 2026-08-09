@@ -32,6 +32,14 @@ feedback:
 | Date and time picker | Locale-aware controlled selection without hidden persistence or system effects |
 | Form validation primitives | Shared field messages, summaries, required-state semantics, and focus routing intentions |
 | Advanced desktop navigation | Denser navigation patterns for multi-pane and information-rich native applications |
+| Accordion and collapsible regions | Keyboard-operable disclosure groups with controlled expansion and nested-content contracts |
+| Avatar and persona | Image, initials, presence, fallback, loading, and accessible identity presentation |
+| Context menu and desktop menubar | Controlled menu models, nested navigation, shortcuts, focus restoration, and host-owned command execution |
+| Floating and resizable panel | Bounded drag and resize intentions with host-owned placement persistence |
+| Color picker | Controlled color selection with accessible numeric entry and explicit format conversion |
+| Date-range picker | Locale-aware bounded range selection composed from shared date primitives |
+| Data-visualization primitives | Tokenized sparklines, bars, lines, areas, and legends for host-provided data rather than a domain charting engine |
+| Virtualized data table | Large-data presentation composed from existing table contracts, bounded rendering, stable identity, and host-owned sorting and pagination |
 
 ## Application block candidates
 
@@ -49,6 +57,28 @@ structures:
 | Permission management | Roles, capabilities, grouped controls, warnings, and confirmation boundaries |
 | Operational states | Composable offline, loading, empty, partial, stale, and error presentations |
 | Responsive desktop shell | Top bar, navigation, content, contextual panels, overlays, and adaptive footers |
+| Team and profile management | Reusable identity, membership, role, profile, and account compositions built from shared form and permission primitives |
+| Metrics and monitoring workspace | Cards, status, trends, filters, alerts, and drill-down intentions for operational applications |
+
+## Delivery and ecosystem roadmap
+
+Atlas must strengthen delivery evidence and adoption alongside its component
+catalog. The following work is prioritized independently from component count:
+
+| Capability | Intended outcome |
+|---|---|
+| Public multi-platform CI | Compile and test the workspace and a clean consumer on Linux, Windows, and macOS |
+| Registry-only smoke consumer | Prove each release using crates.io packages without workspace paths or inherited Cargo configuration |
+| Interactive component gallery | Publish a browsable or WebAssembly-backed catalog with states, themes, density, responsive widths, and keyboard examples |
+| Component API pages | Generate readable property, callback, maturity, accessibility, and usage documentation from authoritative manifests |
+| Consumer examples | Maintain minimal and realistic applications that depend on Atlas exactly as external users do |
+| Adoption evidence | Record known consumers, verified platforms, rendering profiles, and migration outcomes without overstating support |
+| Agent protocol bridge | Expose the existing machine-readable manifest through a small MCP-compatible discovery layer without duplicating component source |
+| Release compatibility matrix | Publish Stable and Preview changes, Slint requirements, platform evidence, and migration instructions for every release |
+
+Atlas remains a centrally maintained shared dependency. Any future CLI, agent
+bridge, or registry endpoint must install or reference canonical Atlas packages;
+it must not silently turn the project into a copy-and-own component collection.
 
 ## Composition rule
 
