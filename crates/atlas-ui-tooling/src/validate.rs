@@ -79,7 +79,12 @@ fn publication(root: &Path) -> Result {
     )?;
     let mut count = 0;
     for file in util::files(root) {
-        let rel = file.strip_prefix(root)?.to_string_lossy();
+        // Normalize separators so publication rules behave identically on Unix
+        // and Windows checkouts.
+        let rel = file
+            .strip_prefix(root)?
+            .to_string_lossy()
+            .replace('\\', "/");
         if rel.starts_with("ai/")
             || rel.starts_with("target/")
             || rel.starts_with(".git/")
