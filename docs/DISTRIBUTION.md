@@ -6,7 +6,7 @@ named imports rather than paths tied to the Atlas monorepo.
 
 ## Current state
 
-- Seven Atlas library crates are prepared for crates.io at version `0.2.1`. The
+- Seven Atlas library crates are published on crates.io at version `0.2.1`. The
   gallery and getting-started application remain `publish = false`.
 - Internal path dependencies also declare the exact `0.2.1` version required by
   registry packaging.
@@ -16,9 +16,8 @@ named imports rather than paths tied to the Atlas monorepo.
 - All 72 visual baselines are approved and the local release-readiness check is
   ready.
 
-After registry publication, the canonical user dependency is
-`atlas-ui = "=0.2.1"`. Documentation links may remain pending while docs.rs
-builds a newly published crate.
+The canonical user dependency is `atlas-ui = "=0.2.1"`. Documentation links
+may remain pending while docs.rs builds a newly published crate.
 
 ## Planned publication order
 
