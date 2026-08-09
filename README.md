@@ -6,6 +6,12 @@
 
 <p align="center">
   <a href="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml"><img src="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml/badge.svg" alt="Cross-platform CI status"></a>
+  <a href="https://crates.io/crates/atlas-ui"><img src="https://img.shields.io/crates/v/atlas-ui.svg" alt="Latest atlas-ui version on crates.io"></a>
+  <a href="https://docs.rs/atlas-ui"><img src="https://docs.rs/atlas-ui/badge.svg" alt="atlas-ui documentation on docs.rs"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
+  <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust-1.92-orange.svg" alt="Rust 1.92 MSRV"></a>
+  <a href="https://github.com/slint-ui/slint"><img src="https://img.shields.io/badge/Slint-1.17.1-2379F4.svg" alt="Slint 1.17.1"></a>
+  <img src="https://img.shields.io/badge/status-experimental-yellow.svg" alt="Experimental project status">
 </p>
 
 > [!WARNING]
