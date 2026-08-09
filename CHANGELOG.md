@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 — 2026-08-09
+
+- Makes `@atlas-ui/stable.slint` compile without Slint experimental features.
+- Adds a dedicated non-experimental Atlas Core facade for stable components.
+- Keeps `FlexboxLayout` and responsive preview contracts isolated from the
+  stable import graph.
+- Adds a regression test for the stable-to-preview dependency boundary.
+- Corrects the effective Rust MSRV to 1.92, as required by Slint 1.17.1.
+- Includes the native Rust maintenance-tooling migration and refreshed agent
+  documentation introduced after the 0.2.0 tag.
+
 ## 0.2.0 — 2026-08-09
 
 - Establishes 48 stable-contract symbols in `stable.slint`.

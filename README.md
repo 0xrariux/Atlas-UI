@@ -53,7 +53,7 @@ screen or in every Rust project.
 
 ## Project status
 
-- Atlas version: `0.2.0`;
+- Atlas version: `0.2.1`;
 - referenced Slint version: `1.17.1`;
 - validated target: macOS arm64, software renderer, scale factor 1;
 - 81 public components and 158 public symbols;
@@ -131,28 +131,28 @@ other Slint libraries.
 | Documentation model | Public architecture, component catalog, agent manifest, integration guide, compiled consumer example, and executable native gallery |
 | Validation model | Automated architecture and API checks, deterministic fixtures, visual scenarios, contrast and accessibility contracts, and performance budgets |
 | Accessibility scope | Keyboard, focus, semantics, contrast, reduced motion, and explicit host-controlled interaction contracts are part of component validation |
-| Current API size | 81 public components, 48 stable symbols, and 110 preview symbols in Atlas `0.2.0` |
+| Current API size | 81 public components, 48 stable symbols, and 110 preview symbols in Atlas `0.2.1` |
 | Current proven platform | macOS arm64 with Slint's software renderer at scale factor 1; other platforms and renderers are not yet claimed as validated |
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
 
 ## Installation and local development
 
-Atlas `0.2.0` is available from crates.io. Add the facade as both a runtime and
+Atlas `0.2.1` is available from crates.io. Add the facade as both a runtime and
 build dependency so its helper can expose registry-safe named Slint imports:
 
 ```toml
 [dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint-build = "=1.17.1"
 ```
 
-Atlas `0.2.0` currently wraps Slint's experimental `FlexboxLayout`. Enable it
-for the Slint compiler used by your application:
+The stable facade compiles without Slint experimental features. Applications
+that import Atlas preview responsive contracts must enable them explicitly:
 
 ```toml
 # .cargo/config.toml

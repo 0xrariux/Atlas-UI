@@ -3,7 +3,7 @@
 For a quick task-oriented selection, especially from an AI agent, also see the
 [component index](AGENT_COMPONENT_INDEX.md).
 
-Atlas `0.2.0` exposes 81 components. Their public classification is described
+Atlas `0.2.1` exposes 81 components. Their public classification is described
 below and enforced by the `stable.slint` and `preview.slint` facades.
 
 ## Stable foundations

@@ -4,11 +4,11 @@
 > tokens, accessible components, responsive compositions, application
 > templates, and deterministic visual validation without replacing Slint.
 
-Atlas 0.2.0 effectively requires Rust 1.92 and pins Slint 1.17.1. Consumers
-must set SLINT_ENABLE_EXPERIMENTAL_FEATURES=1 while its responsive preview
-contracts use FlexboxLayout. The currently proven platform
+Atlas 0.2.1 effectively requires Rust 1.92 and pins Slint 1.17.1. Stable
+imports need no experimental configuration. Consumers of responsive preview
+contracts must set SLINT_ENABLE_EXPERIMENTAL_FEATURES=1. The proven platform
 profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
-is published on crates.io as version 0.2.0.
+is published on crates.io as version 0.2.1.
 
 ## Start here
 

@@ -7,7 +7,7 @@ that the user accepts Atlas's experimental status and current platform limits.
 
 ## 1. Verify compatibility
 
-- Atlas version: `0.2.0`.
+- Atlas version: `0.2.1`.
 - Effective Rust MSRV: `1.92`.
 - Slint version: exactly `1.17.1`.
 - Proven profile: macOS arm64, software renderer, scale factor 1.
@@ -18,23 +18,23 @@ Read `docs/COMPATIBILITY.md` before targeting another platform or renderer.
 
 ## 2. Add dependencies
 
-Use the published `0.2.0` facade from crates.io as both a runtime and build
+Use the published `0.2.1` facade from crates.io as both a runtime and build
 dependency.
 
 ```toml
 [dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint-build = "=1.17.1"
 ```
 
 Do not substitute an unverified Atlas or Slint version.
 
-Atlas `0.2.0` requires Slint experimental compilation because its responsive
-preview contracts use `FlexboxLayout`:
+Stable imports require no experimental Slint configuration. When preview
+responsive contracts are used, enable their upstream `FlexboxLayout` support:
 
 ```toml
 # .cargo/config.toml

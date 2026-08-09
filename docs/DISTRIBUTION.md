@@ -6,9 +6,9 @@ named imports rather than paths tied to the Atlas monorepo.
 
 ## Current state
 
-- Seven Atlas library crates are published on crates.io at version `0.2.0`. The
+- Seven Atlas library crates are prepared for crates.io at version `0.2.1`. The
   gallery and getting-started application remain `publish = false`.
-- Internal path dependencies also declare the exact `0.2.0` version required by
+- Internal path dependencies also declare the exact `0.2.1` version required by
   registry packaging.
 - The facade has a description, README, license, keywords, and category.
 - Repository metadata points to `https://github.com/rariux/Atlas-UI`, and every
@@ -16,8 +16,9 @@ named imports rather than paths tied to the Atlas monorepo.
 - All 72 visual baselines are approved and the local release-readiness check is
   ready.
 
-The canonical user dependency is `atlas-ui = "=0.2.0"`. Documentation links
-may remain pending while docs.rs builds a newly published crate.
+After registry publication, the canonical user dependency is
+`atlas-ui = "=0.2.1"`. Documentation links may remain pending while docs.rs
+builds a newly published crate.
 
 ## Planned publication order
 

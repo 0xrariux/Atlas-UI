@@ -3,18 +3,7 @@
 Atlas is a Rust workspace divided by responsibility. A lower layer never
 depends on a higher layer, and dependency cycles are forbidden.
 
-```text
-atlas-ui-tokens
-      ↓
-atlas-ui-core ← atlas-ui-icons
-      ↓              ↓
-atlas-ui-components
-      ↓
-applications and gallery
-
-atlas-ui-documents ──→ application adapters / gallery
-atlas-ui-testing   ──→ tests and captures only
-```
+![Atlas UI architecture showing the dependency flow from tokens, core, icons, and components to applications and the gallery; document and testing support layers; and Slint as the common foundation.](../assets/architecture/atlas-ui-layer-diagram.png)
 
 ## 1. Tokens — `atlas-ui-tokens`
 

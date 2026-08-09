@@ -250,6 +250,30 @@ fn responsive_recipes_share_tokens_and_expose_observable_breakpoints() {
 }
 
 #[test]
+fn stable_facade_does_not_load_experimental_responsive_layouts() {
+    let root = workspace_root();
+    let core_stable = fs::read_to_string(root.join("crates/atlas-ui-core/ui/stable.slint"))
+        .expect("stable Core facade");
+    assert!(!core_stable.contains("responsive-layout.slint"));
+    assert!(!core_stable.contains("FlexboxLayout"));
+
+    let component_root = root.join("crates/atlas-ui-components/ui");
+    for file in [
+        "stable.slint",
+        "button.slint",
+        "checkbox.slint",
+        "switch.slint",
+    ] {
+        let source =
+            fs::read_to_string(component_root.join(file)).expect("stable component source");
+        assert!(
+            !source.contains("@atlas-ui-core/core.slint"),
+            "{file} must import the non-experimental Core facade"
+        );
+    }
+}
+
+#[test]
 fn data_contract_covers_planned_table_capabilities() {
     let source = fs::read_to_string(
         workspace_root().join("crates/atlas-ui-components/ui/data-contracts.slint"),
@@ -840,8 +864,8 @@ fn data_components_expose_scalable_intentions_and_states() {
 #[test]
 fn shared_visual_geometry_covers_reported_alignment_contracts() {
     let root = workspace_root();
-    let core =
-        fs::read_to_string(root.join("crates/atlas-ui-core/ui/core.slint")).expect("core facade");
+    let core = fs::read_to_string(root.join("crates/atlas-ui-core/ui/stable.slint"))
+        .expect("stable core facade");
     assert!(core.contains("in property <length> radius"));
 
     let switch = fs::read_to_string(root.join("crates/atlas-ui-components/ui/switch.slint"))

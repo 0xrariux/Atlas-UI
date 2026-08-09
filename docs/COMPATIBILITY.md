@@ -7,11 +7,11 @@ release evidence for it.
 
 | Dimension | Version or target | Status | Evidence or constraint |
 |---|---|---|---|
-| Atlas | `0.2.0` | Experimental | Stable and preview facades are separated; all 72 release baselines are approved |
+| Atlas | `0.2.1` | Experimental | Stable imports no longer load experimental responsive modules; all 72 release baselines are approved |
 | Rust | `1.92` | Required | Effective MSRV imposed by `slint-build 1.17.1` |
 | Rust edition | `2024` | Required | Workspace package edition |
 | Slint | `1.17.1` | Pinned | Workspace dependencies use exact versions for `slint` and `slint-build` |
-| Slint experimental compiler features | Enabled | Required by Atlas 0.2.0 responsive preview contracts that use `FlexboxLayout` |
+| Slint experimental compiler features | Preview only | Required only when importing responsive preview contracts that use `FlexboxLayout` |
 | macOS arm64 | Software renderer, scale factor 1 | Verified | Current deterministic capture and performance profile |
 | Other macOS configurations | Other renderer or scale factor | Expected, unverified | Validate rendering, input, focus, fonts, and performance in the consumer |
 | Linux | Any backend | Expected, unverified | No release claim until platform evidence is recorded |

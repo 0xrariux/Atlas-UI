@@ -5732,8 +5732,8 @@
             "type": "length"
           }
         ],
-        "source": "crates/atlas-ui-core/ui/core.slint",
-        "source_line": 18
+        "source": "crates/atlas-ui-core/ui/stable.slint",
+        "source_line": 15
       },
       {
         "callbacks": [],
@@ -9173,7 +9173,7 @@
     "ThemeMode",
     "TypographyScale"
   ],
-  "version": "0.2.0",
+  "version": "0.2.1",
   "visual_validation": {
     "scenario_count": 72
   }

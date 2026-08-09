@@ -1,26 +1,13 @@
-import {
-    AtlasTheme, AtlasShape, AtlasGrid
-} from "@atlas-ui-tokens/tokens.slint";
-export { ContentFrame, LayoutGridOverlay, LayoutWidth } from "layout-grid.slint";
+// Compatibility aggregate. Prefer stable.slint when experimental responsive
+// primitives are not required.
+export {
+    ContentFrame, AtlasScrollViewport, ComponentFrame, Surface, FocusRing,
+    ActionArea, OverlayFocusController, SelectionController,
+    RovingFocusController, SelectionMode
+} from "stable.slint";
+export { LayoutGridOverlay, LayoutWidth } from "layout-grid.slint";
 export {
     AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
     AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane, AtlasResizeHandle, AtlasStickyRegion,
     LayoutGap, SplitOrientation, StickyEdge
 } from "responsive-layout.slint";
-export { AtlasScrollViewport } from "scroll-viewport.slint";
-export { ComponentFrame, Surface } from "component-frame.slint";
-export {
-    ActionArea, OverlayFocusController, SelectionController, RovingFocusController, SelectionMode
-} from "interaction.slint";
-
-// Focus styling is centralized here so all interactive components expose the
-// same visible contract. Keyboard focus ownership remains with each control.
-export component FocusRing inherits Rectangle {
-    in property <bool> active: false;
-    in property <length> radius: AtlasShape.radius-control;
-
-    background: AtlasTheme.transparent;
-    border-width: active ? AtlasShape.focus-width : AtlasGrid.zero;
-    border-color: AtlasTheme.focus-ring;
-    border-radius: root.radius;
-}

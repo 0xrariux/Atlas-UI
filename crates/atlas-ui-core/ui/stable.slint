@@ -1,0 +1,23 @@
+// Atlas Core stable surface. This module must remain compilable without
+// enabling experimental Slint language features.
+import {
+    AtlasTheme, AtlasShape, AtlasGrid
+} from "@atlas-ui-tokens/tokens.slint";
+
+export { ContentFrame } from "layout-grid.slint";
+export { AtlasScrollViewport } from "scroll-viewport.slint";
+export { ComponentFrame, Surface } from "component-frame.slint";
+export {
+    ActionArea, OverlayFocusController, SelectionController,
+    RovingFocusController, SelectionMode
+} from "interaction.slint";
+
+export component FocusRing inherits Rectangle {
+    in property <bool> active: false;
+    in property <length> radius: AtlasShape.radius-control;
+
+    background: AtlasTheme.transparent;
+    border-width: active ? AtlasShape.focus-width : AtlasGrid.zero;
+    border-color: AtlasTheme.focus-ring;
+    border-radius: root.radius;
+}

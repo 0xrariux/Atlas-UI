@@ -9,12 +9,12 @@ publish = false
 build = "build.rs"
 
 [dependencies]
-atlas-ui-components = { path = "../../crates/atlas-ui-components", version = "=0.2.0" }
+atlas-ui-components = { path = "../../crates/atlas-ui-components", version = "=0.2.1" }
 image.workspace = true
 slint.workspace = true
 
 [build-dependencies]
-atlas-ui = { path = "../../crates/atlas-ui", version = "=0.2.0" }
+atlas-ui = { path = "../../crates/atlas-ui", version = "=0.2.1" }
 slint-build.workspace = true
 
 [lints]

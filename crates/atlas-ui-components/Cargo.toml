@@ -6,15 +6,15 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
-documentation = "https://docs.rs/atlas-ui-components/0.2.0"
+documentation = "https://docs.rs/atlas-ui-components/0.2.1"
 repository.workspace = true
 homepage.workspace = true
 readme = false
 
 [dependencies]
-atlas-ui-core = { path = "../atlas-ui-core", version = "=0.2.0" }
-atlas-ui-icons = { path = "../atlas-ui-icons", version = "=0.2.0" }
-atlas-ui-tokens = { path = "../atlas-ui-tokens", version = "=0.2.0" }
+atlas-ui-core = { path = "../atlas-ui-core", version = "=0.2.1" }
+atlas-ui-icons = { path = "../atlas-ui-icons", version = "=0.2.1" }
+atlas-ui-tokens = { path = "../atlas-ui-tokens", version = "=0.2.1" }
 
 [lints]
 workspace = true

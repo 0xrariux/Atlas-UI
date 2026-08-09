@@ -11,16 +11,17 @@ Add the published Atlas facade as a normal and build dependency:
 
 ```toml
 [dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.2.0"
+atlas-ui = "=0.2.1"
 slint-build = "=1.17.1"
 ```
 
-Atlas `0.2.0` uses Slint's experimental `FlexboxLayout` behind Atlas preview
-contracts. Enable experimental Slint compilation in the consumer repository:
+The stable facade requires no experimental Slint configuration. If the
+application imports responsive contracts from `@atlas-ui/preview.slint`, enable
+experimental compilation in the consumer repository:
 
 ```toml
 # .cargo/config.toml
