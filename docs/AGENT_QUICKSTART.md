@@ -10,11 +10,14 @@ that the user accepts Atlas's experimental status and current platform limits.
 - Atlas version: `0.2.1`.
 - Effective Rust MSRV: `1.92`.
 - Slint version: exactly `1.17.1`.
-- Proven profile: macOS arm64, software renderer, scale factor 1.
+- CI-verified systems: Linux, Windows, and macOS with Rust `1.92`.
+- Visually verified profile: macOS arm64, software renderer, scale factor 1.
 - Stable API: SemVer-governed.
 - Preview API: may change in a minor Atlas release.
 
-Read `docs/COMPATIBILITY.md` before targeting another platform or renderer.
+Read `docs/COMPATIBILITY.md` before selecting a renderer or making a production
+platform-support claim. Cross-platform CI validates the code and contracts; it
+does not guarantee pixel-identical rendering on every deployment profile.
 
 ## 2. Add dependencies
 

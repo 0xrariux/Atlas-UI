@@ -4,6 +4,10 @@
 
 <h1 align="center">Atlas UI</h1>
 
+<p align="center">
+  <a href="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml"><img src="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml/badge.svg" alt="Cross-platform CI status"></a>
+</p>
+
 > [!WARNING]
 > **Atlas UI is experimental, work in progress, and provided as is.** The project
 > is actively maintained, but APIs, component behavior, platform support, and
@@ -55,7 +59,8 @@ screen or in every Rust project.
 
 - Atlas version: `0.2.1`;
 - referenced Slint version: `1.17.1`;
-- validated target: macOS arm64, software renderer, scale factor 1;
+- continuous integration: Linux, Windows, and macOS with Rust `1.92`;
+- deterministic visual profile: macOS arm64, software renderer, scale factor 1;
 - 81 public components and 158 public symbols;
 - 48 stable symbols governed by SemVer;
 - 110 preview symbols that may evolve;
@@ -133,7 +138,7 @@ other Slint libraries.
 | Validation model | Automated architecture and API checks, deterministic fixtures, visual scenarios, contrast and accessibility contracts, and performance budgets |
 | Accessibility scope | Keyboard, focus, semantics, contrast, reduced motion, and explicit host-controlled interaction contracts are part of component validation |
 | Current API size | 81 public components, 48 stable symbols, and 110 preview symbols in Atlas `0.2.1` |
-| Current proven platform | macOS arm64 with Slint's software renderer at scale factor 1; other platforms and renderers are not yet claimed as validated |
+| Platform validation | Linux, Windows, and macOS continuously compile and pass Clippy, tests, and public contract checks; deterministic rendering evidence currently covers macOS arm64 with Slint's software renderer at scale factor 1 |
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
 

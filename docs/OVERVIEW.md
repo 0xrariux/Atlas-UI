@@ -28,9 +28,12 @@ Version `0.2.1` retains 48 stable foundational symbols. The rest of the catalog 
 available as preview so it can evolve without creating a permanent compatibility
 commitment too early.
 
-The currently proven profile is the project's macOS arm64 machine with Slint's
-software renderer and a deterministic scale factor of 1. Linux, Windows,
-WebAssembly, and other renderers are not currently claimed as supported.
+Linux, Windows, and macOS are continuously validated for workspace compilation,
+Clippy, tests, and public contracts with Rust `1.92`. The deterministic visual
+profile remains the project's macOS arm64 machine with Slint's software
+renderer and a scale factor of 1. CI portability must not be interpreted as a
+pixel-identical rendering claim for every backend, display scale, font stack,
+or input configuration. WebAssembly and embedded targets remain unverified.
 
 ## Intended users
 
