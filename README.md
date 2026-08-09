@@ -14,7 +14,7 @@
 
 <p align="center"><sub><strong>AI-agent friendly</strong> · Structured manifests, documented contracts, and deterministic validation for human–AI collaboration. <a href="docs/AI_INTEGRATION_GUIDE.md">Agent guide</a></sub></p>
 
-Writing Rust is great; pairing it with a modern interface for your applications is even better.
+> **Writing Rust is great; pairing it with a modern interface for your applications is even better.**
 
 Atlas UI is a native component library and visual foundation for **Rust and
 Slint**. It gives Slint an industrialized layer comparable to mature web design
