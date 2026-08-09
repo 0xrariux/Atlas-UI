@@ -95,7 +95,7 @@ The manifest is generated from public Slint declarations. Regenerate it after
 an API change with:
 
 ```bash
-node scripts/generate-agent-manifest.mjs
+cargo run -p atlas-ui-tooling -- generate-agent-manifest
 ```
 
 The quality gate runs the generator in check mode and rejects stale metadata.

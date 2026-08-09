@@ -891,7 +891,7 @@ export component Gallery inherits Window {
                     AtlasTerminalBlock {
                         flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5;
                         title: "Release audit";
-                        command: "node ai/check_slint_release.mjs";
+                        command: "cargo run -p atlas-ui-tooling -- validate local";
                         output: "github_latest: 1.17.1\nupdate_available: false";
                     }
                 }

@@ -10,6 +10,8 @@
 > rendered output may still change or contain defects. Validate Atlas against
 > your target platform and requirements before using it in production.
 
+<p align="center"><strong>Powered by <a href="https://github.com/slint-ui/slint">Slint</a></strong></p>
+
 Writing Rust is great; pairing it with a modern interface for your applications is even better.
 
 Atlas UI is a native component library and visual foundation for **Rust and
@@ -90,6 +92,7 @@ changes.
 - [Integration guide for AI agents](docs/AI_INTEGRATION_GUIDE.md)
 - [Quickstart for coding agents](docs/AGENT_QUICKSTART.md)
 - [Machine-readable API manifest guide](docs/AGENT_MANIFEST.md)
+- [Native Rust tooling](docs/TOOLING.md)
 - [Compatibility matrix](docs/COMPATIBILITY.md)
 - [Distribution and registry preparation](docs/DISTRIBUTION.md)
 - [Agent evaluation kit](evals/agent-discovery/README.md)
@@ -168,7 +171,7 @@ Feedback from real applications is valuable, especially for rendering defects,
 platform differences, accessibility problems, API friction, missing states, and
 components that do not behave well with realistic content.
 
-Use the [structured issue forms](../../issues/new/choose) to report a problem or
+Use the [structured issue forms](https://github.com/rariux/Atlas-UI/issues/new/choose) to report a problem or
 propose an improvement. A useful report should identify the affected component,
 Atlas and Slint versions, operating system, architecture, renderer, theme,
 density, viewport or window size, reproduction steps, expected result, and

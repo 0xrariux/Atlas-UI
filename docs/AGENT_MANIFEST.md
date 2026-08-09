@@ -90,13 +90,13 @@ jq '.api.types[] | select(.name == "DataRow")' \
 Regenerate the manifest after changing a public Slint declaration or facade:
 
 ```bash
-node scripts/generate-agent-manifest.mjs
+cargo run -p atlas-ui-tooling -- generate-agent-manifest
 ```
 
 Check that the committed file is current without modifying it:
 
 ```bash
-node scripts/generate-agent-manifest.mjs --check
+cargo run -p atlas-ui-tooling -- generate-agent-manifest --check
 ```
 
 `scripts/quality-gate.sh` runs check mode automatically. It also verifies symbol

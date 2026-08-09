@@ -5,7 +5,7 @@
 After `codex login`, run at most four analyses per invocation:
 
 ```bash
-node scripts/review-screenshots.mjs
+cargo run -p atlas-ui-tooling -- review-screenshots
 ```
 
 The runner resumes at the first unprocessed scenario and stops after four
@@ -34,10 +34,10 @@ baseline, and `reviews/` stores local Codex assessments. A recaptured baseline
 remains `pending-human` until explicitly approved.
 
 ```bash
-node scripts/capture-scenarios.mjs --validate-only
-node scripts/capture-scenarios.mjs --scenario foundations.dark.normal.desktop
-node scripts/capture-scenarios.mjs --update-baselines
-node scripts/capture-scenarios.mjs \
+cargo run -p atlas-ui-tooling -- capture-scenarios --validate-only
+cargo run -p atlas-ui-tooling -- capture-scenarios --scenario foundations.dark.normal.desktop
+cargo run -p atlas-ui-tooling -- capture-scenarios --update-baselines
+cargo run -p atlas-ui-tooling -- capture-scenarios \
   --approve-baseline foundations.dark.normal.desktop \
   --reviewer "Name" \
   --note "Compared with the foundations-v1 fixture"
