@@ -163,7 +163,9 @@ pub fn run(root: &Path, args: &[String]) -> Result {
     validate_source_declarations(root, &manifest)?;
     let rendered = format!("{}\n", serde_json::to_string_pretty(&manifest)?);
     if args.iter().any(|a| a == "--check") {
-        if fs::read_to_string(&path)? != rendered {
+        // Git may materialize text files with CRLF on Windows. Manifest
+        // freshness concerns JSON content, not the checkout's line endings.
+        if fs::read_to_string(&path)?.replace("\r\n", "\n") != rendered {
             return Err("agent manifest is stale; run `cargo run -p atlas-ui-tooling -- generate-agent-manifest`".into());
         }
     } else {
