@@ -22,8 +22,6 @@
 
 <p align="center"><sub><strong>AI-agent friendly</strong> · Structured manifests, documented contracts, and deterministic validation for human–AI collaboration. <a href="docs/AI_INTEGRATION_GUIDE.md">Agent guide</a></sub></p>
 
-> **Writing Rust is great, pairing it with a modern interface for your applications is even better.**
-
 Atlas UI is a native component library and visual foundation for **Rust and
 Slint**. It gives Slint an industrialized layer comparable to mature web design
 systems and frontend libraries: tokens, a grid, coherent components, responsive
@@ -61,8 +59,6 @@ readable, responsive, and production-ready. Applications keep control of their
 identity and domain behavior, while Atlas supplies the visual grammar and
 industrial foundations needed to avoid rebuilding the same UI rules on every
 screen or in every Rust project.
-
-> **One native Rust and Slint design system. Endless visual possibilities.**
 
 ![Atlas UI architecture: Tokens flow through Core and Components into Applications; Icons support Components, Documents support Applications, Gallery and Testing validate the system, and Slint provides the common language, runtime, and rendering foundation.](assets/architecture/atlas-ui-architecture.png)
 
