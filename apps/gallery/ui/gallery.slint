@@ -1,20 +1,22 @@
 import { ScrollView } from "std-widgets.slint";
 import {
-    AtlasPalette, AtlasTheme, AtlasGrid, AtlasShape, AtlasDensity, AtlasTypography,
-    Density, AtlasButton, ButtonTone, AtlasTextField, AtlasCheckbox,
+    AtlasPalette, AtlasTheme, AtlasCategoryTokens, AtlasGrid, AtlasShape, AtlasDensity, AtlasTypography,
+    Density, AtlasButton, ButtonTone, AtlasIconButton, IconButtonTone, AtlasTextField, AtlasCheckbox,
     AtlasSwitch, SwitchTone, AtlasBadge, BadgeTone, AtlasIcon, IconName, IconTone, Surface,
-    AtlasTab, TabVariant, AtlasTooltip, TooltipTone, TooltipPlacement, AtlasMenu, MenuItem,
+    AtlasTab, AtlasWorkspaceTab, AtlasWorkspaceTabList, TabVariant, AtlasTooltip, TooltipTone, TooltipPlacement, AtlasMenu, MenuItem,
     AtlasModal, ModalSize, ContentFrame, LayoutGridOverlay
     , AtlasDataTable, AtlasSkeleton, AtlasEmptyState, AtlasErrorState,
-    DataColumn, DataRow, DataViewState, CellEditorKind, ColumnPin
-    , AtlasPanel, AtlasMetricCard, AtlasSelectField, AtlasProgressBar, ProgressTone,
+    DataColumn, DataRow, DataViewState, DataCellKind, DataCellAlignment,
+    CellEditorKind, ColumnPin
+    , AtlasPanel, AtlasMetricCard, AtlasSelectField, AtlasSpinner, AtlasProgressBar, AtlasRadialProgress, ProgressTone,
     AtlasRangeControl, AtlasPagination, AtlasKeyValueList, KeyValueItem, ValueTone
     , AtlasSparkline, SparklineTone, AtlasInlineAlert, AlertTone, AtlasNoticeStack,
     NoticeItem, NoticeTone, AtlasWorkflowBanner, AtlasStepper, StepItem,
     AtlasDrawer, DrawerSide, AtlasErrorPage
     , AtlasHeading, AtlasParagraph, AtlasStyledText, AtlasSelectableText, AtlasInlineCode, AtlasCodeBlock,
     AtlasBlockQuote, AtlasDivider, HeadingLevel, EditorialTone, EditorialEmphasis
-    , AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
+    , AtlasEdgeSurface, DividerEdge, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
+    AtlasColumnGrid, AtlasGridItem,
     AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane, AtlasResizeHandle, AtlasStickyRegion,
     LayoutGap, SplitOrientation, StickyEdge
     , AtlasAdmonition, AtlasCallout, AtlasLink, AtlasLinkCard, AtlasRichText, AtlasDocumentList,
@@ -312,6 +314,7 @@ export component Gallery inherits Window {
                     : root.preview-page == "editorial" ? "ATLAS UI EDITORIAL SYSTEM"
                     : root.preview-page == "final" ? "ATLAS UI FINAL MIGRATION"
                     : root.preview-page == "wave" ? "ATLAS UI COMPONENT WAVE"
+                    : root.preview-page == "data-rich" ? "RESPONSIVE ACCESS MATRIX"
                     : root.preview-page == "data" ? "ATLAS UI DATA SYSTEM"
                     : root.preview-page == "navigation" ? "ATLAS UI OVERLAYS & NAVIGATION"
                     : root.preview-page == "components" ? "ATLAS UI COMPONENTS"
@@ -322,7 +325,7 @@ export component Gallery inherits Window {
                 font-weight: AtlasTypography.weight-bold;
             }
             Text {
-                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
+                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "data-rich" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
                 height: self.visible ? AtlasTypography.line-body : AtlasGrid.zero;
                 text: root.preview-page == "components"
                     ? "Shared foundations → consistent contracts → production-ready composition"
@@ -358,6 +361,19 @@ export component Gallery inherits Window {
                 ColorSwatch { horizontal-stretch: 1; label: "warning"; swatch: AtlasTheme.warning; foreground: AtlasTheme.on-warning; }
                 ColorSwatch { horizontal-stretch: 1; label: "danger"; swatch: AtlasTheme.danger; foreground: AtlasTheme.on-danger; }
                 ColorSwatch { horizontal-stretch: 1; label: "info"; swatch: AtlasTheme.info; foreground: AtlasTheme.on-info; }
+            }
+
+            SectionLabel { visible: root.preview-page == "foundations"; text: "CATEGORICAL IDENTITY · NEVER STATUS"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            HorizontalLayout {
+                visible: root.preview-page == "foundations";
+                height: self.visible ? AtlasGrid.space-12 : AtlasGrid.zero;
+                spacing: AtlasGrid.space-2;
+                ColorSwatch { horizontal-stretch: 1; label: "category-1"; swatch: AtlasCategoryTokens.category-1; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "category-2"; swatch: AtlasCategoryTokens.category-2; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "category-3"; swatch: AtlasCategoryTokens.category-3; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "category-4"; swatch: AtlasCategoryTokens.category-4; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "category-5"; swatch: AtlasCategoryTokens.category-5; foreground: AtlasTheme.canvas; }
+                ColorSwatch { horizontal-stretch: 1; label: "category-6"; swatch: AtlasCategoryTokens.category-6; foreground: AtlasTheme.canvas; }
             }
 
             SectionLabel { visible: root.preview-page == "foundations"; text: "DENSITY MATRIX"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
@@ -485,7 +501,7 @@ export component Gallery inherits Window {
             }
 
             Text {
-                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
+                visible: root.preview-page != "components" && root.preview-page != "navigation" && root.preview-page != "data" && root.preview-page != "data-rich" && root.preview-page != "wave" && root.preview-page != "final" && root.preview-page != "editorial" && root.preview-page != "typography-stress" && root.preview-page != "icons" && root.preview-page != "responsive" && root.preview-page != "rich-content";
                 height: self.visible ? self.preferred-height : AtlasGrid.zero;
                 text: root.preview-page == "interactions"
                     ? "Accessible role + name + default action · reduced motion resolves durations to zero"
@@ -521,6 +537,18 @@ export component Gallery inherits Window {
                 AtlasButton { text: "Danger"; tone: ButtonTone.danger; }
                 AtlasButton { text: "Loading"; loading: true; }
                 AtlasButton { text: "Disabled"; enabled: false; }
+                Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            SectionLabel { text: "ICON BUTTONS · POINTER TARGETS · FOCUS"; height: AtlasGrid.space-4; }
+            HorizontalLayout {
+                height: AtlasDensity.control-height-comfortable;
+                spacing: AtlasGrid.space-3;
+                AtlasIconButton { icon-name: IconName.add; accessible-label: "Add item"; }
+                AtlasIconButton { icon-name: IconName.play; accessible-label: "Start"; tone: IconButtonTone.primary; }
+                AtlasIconButton { icon-name: IconName.stop; accessible-label: "Stop"; tone: IconButtonTone.danger; preview-focus-visible: true; }
+                AtlasIconButton { icon-name: IconName.grid; accessible-label: "Grid selected"; toggle: true; selected: true; }
+                AtlasIconButton { icon-name: IconName.refresh; accessible-label: "Loading metrics"; loading: true; }
+                AtlasIconButton { icon-name: IconName.close; accessible-label: "Unavailable close"; enabled: false; }
                 Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
             }
             SectionLabel { text: "TEXT FIELDS"; height: AtlasGrid.space-4; }
@@ -576,6 +604,18 @@ export component Gallery inherits Window {
                 font-size: AtlasTypography.size-body; height: AtlasGrid.space-5;
             }
             SectionLabel { text: "TABS · ROVING FOCUS CONTRACT"; height: AtlasGrid.space-4; }
+            workspace-tabs := AtlasWorkspaceTabList {
+                height: AtlasDensity.row-height;
+                accessible-label: "Workspace tabs";
+                tab-count: 3; selected-index: 0;
+                overview-workspace-tab := AtlasWorkspaceTab { tab-id: "overview"; text: "Overview"; selected: true; closable: true; active-in-roving-group: true; index: 0; count: 3; preview-focus-visible: true; }
+                terminal-workspace-tab := AtlasWorkspaceTab { tab-id: "terminal"; text: "Terminal session with a deliberately long label"; closable: true; dirty: true; index: 1; count: 3; }
+                AtlasWorkspaceTab { tab-id: "disabled"; text: "Disabled"; enabled: false; closable: true; index: 2; count: 3; }
+                focus-requested(index) => {
+                    if (index == 0) { overview-workspace-tab.focus-from-group(); }
+                    if (index == 1) { terminal-workspace-tab.focus-from-group(); }
+                }
+            }
             HorizontalLayout {
                 height: AtlasDensity.row-height; spacing: AtlasGrid.space-2;
                 AtlasTab { text: "Overview"; selected: true; active-in-roving-group: true; index: 0; count: 4; preview-focus-visible: true; }
@@ -662,6 +702,74 @@ export component Gallery inherits Window {
             }
         }
     }
+    if root.preview-page == "data-rich": Rectangle {
+        x: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-3 : AtlasGrid.space-8;
+        y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4;
+        width: parent.width - self.x * 2;
+        height: parent.height - self.y - AtlasGrid.space-6;
+        background: AtlasTheme.transparent;
+        VerticalLayout {
+            spacing: AtlasGrid.space-5;
+            Text {
+                height: AtlasTypography.line-body;
+                text: "Shared column tracks → rich cells → controlled access state";
+                color: AtlasTheme.content-secondary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body;
+                overflow: elide;
+            }
+            SectionLabel {
+                text: "ACCESS CONTROL · RESPONSIVE ALLOCATION · SEMANTIC CARDS";
+                height: AtlasGrid.space-4;
+            }
+            access-table := AtlasDataTable {
+                vertical-stretch: 1;
+                label: "Access-control matrix";
+                focused-row: 1;
+                rich-rows: true;
+                compact: root.width < AtlasGrid.breakpoint-compact;
+                columns: [
+                    { id: "role", label: "ROLE", width: 190px, min-width: 160px, max-width: 1000px, grow: 19, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.start },
+                    { id: "scope", label: "SCOPE", width: 160px, min-width: 140px, max-width: 1000px, grow: 16, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+                    { id: "rights", label: "EFFECTIVE RIGHTS", width: 240px, min-width: 220px, max-width: 1200px, grow: 24, resizable: true, sortable: false, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+                    { id: "custody", label: "RECOMMENDED CUSTODY", width: 290px, min-width: 240px, max-width: 1400px, grow: 29, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+                    { id: "status", label: "STATUS", width: 120px, min-width: 110px, max-width: 700px, grow: 12, resizable: false, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.end }
+                ];
+                rows: [
+                    {
+                        id: "contract-admin", selected: true, expanded: false, disabled: false, detail: "",
+                        cells: [
+                            { column-id: "role", text: "EVM, Contract administrator", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "Contract administrator", secondary-text: "", badge-text: "EVM", badge-tone: BadgeTone.info, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "scope", text: "All EVM contracts", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.text, alignment: DataCellAlignment.start, wrap: true },
+                            { column-id: "rights", text: "Read, propose, execute", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.tags, tags: [{ text: "READ", tone: BadgeTone.neutral }, { text: "PROPOSE", tone: BadgeTone.info }, { text: "EXECUTE", tone: BadgeTone.warning }], alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "custody", text: "COLD, 3 of 5 hardware multisig", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "", secondary-text: "3 of 5 hardware multisig", badge-text: "COLD", badge-tone: BadgeTone.info, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "status", text: "Active", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.badge, badge-text: "ACTIVE", badge-tone: BadgeTone.healthy, alignment: DataCellAlignment.start, wrap: false }
+                        ]
+                    },
+                    {
+                        id: "shielded-operator", selected: false, expanded: false, disabled: false, detail: "",
+                        cells: [
+                            { column-id: "role", text: "AZTEC, Shielded operator", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "Shielded operator", secondary-text: "", badge-text: "AZTEC", badge-tone: BadgeTone.live, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "scope", text: "Private execution", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.text, alignment: DataCellAlignment.start, wrap: true },
+                            { column-id: "rights", text: "Read, attest", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.tags, tags: [{ text: "READ", tone: BadgeTone.neutral }, { text: "ATTEST", tone: BadgeTone.live }], alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "custody", text: "WARM, Isolated signing service", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "", secondary-text: "Isolated signing service", badge-text: "WARM", badge-tone: BadgeTone.warning, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "status", text: "Review", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.badge, badge-text: "REVIEW", badge-tone: BadgeTone.warning, alignment: DataCellAlignment.start, wrap: false }
+                        ]
+                    },
+                    {
+                        id: "incident-responder", selected: false, expanded: false, disabled: false, detail: "",
+                        cells: [
+                            { column-id: "role", text: "EVM, Incident responder", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "Incident responder", secondary-text: "", badge-text: "EVM", badge-tone: BadgeTone.info, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "scope", text: "Emergency only", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.text, alignment: DataCellAlignment.start, wrap: true },
+                            { column-id: "rights", text: "Pause, revoke", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.tags, tags: [{ text: "PAUSE", tone: BadgeTone.warning }, { text: "REVOKE", tone: BadgeTone.danger }], alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "custody", text: "HOT, Monitored break-glass signer", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.stacked-with-badge, primary-text: "", secondary-text: "Monitored break-glass signer", badge-text: "HOT", badge-tone: BadgeTone.danger, alignment: DataCellAlignment.start, wrap: false },
+                            { column-id: "status", text: "Guarded", accessible-text: "", tooltip: "", editable: false, kind: DataCellKind.badge, badge-text: "GUARDED", badge-tone: BadgeTone.danger, alignment: DataCellAlignment.start, wrap: false }
+                        ]
+                    }
+                ];
+            }
+        }
+    }
     if root.preview-page == "wave": Rectangle {
         x: frame.content-x; y: AtlasGrid.space-12 * 2 + AtlasGrid.space-4; width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
         background: AtlasTheme.transparent;
@@ -672,7 +780,30 @@ export component Gallery inherits Window {
                 AtlasMetricCard { horizontal-stretch: 1; label: "Monthly spend"; value: "€ 12,480"; meta: "72% of budget"; tone: ValueTone.accent; }
                 AtlasSelectField { horizontal-stretch: 1; label: "Environment"; value: "Production"; hint: "Bounded option set"; required: true; }
             }
-            AtlasProgressBar { label: "Deployment"; value: 72; meta: "72 / 100"; tone: ProgressTone.success; }
+            HorizontalLayout { height: AtlasGrid.space-12 * 2; spacing: AtlasGrid.space-5;
+                AtlasProgressBar { horizontal-stretch: 1; label: "Deployment"; value: 72; meta: "72 / 100"; tone: ProgressTone.success; }
+                AtlasRadialProgress { label: "Deployment"; value: 72; tone: ProgressTone.success; }
+            }
+            SectionLabel { text: "INDETERMINATE · EXPLICIT ACCESSIBLE NAME AND VALUE"; height: AtlasGrid.space-4; }
+            HorizontalLayout { height: AtlasGrid.space-8; spacing: AtlasGrid.space-3; alignment: center;
+                AtlasSpinner { label: "Workspace synchronization"; value-text: "Checking remote state"; }
+                Text {
+                    width: AtlasGrid.column-min-width * 2;
+                    text: "Checking remote state";
+                    color: AtlasTheme.content-secondary;
+                    font-family: AtlasTypography.font-sans;
+                    font-size: AtlasTypography.size-body-small;
+                    vertical-alignment: center;
+                }
+                AtlasProgressBar {
+                    width: AtlasGrid.column-min-width * 4;
+                    horizontal-stretch: 1;
+                    label: "Workspace synchronization";
+                    value-text: "Checking remote state";
+                    indeterminate: true;
+                    show-labels: false;
+                }
+            }
             AtlasRangeControl { label: "Traffic allocation"; value: 65; unit: "%"; }
             AtlasPagination { page: 4; page-count: 12; }
             AtlasKeyValueList { title: "Runtime facts"; items: [{ label: "Region", value: "eu-west-3", tone: ValueTone.neutral, mono: true }, { label: "Health", value: "Operational", tone: ValueTone.positive, mono: false }, { label: "Error budget", value: "18 min", tone: ValueTone.negative, mono: true }]; }
@@ -806,6 +937,20 @@ export component Gallery inherits Window {
                     IconPreview { icon-name: IconName.chevron-down; label: "chevron-down"; }
                     IconPreview { icon-name: IconName.none; label: "none"; }
                 }
+                Row {
+                    IconPreview { icon-name: IconName.grid; label: "grid"; }
+                    IconPreview { icon-name: IconName.terminal; label: "terminal"; }
+                    IconPreview { icon-name: IconName.gamepad; label: "gamepad"; }
+                    IconPreview { icon-name: IconName.cpu; label: "cpu"; }
+                    IconPreview { icon-name: IconName.memory; label: "memory"; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.play; label: "play"; tone: IconTone.success; }
+                    IconPreview { icon-name: IconName.stop; label: "stop"; tone: IconTone.danger; }
+                    IconPreview { icon-name: IconName.chevron-right; label: "chevron-right"; }
+                    IconPreview { icon-name: IconName.layers; label: "layers"; tone: IconTone.accent; }
+                    IconPreview { icon-name: IconName.add; label: "decorative-example"; }
+                }
             }
         }
     }
@@ -821,15 +966,17 @@ export component Gallery inherits Window {
                 AtlasStack { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 + AtlasGrid.space-6 : AtlasGrid.space-12 * 3; gap: LayoutGap.compact;
                     RecipeCard { height: AtlasGrid.space-10; label: "Vertical rhythm"; }
                     AtlasCluster { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 + AtlasGrid.space-6 : AtlasGrid.space-12; gap: LayoutGap.compact;
-                        AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "Wrap aware"; tone: BadgeTone.healthy; }
-                        AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "Intrinsic"; tone: BadgeTone.info; }
+                        AtlasBadge { text: "Wrap aware"; tone: BadgeTone.healthy; }
+                        AtlasBadge { text: "Intrinsic"; tone: BadgeTone.info; }
                         AtlasButton { width: AtlasGrid.column-min-width * 2; text: "Action"; }
                     }
                     RecipeCard { height: AtlasGrid.space-10; label: "Shared gap tokens"; }
                 }
                 AtlasHeading { height: AtlasTypography.line-heading-small; text: "Sidebar and switcher"; level: HeadingLevel.h4; }
                 AtlasSidebar { height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 4 + AtlasGrid.space-2 : AtlasGrid.space-12 * 2; reference-width: root.width; gap: LayoutGap.compact;
-                    RecipeCard { flex-basis: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 2 : AtlasGrid.column-min-width * 3; flex-grow: 0; label: "Navigation"; }
+                    AtlasEdgeSurface { flex-basis: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 2 : AtlasGrid.column-min-width * 3; flex-grow: 0; divider-edge: root.width < AtlasGrid.breakpoint-wide ? DividerEdge.bottom : DividerEdge.right; background: AtlasTheme.transparent;
+                        Text { x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-6; text: "Navigation · divider only"; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; }
+                    }
                     RecipeCard { flex-grow: 1; label: root.width < AtlasGrid.breakpoint-wide ? "Main content · stacked" : "Main content · adjacent"; }
                 }
                 AtlasSwitcher { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 : AtlasGrid.space-12; reference-width: root.width; gap: LayoutGap.compact;
@@ -845,6 +992,28 @@ export component Gallery inherits Window {
                     RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 4"; }
                     RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 5"; }
                     RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 6"; }
+                }
+                AtlasHeading { height: AtlasTypography.line-heading-small; text: "12-column grid"; level: HeadingLevel.h4; }
+                columns := AtlasColumnGrid {
+                    height: root.width < AtlasGrid.breakpoint-compact
+                        ? AtlasGrid.space-12 * 4 + AtlasGrid.gutter-compact
+                        : AtlasGrid.space-12 * 2;
+                    reference-width: self.width;
+                    gap: LayoutGap.compact;
+                    AtlasGridItem {
+                        height: AtlasGrid.space-12 * 2;
+                        reference-width: columns.reference-width;
+                        compact-span: 12; normal-span: 8; wide-span: 7;
+                        gap: columns.gap;
+                        RecipeCard { width: parent.width; height: parent.height; label: "Primary · 12 / 8 / 7"; }
+                    }
+                    AtlasGridItem {
+                        height: AtlasGrid.space-12 * 2;
+                        reference-width: columns.reference-width;
+                        compact-span: 12; normal-span: 4; wide-span: 5;
+                        gap: columns.gap;
+                        RecipeCard { width: parent.width; height: parent.height; label: "Aside · 12 / 4 / 5"; }
+                    }
                 }
             }
         }
@@ -1096,7 +1265,7 @@ export component Gallery inherits Window {
                             title: "Recommended foundation";
                             body: "Start with tokens and recipes before composing a product-specific template.";
                             action-id: "open-foundations"; action-label: "Open guide";
-                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "COMPOSABLE"; tone: BadgeTone.healthy; }
+                            AtlasBadge { text: "COMPOSABLE"; tone: BadgeTone.healthy; }
                         }
                         AtlasCallout {
                             flex-basis: callout-grid.item-basis; flex-grow: 1;
@@ -1105,7 +1274,7 @@ export component Gallery inherits Window {
                             title: "External boundary";
                             body: "The host must confirm policy before resolving a destination outside the application.";
                             action-id: "review-policy"; action-label: "Review policy";
-                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "CONTROLLED"; tone: BadgeTone.warning; }
+                            AtlasBadge { text: "CONTROLLED"; tone: BadgeTone.warning; }
                         }
                         AtlasCallout {
                             flex-basis: callout-grid.item-basis; flex-grow: 1;
@@ -1113,7 +1282,7 @@ export component Gallery inherits Window {
                             tone: AdmonitionTone.note;
                             title: "Slot content";
                             body: "Applications may add badges or compact supporting content without restyling the frame.";
-                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "NO ACTION"; tone: BadgeTone.neutral; }
+                            AtlasBadge { text: "NO ACTION"; tone: BadgeTone.neutral; }
                         }
                         AtlasCallout {
                             flex-basis: callout-grid.item-basis; flex-grow: 1;
@@ -1122,7 +1291,7 @@ export component Gallery inherits Window {
                             title: "Unavailable action";
                             body: "Disabled callout actions stay visible but cannot emit an intention.";
                             action-id: "blocked"; action-label: "Unavailable"; action-enabled: false;
-                            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "DISABLED"; tone: BadgeTone.danger; }
+                            AtlasBadge { text: "DISABLED"; tone: BadgeTone.danger; }
                         }
                     }
                 }
@@ -1264,7 +1433,7 @@ export component Gallery inherits Window {
                             meta: "request 41 · superseded by request 42";
                             VerticalLayout {
                                 padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
-                                AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "STALE"; tone: BadgeTone.warning; }
+                                AtlasBadge { text: "STALE"; tone: BadgeTone.warning; }
                                 AtlasParagraph {
                                     height: AtlasTypography.line-body * 2;
                                     text: "Late content is discarded before it can replace the active document.";
@@ -1284,7 +1453,7 @@ export component Gallery inherits Window {
                             meta: "guide / en / v3 · shared allocation";
                             VerticalLayout {
                                 padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
-                                AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "READY"; tone: BadgeTone.healthy; }
+                                AtlasBadge { text: "READY"; tone: BadgeTone.healthy; }
                                 AtlasParagraph {
                                     height: AtlasTypography.line-body * 3;
                                     text: "The cached source is reused through Arc<str>; parsing and rendering remain separate stages.";
@@ -1312,7 +1481,7 @@ export component Gallery inherits Window {
                     tone: AdmonitionTone.caution;
                     title: "Budgets and obsolescence";
                     body: "Default limits: 64 revisions, 8 MiB cache, 512 KiB per source. A newer route or cancellation makes every late completion stale.";
-                    AtlasBadge { width: AtlasGrid.column-min-width * 2; text: "BOUNDED"; tone: BadgeTone.warning; }
+                    AtlasBadge { text: "BOUNDED"; tone: BadgeTone.warning; }
                 }
             }
         }
@@ -1875,10 +2044,6 @@ export component Gallery inherits Window {
                     ? AtlasGrid.space-3
                     : AtlasGrid.space-4;
                 AtlasBadge {
-                    width: root.preview-page == "documentation-scroll-sync"
-                            || root.preview-page == "documentation-viewport"
-                        ? AtlasGrid.column-min-width * 4
-                        : AtlasGrid.column-min-width * 2;
                     text: root.preview-page == "documentation-scroll-sync"
                         ? (root.width >= AtlasGrid.breakpoint-wide
                             ? "USER SCROLL · REPLACE ANCHOR"
@@ -2120,7 +2285,7 @@ export component Gallery inherits Window {
                     meta: "preference=system · platform signal applied live";
                     VerticalLayout {
                         padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
-                        AtlasBadge { width: AtlasGrid.column-min-width * 3; text: GallerySettings.system-dark ? "SYSTEM DARK" : "SYSTEM LIGHT"; tone: BadgeTone.info; }
+                        AtlasBadge { text: GallerySettings.system-dark ? "SYSTEM DARK" : "SYSTEM LIGHT"; tone: BadgeTone.info; }
                         AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Semantic canvas, surface, content, border and focus tokens update together."; }
                     }
                 }

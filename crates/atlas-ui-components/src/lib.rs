@@ -20,3 +20,6 @@ pub fn dependency_ui_paths() -> [PathBuf; 3] {
 
 /// Public Slint facade filename.
 pub const FACADE: &str = "components.slint";
+
+/// Non-responsive preview Slint facade filename.
+pub const NONRESPONSIVE_PREVIEW_FACADE: &str = "preview-nonresponsive.slint";

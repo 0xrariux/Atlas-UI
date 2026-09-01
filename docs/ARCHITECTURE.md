@@ -28,11 +28,15 @@ icons are licensed under CC0-1.0.
 
 This layer composes tokens, core, and icons into the user-facing API. It
 contains controls, navigation, data presentation, editorial content,
-documentation, and templates. Three facades define the contract:
+documentation, and templates. Four facades define the contract:
 
-- `stable.slint`: 48 symbols guaranteed by SemVer;
-- `preview.slint`: 110 evolving symbols;
-- `components.slint`: compatibility aggregate.
+- `stable.slint`: 57 symbols guaranteed by SemVer;
+- `preview-nonresponsive.slint`: evolving symbols without experimental Slint
+  dependencies;
+- `preview.slint`: 115 evolving symbols, plus compatibility re-exports for
+  contracts promoted from preview; it also loads responsive contracts;
+- `components.slint`: stable-plus-preview compatibility aggregate, which also
+  loads responsive contracts.
 
 ## 5. Documents — `atlas-ui-documents`
 

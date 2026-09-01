@@ -1,0 +1,54 @@
+import {
+    AtlasTheme, AtlasShape, AtlasTypography, AtlasMotion, AtlasSettings, MotionPreference
+} from "@atlas-ui-tokens/tokens.slint";
+
+// Compact indeterminate progress for controls and small status surfaces. The
+// static reduced-motion arc remains visibly incomplete instead of implying a
+// determinate value or completion.
+export component AtlasSpinner inherits Rectangle {
+    in property <string> label;
+    in property <string> value-text: "In progress";
+    in property <color> indicator-color: AtlasTheme.info;
+    in property <length> size: AtlasTypography.size-title-small;
+
+    width: root.size;
+    height: root.size;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.progress-indicator;
+    accessible-label: root.label;
+    accessible-value: root.value-text;
+
+    Path {
+        private property <float> radius: 42;
+        private property <float> start: AtlasSettings.motion == MotionPreference.reduced
+            ? 0.08 : 1 * mod(animation-tick(), AtlasMotion.spinner-cycle) / AtlasMotion.spinner-cycle;
+        private property <float> progress: AtlasSettings.motion == MotionPreference.reduced
+            ? 0.72 : min(0.82, max(0.28,
+                1 * abs(sin(360deg * animation-tick() / AtlasMotion.indeterminate-cycle))));
+
+        width: 100%;
+        height: 100%;
+        viewbox-width: 100;
+        viewbox-height: 100;
+        fill: AtlasTheme.transparent;
+        stroke: root.indicator-color;
+        stroke-width: root.size * 0.12;
+        stroke-line-cap: round;
+        MoveTo {
+            x: 50 - parent.radius * sin(-(parent.start - 0.001) * 360deg);
+            y: 50 - parent.radius * cos(-(parent.start - 0.001) * 360deg);
+        }
+        LineTo {
+            x: 50 - parent.radius * sin(-parent.start * 360deg);
+            y: 50 - parent.radius * cos(-parent.start * 360deg);
+        }
+        ArcTo {
+            radius-x: parent.radius;
+            radius-y: parent.radius;
+            x: 50 - parent.radius * sin(-(parent.start + parent.progress) * 360deg);
+            y: 50 - parent.radius * cos(-(parent.start + parent.progress) * 360deg);
+            sweep: parent.progress > 0;
+            large-arc: parent.progress > 0.5;
+        }
+    }
+}

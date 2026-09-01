@@ -1,5 +1,6 @@
-import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
-import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasMotion } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/stable.slint";
 
 export enum TabVariant { global, view }
 
@@ -23,8 +24,13 @@ export component AtlasTab inherits Rectangle {
     border-radius: AtlasShape.radius-control;
     border-width: root.selected ? AtlasShape.border-width : AtlasGrid.zero;
     border-color: root.selected ? AtlasTheme.info : AtlasTheme.transparent;
-    background: root.selected ? AtlasTheme.surface-selected : action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+    background: root.selected ? AtlasTheme.surface-selected
+        : action.pressed ? AtlasTheme.surface-pressed
+        : action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
     opacity: root.enabled ? 1 : 0.55;
+    animate background { duration: AtlasMotion.fast; }
+    animate border-color { duration: AtlasMotion.fast; }
+    animate opacity { duration: AtlasMotion.fast; }
     accessible-role: AccessibleRole.tab;
     accessible-label: root.text;
     accessible-enabled: root.enabled;
@@ -66,4 +72,205 @@ export component AtlasTabPanel inherits Rectangle {
     accessible-role: AccessibleRole.tab-panel;
     accessible-label: root.accessible-name;
     background: AtlasTheme.transparent;
+}
+
+// Workspace tabs add close and dirty-state behavior without changing the
+// preview AtlasTab contract. Delete requests close; Backspace is unclaimed.
+export component AtlasWorkspaceTab inherits Rectangle {
+    in property <string> tab-id;
+    in property <string> text;
+    in property <bool> selected: false;
+    in property <bool> enabled: true;
+    in property <bool> dirty: false;
+    in property <bool> closable: false;
+    in property <bool> active-in-roving-group: false;
+    in property <int> index: 0;
+    in property <int> count: 1;
+    in property <string> automation-id: "atlas-workspace-tab-" + root.tab-id;
+    in property <bool> preview-focus-visible: false;
+    in property <bool> preview-close-focus-visible: false;
+    callback activated();
+    callback close-requested();
+    callback navigation-requested(int);
+
+    height: AtlasDensity.row-height;
+    min-width: AtlasGrid.column-min-width * 2;
+    max-width: AtlasGrid.column-min-width * 4;
+    horizontal-stretch: 0;
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+    animate opacity { duration: AtlasMotion.fast; }
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: root.text + " workspace tab controls";
+
+    tab-target := Rectangle {
+        width: root.width - (root.closable ? AtlasDensity.pointer-target-min : AtlasGrid.zero);
+        height: parent.height;
+        border-radius: AtlasShape.radius-control;
+        border-width: root.selected ? AtlasShape.border-width : AtlasGrid.zero;
+        border-color: root.selected ? AtlasTheme.info : AtlasTheme.transparent;
+        background: root.selected ? AtlasTheme.surface-selected
+            : tab-action.pressed ? AtlasTheme.surface-pressed
+            : tab-action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+        animate background { duration: AtlasMotion.fast; }
+        animate border-color { duration: AtlasMotion.fast; }
+        accessible-role: AccessibleRole.tab;
+        accessible-label: root.text;
+        accessible-description: root.dirty ? "Unsaved changes" : "";
+        accessible-enabled: root.enabled;
+        accessible-item-selectable: true;
+        accessible-item-selected: root.selected;
+        accessible-item-index: root.index;
+        accessible-item-count: root.count;
+        accessible-id: root.automation-id;
+        accessible-action-default => { tab-action.trigger(); }
+
+        Text {
+            x: AtlasGrid.space-3;
+            width: parent.width - AtlasGrid.space-6
+                - (root.dirty ? AtlasGrid.space-3 : AtlasGrid.zero);
+            text: root.text;
+            color: root.selected ? AtlasTheme.content-primary : AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            font-weight: AtlasTypography.weight-semibold;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        if root.dirty: Rectangle {
+            x: parent.width - AtlasGrid.space-4;
+            y: (parent.height - AtlasGrid.space-2) / 2;
+            width: AtlasGrid.space-2;
+            height: AtlasGrid.space-2;
+            border-radius: AtlasShape.radius-round;
+            background: AtlasTheme.warning;
+            accessible-role: AccessibleRole.none;
+        }
+        FocusRing {
+            x: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            y: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            width: parent.width + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            height: parent.height + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            active: tab-action.focus-visible || root.preview-focus-visible;
+        }
+        tab-action := ActionArea {
+            enabled: root.enabled;
+            selected: root.selected;
+            focus-on-tab-navigation: root.active-in-roving-group;
+            accessible-name: root.text;
+            automation-id: root.automation-id;
+            activated => { root.activated(); }
+            navigation-requested(direction) => { root.navigation-requested(direction); }
+            removal-requested => { if (root.closable) { root.close-requested(); } }
+        }
+    }
+
+    if root.closable: close-target := Rectangle {
+        x: root.width - AtlasDensity.pointer-target-min;
+        width: AtlasDensity.pointer-target-min;
+        height: parent.height;
+        border-radius: AtlasShape.radius-control;
+        background: close-action.pressed ? AtlasTheme.surface-pressed
+            : close-action.hovered ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+        animate background { duration: AtlasMotion.fast; }
+        accessible-role: AccessibleRole.button;
+        accessible-label: "Close " + root.text;
+        accessible-description: root.dirty ? "Tab has unsaved changes" : "";
+        accessible-enabled: root.enabled;
+        accessible-id: root.automation-id + "-close";
+        accessible-action-default => { close-action.trigger(); }
+        AtlasIcon {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            size: AtlasGrid.space-4;
+            name: IconName.close;
+            icon-color: root.dirty ? AtlasTheme.warning : AtlasTheme.content-secondary;
+            decorative: true;
+        }
+        FocusRing {
+            x: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            y: -(AtlasShape.focus-offset + AtlasShape.focus-width);
+            width: parent.width + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            height: parent.height + (AtlasShape.focus-offset + AtlasShape.focus-width) * 2;
+            active: close-action.focus-visible || root.preview-close-focus-visible;
+        }
+        close-action := ActionArea {
+            enabled: root.enabled;
+            focus-on-tab-navigation: false;
+            accessible-name: "Close " + root.text;
+            automation-id: root.automation-id + "-close";
+            activated => { root.close-requested(); }
+        }
+    }
+
+    public function focus-from-group() { tab-action.focus-from-keyboard(); }
+}
+
+// Controlled tab-list coordinator. Applications wire each tab's index to the
+// request functions and call the matching tab's focus-from-group function when
+// focus-requested fires. Selection and model mutation remain host-owned.
+export component AtlasWorkspaceTabList inherits Rectangle {
+    in property <int> tab-count: 0;
+    in property <int> selected-index: -1;
+    in-out property <int> active-index: root.selected-index >= 0 ? root.selected-index : 0;
+    in property <bool> wrap-navigation: true;
+    out property <bool> overflowed: content.preferred-width > root.width;
+    callback activated(int);
+    callback close-requested(int);
+    callback focus-requested(int);
+    callback overflow-requested();
+
+    height: AtlasDensity.row-height;
+    background: AtlasTheme.transparent;
+    clip: true;
+    accessible-role: AccessibleRole.tab-list;
+    accessible-item-count: root.tab-count;
+
+    content := HorizontalLayout {
+        spacing: AtlasGrid.space-1;
+        @children
+    }
+
+    function move-to(index: int) {
+        if (root.tab-count <= 0) { return; }
+        root.active-index = max(0, min(root.tab-count - 1, index));
+        root.focus-requested(root.active-index);
+    }
+
+    public function navigate(direction: int) {
+        if (root.tab-count <= 0) { return; }
+        if (direction == -2) { root.move-to(0); return; }
+        if (direction == 2) { root.move-to(root.tab-count - 1); return; }
+        if (direction < 0) {
+            root.move-to(root.active-index <= 0 && root.wrap-navigation
+                ? root.tab-count - 1 : root.active-index - 1);
+            return;
+        }
+        if (direction > 0) {
+            root.move-to(root.active-index + 1 >= root.tab-count && root.wrap-navigation
+                ? 0 : root.active-index + 1);
+        }
+    }
+
+    public function request-activation(index: int) {
+        if (index < 0 || index >= root.tab-count) { return; }
+        root.active-index = index;
+        root.activated(index);
+    }
+
+    public function request-close(index: int) {
+        if (index >= 0 && index < root.tab-count) { root.close-requested(index); }
+    }
+
+    // Call after the host accepts a close and updates its tab model. The newly
+    // selected tab wins; otherwise focus stays at the nearest surviving index.
+    public function settle-after-close(closed-index: int, remaining-count: int, new-selected-index: int) {
+        if (remaining-count <= 0) { root.active-index = 0; return; }
+        root.move-to(new-selected-index >= 0
+            ? new-selected-index : min(closed-index, remaining-count - 1));
+    }
+
+    public function request-overflow-menu() {
+        if (root.overflowed) { root.overflow-requested(); }
+    }
 }

@@ -12,6 +12,7 @@ technical context for coding agents.
 - Machine-readable API catalog and signatures: `docs/atlas-ui-agent-manifest.json`
 - Manifest schema and query guide: `docs/AGENT_MANIFEST.md`
 - Deterministic integration procedure: `docs/AGENT_QUICKSTART.md`
+- Visual generation and external-consumer handoff: `docs/AGENT_VISUAL_WORKFLOW.md`
 - Human component index: `docs/AGENT_COMPONENT_INDEX.md`
 - Compiled consumer: `examples/getting-started`
 - Native gallery: `apps/gallery`
@@ -28,6 +29,10 @@ technical context for coding agents.
 - Slint is pinned in the workspace `Cargo.toml`.
 - Consumer markup imports Atlas through the named `@atlas-ui` library configured
   by `atlas_ui::slint_library_paths()`.
+- A dependency path provides API access, not product art direction. Before
+  generating a complete screen, obtain a visual reference and target viewports,
+  then capture and inspect the rendered consumer as described in
+  `docs/AGENT_VISUAL_WORKFLOW.md`.
 
 ## Verification
 

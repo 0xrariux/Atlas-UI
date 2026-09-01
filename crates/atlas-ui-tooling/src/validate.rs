@@ -42,7 +42,7 @@ fn agent_kit(root: &Path) -> Result {
         )),
         "agent manifest version drift",
     )?;
-    for key in ["stable", "preview", "aggregate"] {
+    for key in ["stable", "preview_nonresponsive", "preview", "aggregate"] {
         require(
             root.join(m["facades"][key].as_str().ok_or("facade missing")?)
                 .exists(),

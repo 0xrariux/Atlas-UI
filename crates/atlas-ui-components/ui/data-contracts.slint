@@ -1,11 +1,20 @@
 // These types define scalable data-component contracts before a concrete
 // table implementation exists. Sorting, filtering and persistence stay with
 // the consumer; components emit intentions and render observable state.
+import { BadgeTone } from "badge.slint";
+
 export enum DataViewState { ready, loading, empty, error }
-export { SelectionMode } from "@atlas-ui-core/core.slint";
+export { SelectionMode } from "@atlas-ui-core/stable.slint";
 export enum SortDirection { none, ascending, descending }
 export enum CellEditorKind { none, text, number, choice, toggle }
 export enum ColumnPin { none, start, end }
+export enum DataCellKind { text, stacked, badge, stacked-with-badge, tags }
+export enum DataCellAlignment { start, center, end }
+
+export struct DataCellTag {
+    text: string,
+    tone: BadgeTone,
+}
 
 export struct DataColumn {
     id: string,
@@ -23,11 +32,22 @@ export struct DataColumn {
 }
 
 export struct DataCell {
+    // Plain-text fallback and ordered semantic equivalent for compound cells.
+    // In particular, tag cells use it as one spoken label so their decorative
+    // badges do not repeat the same content through accessibility APIs.
     column-id: string,
     text: string,
     accessible-text: string,
     tooltip: string,
     editable: bool,
+    kind: DataCellKind,
+    primary-text: string,
+    secondary-text: string,
+    badge-text: string,
+    badge-tone: BadgeTone,
+    tags: [DataCellTag],
+    alignment: DataCellAlignment,
+    wrap: bool,
 }
 
 export struct DataRow {

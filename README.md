@@ -5,11 +5,11 @@
 <h1 align="center">Atlas UI</h1>
 
 <p align="center">
-  <a href="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml"><img src="https://github.com/rariux/Atlas-UI/actions/workflows/ci.yml/badge.svg" alt="Cross-platform CI status"></a>
-  <a href="https://crates.io/crates/atlas-ui"><img src="https://img.shields.io/crates/v/atlas-ui.svg" alt="Latest atlas-ui version on crates.io"></a>
+  <a href="https://github.com/0xrariux/Atlas-UI/actions/workflows/ci.yml"><img src="https://github.com/0xrariux/Atlas-UI/actions/workflows/ci.yml/badge.svg" alt="Cross-platform CI status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
   <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust-1.92-orange.svg" alt="Rust 1.92 MSRV"></a>
   <a href="https://github.com/slint-ui/slint"><img src="https://img.shields.io/badge/Slint-1.17.1-2379F4.svg" alt="Slint 1.17.1"></a>
+  <a href="https://crates.io/crates/atlas-ui"><img src="https://img.shields.io/crates/v/atlas-ui.svg" alt="Latest atlas-ui version on crates.io"></a>
 </p>
 
 > [!WARNING]
@@ -32,6 +32,13 @@ compositions, templates, a gallery, and deterministic visual validation.
 Atlas does not replace Slint. Slint provides the declarative language, runtime,
 native rendering, and low-level interactions; Atlas provides the conventions,
 contracts, and reusable catalog built on top of it.
+
+> [!IMPORTANT]
+> **For coding agents, a Cargo path to Atlas is not enough to reproduce a good
+> interface.** Give the agent Atlas's API context, an explicit product reference,
+> target viewport sizes, and require screenshot-based iteration. See the
+> [visual workflow for coding agents](docs/AGENT_VISUAL_WORKFLOW.md) for an
+> external-project setup, a consumer `AGENTS.md` snippet, and a reusable prompt.
 
 ## Vision
 
@@ -65,18 +72,25 @@ screen or in every Rust project.
 - referenced Slint version: `1.17.1`;
 - continuous integration: Linux, Windows, and macOS with Rust `1.92`;
 - deterministic visual profile: macOS arm64, software renderer, scale factor 1;
-- 81 public components and 158 public symbols;
-- 48 stable symbols governed by SemVer;
-- 110 preview symbols that may evolve;
-- 72 deterministic visual scenarios across 31 pages;
+- 89 public components and 172 public symbols;
+- 57 stable symbols governed by SemVer;
+- 115 preview symbols that may evolve;
+- 77 deterministic visual scenarios across 32 pages;
 - MIT license.
 
-Import stable contracts from `stable.slint`. Evolving APIs are isolated in
-`preview.slint`. `components.slint` remains an aggregate compatibility facade.
+Import stable contracts from `stable.slint`. Use `preview-nonresponsive.slint`
+for evolving controls that do not need experimental layout. The full
+`preview.slint` and `components.slint` compatibility aggregates load responsive
+contracts and require `SLINT_ENABLE_EXPERIMENTAL_FEATURES=1`.
 
 ```slint
 import { AtlasButton, AtlasTextField, AtlasTheme }
     from "@atlas-ui/stable.slint";
+```
+
+```slint
+import { AtlasProgressBar, AtlasTab }
+    from "@atlas-ui/preview-nonresponsive.slint";
 ```
 
 ## When to use Atlas
@@ -97,11 +111,14 @@ changes.
 
 - [Overview and scope](docs/OVERVIEW.md)
 - [Public roadmap](ROADMAP.md)
+- [Technology and upstream watchlist](TECHNOLOGY_WATCHLIST.md)
+- [Binary efficiency and dead-code policy](docs/BINARY_EFFICIENCY.md)
 - [Architecture and layers](docs/ARCHITECTURE.md)
 - [Slint relationship and version tracking](docs/SLINT_INTEGRATION.md)
 - [Component catalog](docs/COMPONENTS.md)
 - [Component index for AI agents](docs/AGENT_COMPONENT_INDEX.md)
 - [Integration guide for AI agents](docs/AI_INTEGRATION_GUIDE.md)
+- [Visual workflow for coding agents](docs/AGENT_VISUAL_WORKFLOW.md)
 - [Quickstart for coding agents](docs/AGENT_QUICKSTART.md)
 - [Machine-readable API manifest guide](docs/AGENT_MANIFEST.md)
 - [Native Rust tooling](docs/TOOLING.md)
@@ -120,9 +137,7 @@ copy, documentation, issue templates, and contribution material.
 
 ## Project positioning
 
-The following table describes Atlas by technical category. It is intended as a
-factual summary of the project's current scope rather than a comparison with
-other Slint libraries.
+The following table describes Atlas by technical category.
 
 | Category | Atlas position |
 |---|---|
@@ -135,13 +150,13 @@ other Slint libraries.
 | UI scope | Foundations, controls, data presentation, navigation, overlays, editorial content, documentation surfaces, responsive compositions, and application templates |
 | Component behavior | Controlled properties and callbacks express intentions; components do not perform hidden I/O or domain mutations |
 | Customization model | Shared tokens, public component properties, composition, and host-provided data and actions |
-| API organization | `stable.slint` contains SemVer-governed contracts; `preview.slint` contains explicitly evolving APIs; `components.slint` is the compatibility aggregate |
+| API organization | `stable.slint` contains SemVer-governed contracts; `preview-nonresponsive.slint` exposes evolving APIs without experimental layout; `preview.slint` and `components.slint` are responsive compatibility aggregates |
 | Distribution model | Workspace crates and Slint import facades consumed as shared dependencies rather than copied component source |
 | Reuse level | Designed for shared use across multiple screens and applications while leaving product-specific behavior in the host |
 | Documentation model | Public architecture, component catalog, agent manifest, integration guide, compiled consumer example, and executable native gallery |
 | Validation model | Automated architecture and API checks, deterministic fixtures, visual scenarios, contrast and accessibility contracts, and performance budgets |
 | Accessibility scope | Keyboard, focus, semantics, contrast, reduced motion, and explicit host-controlled interaction contracts are part of component validation |
-| Current API size | 81 public components, 48 stable symbols, and 110 preview symbols in Atlas `0.2.1` |
+| Current API size | 89 public components, 57 stable symbols, and 115 preview symbols in Atlas `0.2.1` |
 | Platform validation | Linux, Windows, and macOS continuously compile and pass Clippy, tests, and public contract checks; deterministic rendering evidence currently covers macOS arm64 with Slint's software renderer at scale factor 1 |
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
@@ -161,8 +176,9 @@ atlas-ui = "=0.2.1"
 slint-build = "=1.17.1"
 ```
 
-The stable facade compiles without Slint experimental features. Applications
-that import Atlas preview responsive contracts must enable them explicitly:
+The stable and non-responsive preview facades compile without Slint
+experimental features. Applications importing `preview.slint` or
+`components.slint` must enable their responsive contracts explicitly:
 
 ```toml
 # .cargo/config.toml
@@ -194,7 +210,7 @@ Feedback from real applications is valuable, especially for rendering defects,
 platform differences, accessibility problems, API friction, missing states, and
 components that do not behave well with realistic content.
 
-Use the [structured issue forms](https://github.com/rariux/Atlas-UI/issues/new/choose) to report a problem or
+Use the [structured issue forms](https://github.com/0xrariux/Atlas-UI/issues/new/choose) to report a problem or
 propose an improvement. A useful report should identify the affected component,
 Atlas and Slint versions, operating system, architecture, renderer, theme,
 density, viewport or window size, reproduction steps, expected result, and
@@ -204,7 +220,8 @@ but remove secrets and personal data first.
 Before opening a report:
 
 1. Search existing issues for the same behavior.
-2. Confirm whether the component comes from `stable.slint` or `preview.slint`.
+2. Confirm whether the component comes from `stable.slint`,
+   `preview-nonresponsive.slint`, or the responsive `preview.slint` aggregate.
 3. Reproduce the problem with the smallest practical example.
 4. Note whether it is a regression and, if known, the last working version.
 5. Separate observable facts from design preferences or proposed solutions.

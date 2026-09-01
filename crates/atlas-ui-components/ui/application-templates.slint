@@ -4,7 +4,7 @@ import { ActionArea, FocusRing, AtlasAutoGrid, LayoutGap } from "@atlas-ui-core/
 import { AtlasHeading, AtlasParagraph, HeadingLevel } from "editorial.slint";
 import { AtlasButton, ButtonTone } from "button.slint";
 import { AtlasBadge, BadgeTone } from "badge.slint";
-import { AtlasMetricCard, ValueTone } from "migration-wave.slint";
+import { AtlasMetricCard, ValueTone } from "metric-card.slint";
 
 export struct SettingsSectionItem { id: string, label: string, description: string, disabled: bool }
 export struct DashboardMetricItem { id: string, label: string, value: string, meta: string, tone: ValueTone }
@@ -73,7 +73,7 @@ export component AtlasSettingsTemplate inherits Rectangle {
                 HorizontalLayout {
                     spacing: AtlasGrid.space-2;
                     Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
-                    AtlasBadge { width: AtlasGrid.column-min-width + AtlasGrid.space-4; text: root.dirty ? "UNSAVED" : "SAVED"; tone: root.dirty ? BadgeTone.warning : BadgeTone.healthy; }
+                    AtlasBadge { text: root.dirty ? "UNSAVED" : "SAVED"; tone: root.dirty ? BadgeTone.warning : BadgeTone.healthy; }
                     AtlasButton { text: "Discard"; enabled: root.dirty && !root.saving; clicked => { root.discard-requested(); } }
                     AtlasButton { text: root.saving ? "Saving…" : "Save changes"; tone: ButtonTone.primary; enabled: root.dirty && !root.saving; loading: root.saving; clicked => { root.save-requested(); } }
                 }
@@ -104,7 +104,7 @@ export component AtlasDashboardTemplate inherits Rectangle {
         VerticalLayout {
             width: parent.width - AtlasGrid.space-3;
             spacing: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
-            AtlasBadge { width: AtlasGrid.column-min-width * 2; text: root.eyebrow; tone: BadgeTone.info; }
+            AtlasBadge { text: root.eyebrow; tone: BadgeTone.info; }
             AtlasHeading { height: root.compact ? AtlasTypography.line-display * 2 : AtlasTypography.line-display; text: root.title; level: HeadingLevel.h1; }
             AtlasParagraph { height: root.compact ? AtlasTypography.line-body * 2 : AtlasTypography.line-body; text: root.summary; muted: true; }
             AtlasButton { width: root.compact ? parent.width : AtlasGrid.column-min-width * 3; text: root.refreshing ? "Refreshing…" : "Refresh"; loading: root.refreshing; enabled: !root.refreshing; clicked => { root.refresh-requested(); } }

@@ -1,12 +1,55 @@
 //! Workspace dependency and public-contract checks.
 
-use std::{fs, path::Path};
+use std::{
+    collections::BTreeSet,
+    fs,
+    path::{Path, PathBuf},
+};
 
 fn workspace_root() -> &'static Path {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .and_then(Path::parent)
         .expect("testing crate remains under crates/")
+}
+
+fn ttf_u16_at(bytes: &[u8], offset: usize) -> u16 {
+    u16::from_be_bytes([bytes[offset], bytes[offset + 1]])
+}
+
+fn ttf_i16_at(bytes: &[u8], offset: usize) -> i16 {
+    i16::from_be_bytes([bytes[offset], bytes[offset + 1]])
+}
+
+fn ttf_table_offset(bytes: &[u8], tag: [u8; 4]) -> usize {
+    let table_count = usize::from(ttf_u16_at(bytes, 4));
+    (0..table_count)
+        .find_map(|index| {
+            let record = 12 + index * 16;
+            (bytes[record..record + 4] == tag).then(|| {
+                u32::from_be_bytes([
+                    bytes[record + 8],
+                    bytes[record + 9],
+                    bytes[record + 10],
+                    bytes[record + 11],
+                ]) as usize
+            })
+        })
+        .expect("registered font table")
+}
+
+fn ttf_line_height_ratios(bytes: &[u8]) -> (f32, f32) {
+    let head = ttf_table_offset(bytes, *b"head");
+    let hhea = ttf_table_offset(bytes, *b"hhea");
+    let os2 = ttf_table_offset(bytes, *b"OS/2");
+    let units_per_em = f32::from(ttf_u16_at(bytes, head + 18));
+    let hhea_ratio = f32::from(
+        ttf_i16_at(bytes, hhea + 4) - ttf_i16_at(bytes, hhea + 6) + ttf_i16_at(bytes, hhea + 8),
+    ) / units_per_em;
+    let typo_ratio = f32::from(
+        ttf_i16_at(bytes, os2 + 68) - ttf_i16_at(bytes, os2 + 70) + ttf_i16_at(bytes, os2 + 72),
+    ) / units_per_em;
+    (hhea_ratio, typo_ratio)
 }
 
 #[test]
@@ -16,10 +59,66 @@ fn public_slint_facades_exist() {
         "crates/atlas-ui-tokens/ui/tokens.slint",
         "crates/atlas-ui-core/ui/core.slint",
         "crates/atlas-ui-icons/ui/icons.slint",
+        "crates/atlas-ui-components/ui/stable.slint",
+        "crates/atlas-ui-components/ui/preview-nonresponsive.slint",
+        "crates/atlas-ui-components/ui/preview.slint",
         "crates/atlas-ui-components/ui/components.slint",
     ] {
         assert!(root.join(relative).is_file(), "missing facade: {relative}");
     }
+}
+
+fn collect_slint_imports(root: &Path, path: &Path, visited: &mut BTreeSet<PathBuf>) {
+    if !visited.insert(path.to_owned()) {
+        return;
+    }
+    let source = fs::read_to_string(path).expect("public Slint dependency");
+    assert!(
+        !source.contains("FlexboxLayout")
+            && !source.contains("responsive-layout.slint")
+            && !source.contains("@atlas-ui-core/core.slint"),
+        "{} loads an experimental responsive contract",
+        path.strip_prefix(root).unwrap_or(path).display()
+    );
+
+    let imports = source.split('"').skip(1).step_by(2).filter(|candidate| {
+        Path::new(candidate)
+            .extension()
+            .is_some_and(|extension| extension.eq_ignore_ascii_case("slint"))
+    });
+    for import in imports {
+        let dependency = if let Some(relative) = import.strip_prefix("@atlas-ui-core/") {
+            root.join("crates/atlas-ui-core/ui").join(relative)
+        } else if let Some(relative) = import.strip_prefix("@atlas-ui-icons/") {
+            root.join("crates/atlas-ui-icons/ui").join(relative)
+        } else if let Some(relative) = import.strip_prefix("@atlas-ui-tokens/") {
+            root.join("crates/atlas-ui-tokens/ui").join(relative)
+        } else if import == "std-widgets.slint" {
+            continue;
+        } else {
+            path.parent().expect("Slint source parent").join(import)
+        };
+        collect_slint_imports(root, &dependency, visited);
+    }
+}
+
+#[test]
+fn nonresponsive_preview_facade_has_no_experimental_transitive_dependency() {
+    let root = workspace_root();
+    let facade = root.join("crates/atlas-ui-components/ui/preview-nonresponsive.slint");
+    let source = fs::read_to_string(&facade).expect("non-responsive preview facade");
+    for contract in [
+        "AtlasProgressBar",
+        "AtlasSpinner",
+        "AtlasTab",
+        "AtlasTabPanel",
+    ] {
+        assert!(
+            source.contains(contract),
+            "missing non-responsive preview contract: {contract}"
+        );
+    }
+    collect_slint_imports(root, &facade, &mut BTreeSet::new());
 }
 
 #[test]
@@ -90,8 +189,10 @@ fn typography_embeds_versioned_sans_and_mono_fonts() {
         .expect("typography tokens");
     for contract in [
         "Inter-Variable.ttf",
+        "AtlasText-Variable.ttf",
         "JetBrainsMono-Variable.ttf",
-        "font-sans: \"Inter\"",
+        "font-sans: \"Atlas\"",
+        "font-display: \"Inter\"",
         "font-mono: \"JetBrains Mono\"",
         "TypographyScale",
         "scale-factor",
@@ -126,6 +227,22 @@ fn typography_embeds_versioned_sans_and_mono_fonts() {
         assert!(
             root.join(relative).is_file(),
             "missing font provenance: {relative}"
+        );
+    }
+
+    for relative in [
+        "crates/atlas-ui-tokens/assets/fonts/inter/AtlasText-Variable.ttf",
+        "crates/atlas-ui-tokens/assets/fonts/jetbrains-mono/JetBrainsMono-Variable.ttf",
+    ] {
+        let bytes = fs::read(root.join(relative)).expect("registered font asset");
+        let (hhea_ratio, typo_ratio) = ttf_line_height_ratios(&bytes);
+        assert!(
+            (hhea_ratio - 1.6).abs() < 0.001,
+            "tight hhea leading: {relative}"
+        );
+        assert!(
+            (typo_ratio - 1.6).abs() < 0.001,
+            "tight typo leading: {relative}"
         );
     }
 }
@@ -232,6 +349,16 @@ fn responsive_recipes_share_tokens_and_expose_observable_breakpoints() {
         "AtlasAutoGrid",
         "column-count",
         "item-basis",
+        "AtlasColumnGrid",
+        "AtlasGridItem",
+        "compact-span",
+        "normal-span",
+        "wide-span",
+        "active-span",
+        "resolved-width",
+        "AtlasGrid.gutter-compact",
+        "AtlasGrid.gutter-normal",
+        "AtlasGrid.gutter-wide",
         "LayoutGap",
         "@children",
     ] {
@@ -247,6 +374,19 @@ fn responsive_recipes_share_tokens_and_expose_observable_breakpoints() {
     let cargo_config = fs::read_to_string(root.join(".cargo/config.toml"))
         .expect("explicit Slint preview configuration");
     assert!(cargo_config.contains("SLINT_ENABLE_EXPERIMENTAL_FEATURES"));
+
+    let edge = fs::read_to_string(root.join("crates/atlas-ui-core/ui/edge-surface.slint"))
+        .expect("stable edge surface");
+    for contract in [
+        "AtlasEdgeSurface",
+        "DividerEdge",
+        "divider-edge",
+        "divider-width",
+        "border-width: AtlasGrid.zero",
+    ] {
+        assert!(edge.contains(contract), "missing edge contract: {contract}");
+    }
+    assert!(!edge.contains("FlexboxLayout"));
 }
 
 #[test]
@@ -261,6 +401,9 @@ fn stable_facade_does_not_load_experimental_responsive_layouts() {
     for file in [
         "stable.slint",
         "button.slint",
+        "icon-button.slint",
+        "tabs.slint",
+        "metric-card.slint",
         "checkbox.slint",
         "switch.slint",
     ] {
@@ -317,6 +460,10 @@ fn foundational_components_share_public_contracts() {
             ["ActionArea", "AccessibleRole.switch", "toggled"],
         ),
         ("badge.slint", ["BadgeTone", "accessible-label", "dot"]),
+        (
+            "icon-button.slint",
+            ["AtlasIconButton", "accessible-label", "pointer-target-min"],
+        ),
     ];
     for (file, required) in contracts {
         let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(file))
@@ -324,6 +471,58 @@ fn foundational_components_share_public_contracts() {
         for contract in required {
             assert!(source.contains(contract), "missing {contract} in {file}");
         }
+    }
+}
+
+#[test]
+fn interaction_loading_primitives_are_accessible_and_motion_aware() {
+    let root = workspace_root();
+    let spinner =
+        fs::read_to_string(root.join("crates/atlas-ui-components/ui/activity-indicator.slint"))
+            .expect("activity indicator");
+    for contract in [
+        "AtlasSpinner",
+        "AccessibleRole.progress-indicator",
+        "accessible-label: root.label",
+        "accessible-value: root.value-text",
+        "MotionPreference.reduced",
+        "AtlasMotion.spinner-cycle",
+    ] {
+        assert!(
+            spinner.contains(contract),
+            "missing spinner contract: {contract}"
+        );
+    }
+
+    let progress =
+        fs::read_to_string(root.join("crates/atlas-ui-components/ui/migration-wave.slint"))
+            .expect("progress controls");
+    for contract in [
+        "in property <bool> indeterminate: false",
+        "in property <bool> show-labels: true",
+        "accessible-value: root.value-text",
+        "MotionPreference.reduced",
+        "AtlasMotion.indeterminate-cycle",
+    ] {
+        assert!(
+            progress.contains(contract),
+            "missing activity rail contract: {contract}"
+        );
+    }
+
+    for file in [
+        "button.slint",
+        "icon-button.slint",
+        "checkbox.slint",
+        "switch.slint",
+        "tabs.slint",
+    ] {
+        let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(file))
+            .expect("interactive component");
+        assert!(
+            source.contains("AtlasMotion.fast"),
+            "missing token-driven transition in {file}"
+        );
     }
 }
 
@@ -364,6 +563,7 @@ fn rich_content_components_keep_actions_controlled_and_semantic() {
         "AtlasCallout",
         "action-requested(string)",
         "AtlasLink",
+        "AtlasControlTokens.gap",
         "AtlasLinkCard",
         "in property <bool> selected: false",
         "action.hovered ? AtlasTheme.border-strong",
@@ -434,6 +634,10 @@ fn documentation_shell_exposes_controlled_responsive_navigation() {
         "public function focus-skip-link()",
         "contained-focus: true",
         "AccessibleRole.navigation",
+        "AtlasEdgeSurface",
+        "DividerEdge.bottom",
+        "DividerEdge.right",
+        "DividerEdge.left",
         "@children",
     ] {
         assert!(
@@ -820,11 +1024,59 @@ fn overlay_and_navigation_contracts_cover_focus_and_accessibility() {
         "OverlayFocusController",
         "Key.Escape",
         "Key.Tab",
+        "Key.Delete",
+        "removal-requested",
         "restore-focus-requested",
     ] {
         assert!(
             core.contains(contract),
             "missing focus boundary contract: {contract}"
+        );
+    }
+}
+
+#[test]
+fn stable_workspace_tabs_cover_close_roving_focus_and_overflow() {
+    let source =
+        fs::read_to_string(workspace_root().join("crates/atlas-ui-components/ui/tabs.slint"))
+            .expect("tabs");
+    for contract in [
+        "AtlasWorkspaceTab",
+        "AtlasWorkspaceTabList",
+        "AccessibleRole.tab-list",
+        "AccessibleRole.tab",
+        "AccessibleRole.button",
+        "close-requested",
+        "navigation-requested",
+        "settle-after-close",
+        "overflow-requested",
+        "overflow: elide",
+        "accessible-item-index",
+        "accessible-item-count",
+        "atlas-workspace-tab-",
+    ] {
+        assert!(
+            source.contains(contract),
+            "missing workspace tab contract: {contract}"
+        );
+    }
+}
+
+#[test]
+fn categorical_tokens_are_ordinal_and_separate_from_status() {
+    let source =
+        fs::read_to_string(workspace_root().join("crates/atlas-ui-tokens/ui/categorical.slint"))
+            .expect("categorical tokens");
+    for index in 1..=6 {
+        assert!(
+            source.contains(&format!("category-{index}")),
+            "missing category {index}"
+        );
+    }
+    for semantic in ["success", "warning", "danger", "healthy"] {
+        assert!(
+            !source.contains(&format!("category-{semantic}")),
+            "categorical tokens must not encode {semantic}"
         );
     }
 }
@@ -836,6 +1088,23 @@ fn data_components_expose_scalable_intentions_and_states() {
         .expect("data table");
     for contract in [
         "AtlasDataList",
+        "DataColumnTrack",
+        "DataCellView",
+        "DataCellKind.stacked-with-badge",
+        "DataCellKind.tags",
+        "structured-accessible-label",
+        "generated-accessible-label",
+        "horizontal-overflow",
+        "rich-row-height",
+        "cell-padding-x",
+        "column-gap",
+        "accessible-item-selected",
+        "Key.UpArrow",
+        "Key.DownArrow",
+        "Key.Return",
+        "Key.Space",
+        "FocusRing",
+        "AtlasTheme.surface-selected",
         "column-resize-requested",
         "filter-requested",
         "edit-requested",
@@ -847,6 +1116,45 @@ fn data_components_expose_scalable_intentions_and_states() {
         assert!(
             table.contains(contract),
             "missing data capability: {contract}"
+        );
+    }
+    assert_eq!(
+        table
+            .matches("for column in root.columns: DataColumnTrack")
+            .count(),
+        1,
+        "the header must declare one canonical column-track sequence"
+    );
+    assert_eq!(
+        table
+            .matches("for cell[cell-index] in row.cells: DataColumnTrack")
+            .count(),
+        1,
+        "desktop rows must reuse the canonical column-track constraints"
+    );
+    assert_eq!(
+        table.matches("DataCellView {").count(),
+        2,
+        "desktop rows and compact cards must render the same semantic cell component"
+    );
+    let contracts =
+        fs::read_to_string(root.join("crates/atlas-ui-components/ui/data-contracts.slint"))
+            .expect("data contracts");
+    for contract in [
+        "DataCellKind",
+        "DataCellAlignment",
+        "DataCellTag",
+        "primary-text",
+        "secondary-text",
+        "badge-text",
+        "badge-tone",
+        "tags: [DataCellTag]",
+        "wrap: bool",
+        "tag cells use it as one spoken label",
+    ] {
+        assert!(
+            contracts.contains(contract),
+            "missing rich-cell contract: {contract}"
         );
     }
     let states = fs::read_to_string(root.join("crates/atlas-ui-components/ui/data-states.slint"))
@@ -877,6 +1185,11 @@ fn shared_visual_geometry_covers_reported_alignment_contracts() {
     for contract in [
         "width: parent.width - self.x - AtlasGrid.space-2",
         "horizontal-alignment: center",
+        "background: root.tone-color.with-alpha(0.08)",
+        "border-color: root.tone-color.with-alpha(0.28)",
+        "border-radius: AtlasShape.radius-small",
+        "max-width: self.min-width",
+        "horizontal-stretch: 0",
     ] {
         assert!(
             badge.contains(contract),
@@ -949,7 +1262,7 @@ fn shared_visual_geometry_covers_reported_alignment_contracts() {
             .expect("migration wave components");
     for contract in [
         "AtlasDensity.control-height + AtlasGrid.space-2",
-        "x: AtlasGrid.zero; y: AtlasGrid.zero; width: parent.width * root.percent; height: parent.height",
+        "width: root.indeterminate ? self.segment-width : parent.width * root.percent",
     ] {
         assert!(
             migration.contains(contract),
@@ -970,18 +1283,35 @@ fn migration_wave_exports_bounded_controls_and_surfaces() {
     .expect("migration wave");
     for contract in [
         "AtlasPanel",
-        "AtlasMetricCard",
         "AtlasSelectField",
         "AtlasSegmentedControl",
         "AtlasProgressBar",
+        "AtlasRadialProgress",
         "AtlasRangeControl",
         "AtlasPagination",
         "AtlasKeyValueList",
-        "accessible-value",
     ] {
         assert!(
             source.contains(contract),
             "missing migration contract: {contract}"
+        );
+    }
+
+    let metric = fs::read_to_string(
+        workspace_root().join("crates/atlas-ui-components/ui/metric-card.slint"),
+    )
+    .expect("stable metric card");
+    for contract in [
+        "AtlasMetricCard",
+        "accessible-label",
+        "accessible-value",
+        "accessible-description",
+        "compact",
+        "overflow: elide",
+    ] {
+        assert!(
+            metric.contains(contract),
+            "missing metric contract: {contract}"
         );
     }
 }
@@ -1010,7 +1340,23 @@ fn final_migration_wave_covers_every_remaining_contract() {
     let icons = fs::read_to_string(workspace_root().join("crates/atlas-ui-icons/ui/icons.slint"))
         .expect("icons");
     for icon in [
-        "add", "back", "lock", "logs", "profile", "refresh", "shield", "warning",
+        "add",
+        "back",
+        "lock",
+        "logs",
+        "profile",
+        "refresh",
+        "shield",
+        "warning",
+        "grid",
+        "terminal",
+        "gamepad",
+        "cpu",
+        "memory",
+        "play",
+        "stop",
+        "chevron-right",
+        "layers",
     ] {
         assert!(icons.contains(icon), "missing icon: {icon}");
     }

@@ -24,7 +24,7 @@ not perform silent remote actions or domain mutations.
 
 ## Current scope
 
-Version `0.2.1` retains 48 stable foundational symbols. The rest of the catalog is
+Version `0.2.1` exposes 57 stable symbols. The rest of the catalog is
 available as preview so it can evolve without creating a permanent compatibility
 commitment too early.
 

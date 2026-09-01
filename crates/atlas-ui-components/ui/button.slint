@@ -1,8 +1,9 @@
 import {
-    AtlasTheme, AtlasGrid, AtlasTypography, AtlasControlTokens, AtlasSettings, Density
+    AtlasTheme, AtlasGrid, AtlasTypography, AtlasControlTokens, AtlasSettings, AtlasMotion, Density
 } from "@atlas-ui-tokens/tokens.slint";
 import { ActionArea, ComponentFrame, FocusRing } from "@atlas-ui-core/stable.slint";
 import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { AtlasSpinner } from "activity-indicator.slint";
 
 export enum ButtonTone { neutral, primary, secondary, danger, live }
 
@@ -13,6 +14,7 @@ export component AtlasButton inherits ComponentFrame {
     in property <bool> show-icon: false;
     in property <IconName> icon-name: IconName.none;
     in property <bool> loading: false;
+    in property <string> loading-label: "Loading";
     in property <bool> contained-focus: false;
     in property <ButtonTone> tone: ButtonTone.neutral;
     callback clicked();
@@ -21,7 +23,7 @@ export component AtlasButton inherits ComponentFrame {
 
     accessible-role: AccessibleRole.button;
     accessible-label: root.text;
-    accessible-description: root.loading ? "Loading" : "";
+    accessible-description: root.loading ? root.loading-label : "";
     accessible-id: "atlas-button-" + root.text;
     accessible-enabled: root.enabled && !root.loading;
     accessible-action-default => { action.trigger(); }
@@ -32,7 +34,7 @@ export component AtlasButton inherits ComponentFrame {
     hovered: action.hovered;
     pressed: action.pressed;
     min-width: label.preferred-width + root.control-padding-x * 2
-        + (root.show-icon ? root.control-height : AtlasGrid.zero);
+        + (root.show-icon || root.loading ? root.control-height : AtlasGrid.zero);
     height: root.control-height;
     border-color: tone == ButtonTone.danger ? AtlasTheme.danger
         : tone == ButtonTone.live ? AtlasTheme.warning
@@ -45,22 +47,35 @@ export component AtlasButton inherits ComponentFrame {
         : (root.pressed ? AtlasTheme.surface-pressed
             : root.hovered ? AtlasTheme.surface-hover
             : root.selected ? AtlasTheme.surface-selected : AtlasTheme.surface);
-    opacity: root.enabled && !root.loading ? 1 : AtlasControlTokens.disabled-opacity;
+    opacity: root.enabled || root.loading ? 1 : AtlasControlTokens.disabled-opacity;
+    animate background { duration: AtlasMotion.fast; }
+    animate border-color { duration: AtlasMotion.fast; }
+    animate opacity { duration: AtlasMotion.fast; }
 
-    if root.show-icon: AtlasIcon {
+    if root.show-icon && !root.loading: AtlasIcon {
         x: root.control-padding-x;
         y: (parent.height - AtlasTypography.size-title-small) / 2;
         width: AtlasTypography.size-title-small;
         height: AtlasTypography.size-title-small;
         size: AtlasTypography.size-title-small;
-        name: root.loading ? IconName.none : root.icon-name;
+        name: root.icon-name;
         icon-color: root.enabled ? AtlasControlTokens.foreground : AtlasControlTokens.foreground-disabled;
     }
 
+    if root.loading: AtlasSpinner {
+        x: root.control-padding-x;
+        y: (parent.height - self.height) / 2;
+        size: AtlasTypography.size-title-small;
+        label: root.text;
+        value-text: root.loading-label;
+        indicator-color: root.tone == ButtonTone.primary
+            ? AtlasControlTokens.primary-foreground : AtlasControlTokens.foreground;
+    }
+
     label := Text {
-        x: root.show-icon ? root.control-height : AtlasGrid.zero;
-        width: root.show-icon ? parent.width - self.x - root.control-padding-x : parent.width;
-        text: root.loading ? "Loading…" : root.text;
+        x: root.show-icon || root.loading ? root.control-height : AtlasGrid.zero;
+        width: root.show-icon || root.loading ? parent.width - self.x - root.control-padding-x : parent.width;
+        text: root.text;
         color: root.enabled
             ? (root.tone == ButtonTone.primary ? AtlasControlTokens.primary-foreground : AtlasControlTokens.foreground)
             : AtlasControlTokens.foreground-disabled;
@@ -84,7 +99,7 @@ export component AtlasButton inherits ComponentFrame {
         contained-focus: root.contained-focus;
         selected: root.selected;
         accessible-name: root.text;
-        action-description: root.loading ? "Loading" : "";
+        action-description: root.loading ? root.loading-label : "";
         automation-id: "atlas-button-" + root.text;
         activated => { root.clicked(); }
         traversal-requested(backwards) => { root.traversal-requested(backwards); }

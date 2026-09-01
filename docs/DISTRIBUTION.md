@@ -11,10 +11,10 @@ named imports rather than paths tied to the Atlas monorepo.
 - Internal path dependencies also declare the exact `0.2.1` version required by
   registry packaging.
 - The facade has a description, README, license, keywords, and category.
-- Repository metadata points to `https://github.com/rariux/Atlas-UI`, and every
+- Repository metadata points to `https://github.com/0xrariux/Atlas-UI`, and every
   public crate declares its versioned docs.rs URL.
-- All 72 visual baselines are approved and the local release-readiness check is
-  ready.
+- The 72 release baselines are approved. Five responsive rich-table scenarios
+  are additionally declared for baseline review.
 
 The canonical user dependency is `atlas-ui = "=0.2.1"`. Documentation links
 may remain pending while docs.rs builds a newly published crate.

@@ -10,6 +10,13 @@
       "median_limit_ms": 2000
     },
     {
+      "id": "render-stable-controls",
+      "scenario": "components.dark.normal.desktop",
+      "warmup_iterations": 1,
+      "sample_count": 5,
+      "median_limit_ms": 2000
+    },
+    {
       "id": "render-content-mobile",
       "scenario": "content-stress.dark.normal.360",
       "warmup_iterations": 1,

@@ -5,5 +5,9 @@ export global AtlasMotion {
     out property <duration> fast: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 100ms;
     out property <duration> normal: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 180ms;
     out property <duration> slow: AtlasSettings.motion == MotionPreference.reduced ? 0ms : 280ms;
+    // Continuous cycles stay non-zero because they are safe animation-tick()
+    // divisors. Components explicitly replace motion with a static state when
+    // AtlasSettings.motion is reduced.
+    out property <duration> spinner-cycle: 1200ms;
+    out property <duration> indeterminate-cycle: 1400ms;
 }
-

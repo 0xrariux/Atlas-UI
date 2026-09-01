@@ -1,0 +1,31 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape
+} from "@atlas-ui-tokens/tokens.slint";
+
+export enum DividerEdge { top, right, bottom, left }
+
+// Stable page chrome uses one divider facing adjacent content. The component
+// deliberately depends only on stable Rectangle and token contracts.
+export component AtlasEdgeSurface inherits Rectangle {
+    in property <DividerEdge> divider-edge: DividerEdge.bottom;
+    in property <bool> show-divider: true;
+    in property <color> divider-color: AtlasTheme.border-subtle;
+    in property <length> divider-width: AtlasShape.border-width;
+
+    background: AtlasTheme.surface;
+    border-width: AtlasGrid.zero;
+    border-radius: AtlasShape.radius-none;
+    @children
+    if root.show-divider: Rectangle {
+        x: root.divider-edge == DividerEdge.right
+            ? max(AtlasGrid.zero, root.width - root.divider-width) : AtlasGrid.zero;
+        y: root.divider-edge == DividerEdge.bottom
+            ? max(AtlasGrid.zero, root.height - root.divider-width) : AtlasGrid.zero;
+        width: root.divider-edge == DividerEdge.top || root.divider-edge == DividerEdge.bottom
+            ? root.width : root.divider-width;
+        height: root.divider-edge == DividerEdge.left || root.divider-edge == DividerEdge.right
+            ? root.height : root.divider-width;
+        background: root.divider-color;
+        accessible-role: AccessibleRole.none;
+    }
+}

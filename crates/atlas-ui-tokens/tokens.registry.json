@@ -35,6 +35,13 @@
       "consumer_policy": "public"
     },
     {
+      "id": "categorical-colors",
+      "layer": 1,
+      "file": "ui/categorical.slint",
+      "exports": ["AtlasCategoryTokens"],
+      "consumer_policy": "public"
+    },
+    {
       "id": "geometry",
       "layer": 1,
       "file": "ui/geometry.slint",

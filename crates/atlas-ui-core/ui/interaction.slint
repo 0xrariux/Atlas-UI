@@ -23,6 +23,7 @@ export component ActionArea inherits Rectangle {
     callback navigation-requested(int /* -2 first, -1 previous, 1 next, 2 last */);
     callback traversal-requested(bool /* backwards */);
     callback dismiss-requested();
+    callback removal-requested();
 
     private property <bool> keyboard-modality: false;
     private property <bool> key-active: false;
@@ -56,6 +57,10 @@ export component ActionArea inherits Rectangle {
             }
             if (root.contained-focus && (event.text == Key.Tab || event.text == Key.Backtab)) {
                 root.traversal-requested(event.text == Key.Backtab || event.modifiers.shift);
+                return accept;
+            }
+            if (event.text == Key.Delete) {
+                root.removal-requested();
                 return accept;
             }
             if (event.text == Key.LeftArrow || event.text == Key.UpArrow) {

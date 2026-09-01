@@ -1,0 +1,33 @@
+import { AtlasSettings, ThemeMode } from "settings.slint";
+
+// Persistent identities and data series are ordinal, never semantic status.
+// Every value has at least 3:1 graphical contrast against Atlas canvases and
+// surfaces in its corresponding theme. Pair color with a label, shape or icon.
+export global AtlasCategoryTokens {
+    out property <color> dark-category-1: #7db7ff;
+    out property <color> dark-category-2: #f0b56a;
+    out property <color> dark-category-3: #c3a6ff;
+    out property <color> dark-category-4: #67d5d1;
+    out property <color> dark-category-5: #ef9ac1;
+    out property <color> dark-category-6: #b8cf6a;
+
+    out property <color> light-category-1: #315a78;
+    out property <color> light-category-2: #865100;
+    out property <color> light-category-3: #6b4f91;
+    out property <color> light-category-4: #246b68;
+    out property <color> light-category-5: #8a3f67;
+    out property <color> light-category-6: #5f6826;
+
+    out property <color> category-1: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-1 : dark-category-1;
+    out property <color> category-2: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-2 : dark-category-2;
+    out property <color> category-3: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-3 : dark-category-3;
+    out property <color> category-4: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-4 : dark-category-4;
+    out property <color> category-5: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-5 : dark-category-5;
+    out property <color> category-6: AtlasSettings.resolved-theme-mode == ThemeMode.light
+        ? light-category-6 : dark-category-6;
+}

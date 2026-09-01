@@ -2,7 +2,7 @@ import {
     AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity,
     AtlasElevation
 } from "@atlas-ui-tokens/tokens.slint";
-import { ActionArea, AtlasScrollViewport, FocusRing } from "@atlas-ui-core/core.slint";
+import { ActionArea, AtlasEdgeSurface, AtlasScrollViewport, DividerEdge, FocusRing } from "@atlas-ui-core/stable.slint";
 import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
 import { AtlasButton, ButtonTone } from "button.slint";
 
@@ -164,13 +164,12 @@ export component AtlasDocumentationShell inherits Rectangle {
     accessible-role: AccessibleRole.main;
     accessible-label: root.product-name + " documentation";
 
-    topbar := Rectangle {
+    topbar := AtlasEdgeSurface {
         x: AtlasGrid.zero; y: AtlasGrid.zero;
         width: parent.width;
         height: AtlasGrid.space-12 + AtlasGrid.space-4;
         background: AtlasTheme.surface;
-        border-width: AtlasShape.border-width;
-        border-color: AtlasTheme.border-subtle;
+        divider-edge: DividerEdge.bottom;
         drop-shadow-blur: AtlasElevation.level-1-blur;
         drop-shadow-offset-y: AtlasElevation.level-1-y;
         drop-shadow-color: AtlasTheme.overlay-backdrop;
@@ -214,11 +213,12 @@ export component AtlasDocumentationShell inherits Rectangle {
         }
     }
 
-    if !root.compact: Rectangle {
+    if !root.compact: AtlasEdgeSurface {
         x: AtlasGrid.space-4; y: topbar.height + AtlasGrid.space-4;
         width: AtlasGrid.column-min-width * 4;
         height: parent.height - self.y - AtlasGrid.space-4;
         background: AtlasTheme.transparent;
+        divider-edge: DividerEdge.right;
         accessible-role: AccessibleRole.navigation;
         accessible-label: "Documentation navigation";
         VerticalLayout {
@@ -299,15 +299,20 @@ export component AtlasDocumentationShell inherits Rectangle {
         active: content-focus.has-focus || root.preview-content-focus;
     }
 
-    if !root.compact: ShellToc {
+    if !root.compact: AtlasEdgeSurface {
         x: parent.width - root.toc-width - AtlasGrid.space-4;
         y: topbar.height + AtlasGrid.space-12;
         width: root.toc-width; height: parent.height - self.y - AtlasGrid.space-4;
-        items: root.toc-items; active-id: root.active-section-id;
-        preview-focus-id: root.preview-toc-focus-id;
-        section-requested(id) => { root.section-requested(id); }
-        keyboard-navigation-requested(id, direction) => {
-            root.toc-focus-requested(id, direction);
+        background: AtlasTheme.transparent;
+        divider-edge: DividerEdge.left;
+        ShellToc {
+            x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-3; height: parent.height;
+            items: root.toc-items; active-id: root.active-section-id;
+            preview-focus-id: root.preview-toc-focus-id;
+            section-requested(id) => { root.section-requested(id); }
+            keyboard-navigation-requested(id, direction) => {
+                root.toc-focus-requested(id, direction);
+            }
         }
     }
 
@@ -329,12 +334,11 @@ export component AtlasDocumentationShell inherits Rectangle {
         }
     }
 
-    Rectangle {
+    AtlasEdgeSurface {
         x: root.main-x; y: parent.height - AtlasGrid.space-12;
         width: root.main-width; height: AtlasGrid.space-12;
         background: AtlasTheme.canvas;
-        border-width: AtlasShape.border-width;
-        border-color: AtlasTheme.border-subtle;
+        divider-edge: DividerEdge.top;
         accessible-role: AccessibleRole.navigation;
         accessible-label: "Documentation footer";
         if !root.compact: HorizontalLayout {
@@ -371,11 +375,12 @@ export component AtlasDocumentationShell inherits Rectangle {
         width: parent.width; height: parent.height - topbar.height;
         background: AtlasTheme.overlay-backdrop;
         z: 20;
-        Rectangle {
+        AtlasEdgeSurface {
             x: AtlasGrid.zero; y: AtlasGrid.zero;
             width: parent.width;
             height: parent.height;
             background: AtlasTheme.surface;
+            divider-edge: DividerEdge.right;
             VerticalLayout {
                 padding: AtlasGrid.space-4; spacing: AtlasGrid.space-1;
                 AtlasButton {
@@ -408,11 +413,12 @@ export component AtlasDocumentationShell inherits Rectangle {
         width: parent.width; height: parent.height - topbar.height;
         background: AtlasTheme.overlay-backdrop;
         z: 20;
-        Rectangle {
+        AtlasEdgeSurface {
             x: max(AtlasGrid.zero, parent.width - AtlasGrid.column-min-width * 5); y: AtlasGrid.zero;
             width: min(parent.width, AtlasGrid.column-min-width * 5);
             height: parent.height;
             background: AtlasTheme.surface;
+            divider-edge: DividerEdge.left;
             VerticalLayout {
                 padding: AtlasGrid.space-4; spacing: AtlasGrid.space-3;
                 AtlasButton {

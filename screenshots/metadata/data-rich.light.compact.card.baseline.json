@@ -1,0 +1,30 @@
+{
+  "approval": {
+    "approved_at": null,
+    "note": null,
+    "reviewer": null,
+    "status": "pending-human"
+  },
+  "architecture": "aarch64",
+  "identity": {
+    "density": "compact",
+    "fixture": "access-control-matrix-v1",
+    "grid": false,
+    "id": "data-rich.light.compact.card",
+    "motion": "reduced",
+    "page": "data-rich",
+    "renderer": "software",
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "light",
+    "viewport": {
+      "height": 1100,
+      "width": 560
+    }
+  },
+  "image": {
+    "height": 1100,
+    "width": 560
+  },
+  "platform": "macos"
+}

@@ -52,7 +52,7 @@ export component AtlasHeading inherits Text {
         : root.tone == EditorialTone.accent ? AtlasTheme.content-accent
         : root.tone == EditorialTone.danger ? AtlasTheme.danger
         : AtlasTheme.content-primary;
-    font-family: AtlasTypography.font-sans;
+    font-family: AtlasTypography.font-display;
     font-size: root.level == HeadingLevel.h1 ? AtlasTypography.size-heading-1
         : root.level == HeadingLevel.h2 ? AtlasTypography.size-heading-2
         : root.level == HeadingLevel.h3 ? AtlasTypography.size-heading-3

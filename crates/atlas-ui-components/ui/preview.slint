@@ -1,17 +1,23 @@
-// Atlas UI 0.2 preview surface. These exports may change between minor releases.
+// Atlas UI 0.2 compatibility preview surface. These exports may change between
+// minor releases. This aggregate loads experimental responsive contracts; use
+// preview-nonresponsive.slint when FlexboxLayout is not required.
 export {
     LayoutGridOverlay, LayoutWidth, ActionArea, OverlayFocusController,
     SelectionController, RovingFocusController, SelectionMode,
-    AtlasScrollViewport, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher,
-    AtlasAutoGrid, AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane,
-    AtlasResizeHandle, AtlasStickyRegion, LayoutGap, SplitOrientation, StickyEdge
+    AtlasScrollViewport, AtlasEdgeSurface, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher,
+    AtlasAutoGrid, AtlasColumnGrid, AtlasGridItem,
+    AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane,
+    AtlasResizeHandle, AtlasStickyRegion, DividerEdge, LayoutGap, SplitOrientation, StickyEdge
 } from "@atlas-ui-core/core.slint";
 export { AtlasTab, AtlasTabPanel, TabVariant } from "tabs.slint";
+export { AtlasSpinner } from "activity-indicator.slint";
 export { AtlasTooltip, TooltipTone, TooltipPlacement } from "tooltip.slint";
 export { AtlasMenu, MenuItem } from "menu.slint";
 export { AtlasModal, ModalSize } from "modal.slint";
 export { AtlasDataTable, AtlasDataList } from "data-table.slint";
-export { AtlasPanel, AtlasMetricCard, AtlasSelectField, AtlasSegmentedControl, AtlasProgressBar, AtlasRangeControl, AtlasPagination, AtlasKeyValueList, ValueTone, SegmentOption, KeyValueItem, ProgressTone } from "migration-wave.slint";
+// Compatibility re-export for the stable AtlasMetricCard and ValueTone.
+export { AtlasMetricCard, ValueTone } from "metric-card.slint";
+export { AtlasPanel, AtlasSelectField, AtlasSegmentedControl, AtlasProgressBar, AtlasRadialProgress, AtlasRangeControl, AtlasPagination, AtlasKeyValueList, SegmentOption, KeyValueItem, ProgressTone } from "migration-wave.slint";
 export { AtlasSparkline, AtlasInlineAlert, AtlasNoticeStack, AtlasWorkflowBanner, AtlasStepper, AtlasDrawer, AtlasErrorPage, SparklineTone, AlertTone, NoticeTone, DrawerSide, NoticeItem, StepItem } from "final-wave.slint";
 export { AtlasSelectableText } from "editorial.slint";
 export { AtlasAdmonition, AtlasCallout, AtlasLink, AtlasLinkCard, AtlasRichText, AtlasDocumentList, AtlasCaption, AtlasCrossReference, AtlasFootnoteReference, AtlasFootnoteList, AtlasDocumentTable, AtlasFigure, AtlasTerminalBlock, AtlasContentTabs, AdmonitionTone, MediaState, CaptionKind, RichTextFragment, DocumentListItem, FootnoteItem, DocumentTableColumn, DocumentTableRow, ContentTabItem } from "rich-content.slint";
@@ -22,5 +28,6 @@ export { AtlasSettingsTemplate, AtlasDashboardTemplate, SettingsSectionItem, Das
 export { AtlasThemeControl } from "theme-control.slint";
 export {
     DataViewState, SortDirection, CellEditorKind, ColumnPin,
+    DataCellKind, DataCellAlignment, DataCellTag,
     DataColumn, DataCell, DataRow, DataSort, DataFilter
 } from "data-contracts.slint";

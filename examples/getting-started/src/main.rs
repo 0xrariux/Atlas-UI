@@ -14,5 +14,7 @@ fn main() -> Result<(), slint::PlatformError> {
         // A real host would call its application service here. The example
         // deliberately performs no filesystem, network or persistence action.
     });
+    app.on_workspace_add_requested(|| {});
+    app.on_workspace_close_requested(|_index| {});
     app.run()
 }

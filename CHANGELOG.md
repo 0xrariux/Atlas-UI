@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+- Adds stable `AtlasIconButton`, `AtlasWorkspaceTab`, and
+  `AtlasWorkspaceTabList` contracts with controlled intentions, keyboard focus,
+  deterministic automation IDs, and accessible close behavior.
+- Adds preview `AtlasSpinner` and `AtlasRadialProgress` activity indicators,
+  including reduced-motion behavior and explicit accessibility values.
+- Adds preview `AtlasColumnGrid` and `AtlasGridItem` responsive 12-column
+  composition contracts.
+- Promotes `AtlasEdgeSurface`, `DividerEdge`, `AtlasMetricCard`, and `ValueTone`
+  to the stable facade while retaining preview-facade compatibility exports.
+- Adds `AtlasCategoryTokens` with six non-semantic light/dark identity colors
+  and automated graphical-contrast evidence.
+- Adds grid, terminal, gamepad, CPU, memory, play, stop, chevron-right, and
+  layers icons to the checksum-controlled monochrome registry.
+- Keeps `AtlasAutoGrid` preview because Slint 1.17.1 still requires the
+  experimental `FlexboxLayout` capability for wrapping actionable cards.
+- Adds `@atlas-ui/preview-nonresponsive.slint` and
+  `atlas_ui::preview_nonresponsive_slint_path()` so evolving controls such as
+  `AtlasProgressBar` and `AtlasTab` compile without experimental Slint
+  features.
+- Documents that `preview.slint` and `components.slint` remain compatibility
+  aggregates that eagerly load responsive `FlexboxLayout` contracts.
+
 ## 0.2.1 — 2026-08-09
 
 - Makes `@atlas-ui/stable.slint` compile without Slint experimental features.

@@ -1,7 +1,7 @@
 import {
-    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasControlTokens
 } from "@atlas-ui-tokens/tokens.slint";
-import { ActionArea, FocusRing } from "@atlas-ui-core/core.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/stable.slint";
 import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
 import { AtlasSkeleton, AtlasEmptyState, AtlasErrorState } from "data-states.slint";
 import { AtlasButton } from "button.slint";
@@ -574,12 +574,15 @@ export component AtlasLink inherits Rectangle {
     in property <bool> enabled: true;
     callback activated(string);
 
-    min-width: label.preferred-width + (root.external ? AtlasGrid.space-8 : AtlasGrid.space-2);
+    horizontal-stretch: 0;
+    min-width: label.preferred-width + AtlasGrid.space-2
+        + AtlasGrid.space-4 + AtlasControlTokens.gap;
     min-height: AtlasDensity.pointer-target-min;
     background: AtlasTheme.transparent;
     label := Text {
         x: AtlasGrid.space-1;
-        width: parent.width - (root.external ? AtlasGrid.space-8 : AtlasGrid.space-2);
+        width: parent.width - AtlasGrid.space-2
+            - AtlasGrid.space-4 - AtlasControlTokens.gap;
         text: root.text;
         color: root.enabled ? AtlasTheme.content-accent : AtlasTheme.content-disabled;
         font-family: AtlasTypography.font-sans;
@@ -588,16 +591,16 @@ export component AtlasLink inherits Rectangle {
         vertical-alignment: center;
         overflow: elide;
     }
-    if root.external: AtlasIcon {
-        x: parent.width - AtlasGrid.space-6;
+    AtlasIcon {
+        x: parent.width - AtlasGrid.space-1 - AtlasGrid.space-4;
         y: (parent.height - self.height) / 2;
         size: AtlasGrid.space-4;
-        name: IconName.back;
+        name: root.external ? IconName.back : IconName.chevron-right;
         icon-color: root.enabled ? AtlasTheme.content-accent : AtlasTheme.content-disabled;
     }
     Rectangle {
         x: AtlasGrid.space-1; y: parent.height - AtlasGrid.space-2;
-        width: label.width; height: AtlasGrid.hairline;
+        width: min(label.preferred-width, label.width); height: AtlasGrid.hairline;
         background: root.enabled ? AtlasTheme.content-accent : AtlasTheme.transparent;
     }
     ActionArea {

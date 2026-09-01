@@ -21,7 +21,7 @@ Before a component is considered complete, it has:
 
 ## Deterministic validation
 
-The 72 scenarios are addressable by identifier. A comparison is valid only
+The 77 scenarios are addressable by identifier. A comparison is valid only
 when its scenario, fixture, viewport, platform profile, and metadata match.
 Every recapture resets human approval so a new image is never accepted implicitly.
 
@@ -46,7 +46,11 @@ evolve in a minor version, but every change is recorded in the changelog and reg
 
 - `docs/`: architecture, components, integration, and methodology;
 - `stable.slint`: the SemVer-governed contract;
-- `preview.slint`: the explicitly evolving surface;
+- `preview-nonresponsive.slint`: the evolving surface without experimental
+  Slint layout dependencies;
+- `preview.slint`: the complete evolving compatibility aggregate, including
+  responsive contracts;
+- `components.slint`: the stable-plus-preview compatibility aggregate;
 - `Cargo.toml` and `Cargo.lock`: Rust and Slint versions;
 - `screenshots/`: scenarios, metadata, and baselines;
 - `CHANGELOG.md`: evolution of published contracts.

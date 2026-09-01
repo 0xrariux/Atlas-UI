@@ -25,13 +25,19 @@ final authority.
 
 The root metadata records Atlas and Slint versions, public facades, ownership
 boundaries, documentation entry points, symbol counts, and the recommended
-agent workflow.
+agent workflow. `preview_nonresponsive_symbols` lists the exact evolving
+surface that compiles without experimental Slint features; `preview.slint` and
+the aggregate facade still load the responsive module.
 
 The `api` object contains three generated collections:
 
 - `components`: public stable and preview components;
 - `types`: public enums and structs;
 - `globals`: public Atlas token and settings globals.
+
+`preview_compatibility_exports` lists stable contracts that remain importable
+from the preview facade after promotion. Their `maturity` is still `stable`;
+the duplicate export exists only to avoid breaking earlier preview consumers.
 
 Each component entry contains:
 

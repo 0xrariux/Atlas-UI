@@ -18,8 +18,8 @@ version = "0.2.1"
 edition = "2024"
 rust-version = "1.92"
 license = "MIT"
-repository = "https://github.com/rariux/Atlas-UI"
-homepage = "https://github.com/rariux/Atlas-UI"
+repository = "https://github.com/0xrariux/Atlas-UI"
+homepage = "https://github.com/0xrariux/Atlas-UI"
 publish = true
 
 [workspace.dependencies]

@@ -1,24 +1,101 @@
 import {
-    AtlasSettings, ThemeMode, TypographyScale, AtlasGrid, AtlasTheme,
+    AtlasSettings, ThemeMode, TypographyScale, AtlasGrid, AtlasTheme, AtlasCategoryTokens,
     AtlasHeading, HeadingLevel, AtlasParagraph,
-    AtlasTextField, AtlasCheckbox, AtlasButton, ButtonTone
+    AtlasTextField, AtlasCheckbox, AtlasButton, ButtonTone,
+    AtlasIconButton, IconButtonTone, IconName,
+    AtlasEdgeSurface, DividerEdge,
+    AtlasWorkspaceTab, AtlasWorkspaceTabList,
+    AtlasMetricCard, ValueTone, AtlasBadge, BadgeTone, Surface
 } from "@atlas-ui/stable.slint";
 export { AtlasSettings, ThemeMode, TypographyScale }
     from "@atlas-ui/stable.slint";
 
 export component App inherits Window {
     callback create-requested();
+    callback workspace-add-requested();
+    callback workspace-close-requested(int);
 
     title: "Atlas UI · Getting started";
     preferred-width: AtlasGrid.breakpoint-compact;
-    preferred-height: AtlasGrid.content-narrow;
+    preferred-height: AtlasGrid.breakpoint-compact;
     background: AtlasTheme.canvas;
 
+    AtlasEdgeSurface {
+        width: parent.width;
+        height: AtlasGrid.space-12 + AtlasGrid.space-2;
+        divider-edge: DividerEdge.bottom;
+        Text {
+            x: AtlasGrid.space-6;
+            width: parent.width - AtlasGrid.space-12;
+            text: "Atlas workspace";
+            color: AtlasTheme.content-primary;
+            vertical-alignment: center;
+        }
+    }
+
     VerticalLayout {
-        padding: AtlasGrid.space-8;
+        y: AtlasGrid.space-12 + AtlasGrid.space-2;
+        height: parent.height - self.y;
+        padding: AtlasGrid.space-6;
         spacing: AtlasGrid.space-4;
         AtlasHeading { text: "Create a workspace"; level: HeadingLevel.h1; }
         AtlasParagraph { text: "A compiled consumer with controlled application intent."; muted: true; }
+        tab-list := AtlasWorkspaceTabList {
+            accessible-label: "Open workspaces";
+            tab-count: 2;
+            selected-index: 0;
+            overview-tab := AtlasWorkspaceTab {
+                tab-id: "overview"; text: "Overview";
+                selected: true; active-in-roving-group: tab-list.active-index == 0;
+                index: 0; count: 2; closable: true;
+                activated => { tab-list.request-activation(0); }
+                close-requested => { tab-list.request-close(0); }
+                navigation-requested(direction) => { tab-list.navigate(direction); }
+            }
+            runtime-tab := AtlasWorkspaceTab {
+                tab-id: "runtime"; text: "Runtime with a localized long label";
+                active-in-roving-group: tab-list.active-index == 1;
+                index: 1; count: 2; closable: true; dirty: true;
+                activated => { tab-list.request-activation(1); }
+                close-requested => { tab-list.request-close(1); }
+                navigation-requested(direction) => { tab-list.navigate(direction); }
+            }
+            close-requested(index) => { root.workspace-close-requested(index); }
+            focus-requested(index) => {
+                if (index == 0) { overview-tab.focus-from-group(); }
+                if (index == 1) { runtime-tab.focus-from-group(); }
+            }
+        }
+        AtlasIconButton {
+            icon-name: IconName.add;
+            accessible-label: "Add workspace";
+            tone: IconButtonTone.primary;
+            clicked => { root.workspace-add-requested(); }
+        }
+        HorizontalLayout {
+            spacing: AtlasGrid.space-4;
+            AtlasMetricCard {
+                horizontal-stretch: 1;
+                label: "CPU utilization";
+                value: "42%";
+                meta: "Last minute";
+                help-text: "Updated by the application host";
+                tone: ValueTone.info;
+                compact: true;
+            }
+            Surface {
+                horizontal-stretch: 1;
+                height: AtlasGrid.space-12 * 2;
+                raised: true;
+                border-color: AtlasCategoryTokens.category-3;
+                VerticalLayout {
+                    padding: AtlasGrid.space-3;
+                    spacing: AtlasGrid.space-2;
+                    Text { text: "Project Violet"; color: AtlasTheme.content-primary; }
+                    AtlasBadge { text: "HEALTHY"; tone: BadgeTone.healthy; }
+                }
+            }
+        }
         AtlasTextField { label: "Project"; placeholder: "atlas-ui"; required: true; }
         AtlasCheckbox { label: "Initialize documentation"; checked: true; }
         AtlasButton {

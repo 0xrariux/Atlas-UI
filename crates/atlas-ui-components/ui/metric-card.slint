@@ -1,0 +1,55 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasTypography
+} from "@atlas-ui-tokens/tokens.slint";
+import { Surface } from "@atlas-ui-core/stable.slint";
+
+export enum ValueTone { neutral, accent, positive, negative, info }
+
+export component AtlasMetricCard inherits Surface {
+    in property <string> label;
+    in property <string> value;
+    in property <string> meta;
+    in property <ValueTone> tone: ValueTone.neutral;
+    in property <bool> compact: false;
+    in property <string> help-text;
+
+    height: root.compact ? AtlasGrid.space-12 * 2 : AtlasGrid.space-12 * 3;
+    raised: true;
+    accessible-role: AccessibleRole.region;
+    accessible-label: root.label;
+    accessible-value: root.value;
+    accessible-description: root.meta == "" ? root.help-text
+        : root.help-text == "" ? root.meta : root.meta + " " + root.help-text;
+
+    VerticalLayout {
+        padding: AtlasGrid.space-4;
+        spacing: AtlasGrid.space-2;
+        Text {
+            text: root.label;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            font-weight: AtlasTypography.weight-semibold;
+            overflow: elide;
+        }
+        Text {
+            text: root.value;
+            color: root.tone == ValueTone.positive ? AtlasTheme.success
+                : root.tone == ValueTone.negative ? AtlasTheme.danger
+                : root.tone == ValueTone.info ? AtlasTheme.info
+                : root.tone == ValueTone.accent ? AtlasTheme.content-accent
+                : AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-title;
+            font-weight: AtlasTypography.weight-bold;
+            overflow: elide;
+        }
+        Text {
+            text: root.meta;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            overflow: elide;
+        }
+    }
+}

@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": null,
+    "note": null,
+    "reviewer": null,
+    "status": "pending-human"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "navigation.dark.normal.desktop",
-    "page": "navigation",
-    "fixture": "overlays-navigation-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "full",
+    "fixture": "overlays-navigation-v1",
     "grid": false,
-    "viewport": {
-      "width": 1080,
-      "height": 820
-    },
+    "id": "navigation.dark.normal.desktop",
+    "motion": "full",
+    "page": "navigation",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 820,
+      "width": 1080
+    }
   },
   "image": {
-    "width": 1080,
-    "height": 820
+    "height": 820,
+    "width": 1080
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:22.037Z"
-  }
+  "platform": "macos"
 }

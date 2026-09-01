@@ -1,10 +1,10 @@
 {
   "agent_workflow": [
+    "Define the product reference, target viewports, theme, density, and required states using docs/AGENT_VISUAL_WORKFLOW.md.",
     "Select a component by need using docs/AGENT_COMPONENT_INDEX.md.",
     "Prefer stable symbols and make preview dependencies explicit.",
-    "Read the component signature in this manifest.",
-    "Confirm final details in the referenced Slint source declaration.",
-    "Compile the consumer and run scripts/quality-gate.sh."
+    "Read the component signature in this manifest and confirm final details in the referenced Slint source declaration.",
+    "Compile the consumer, capture the target viewports, inspect the rendered screenshots, and refine the composition."
   ],
   "api": {
     "components": [
@@ -57,6 +57,13 @@
             "name": "dismiss-requested",
             "parameters": [],
             "return_type": null
+          },
+          {
+            "declared_in": "ActionArea",
+            "inherited": false,
+            "name": "removal-requested",
+            "parameters": [],
+            "return_type": null
           }
         ],
         "inherits": "Rectangle",
@@ -66,7 +73,7 @@
           "automation-id"
         ],
         "maturity": "preview",
-        "minimal_example": "import { ActionArea } from \"preview.slint\";\n\nActionArea { }",
+        "minimal_example": "import { ActionArea } from \"preview-nonresponsive.slint\";\n\nActionArea { }",
         "name": "ActionArea",
         "properties": [
           {
@@ -250,7 +257,7 @@
           "label"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasAnchorAction } from \"preview.slint\";\n\nAtlasAnchorAction { }",
+        "minimal_example": "import { AtlasAnchorAction } from \"preview-nonresponsive.slint\";\n\nAtlasAnchorAction { }",
         "name": "AtlasAnchorAction",
         "properties": [
           {
@@ -331,7 +338,145 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 77
+        "source_line": 103
+      },
+      {
+        "callbacks": [],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [],
+        "maturity": "preview",
+        "minimal_example": "import { AtlasColumnGrid } from \"preview.slint\";\n\nAtlasColumnGrid { }",
+        "name": "AtlasColumnGrid",
+        "properties": [
+          {
+            "declared_in": "AtlasColumnGrid",
+            "default": "root.width",
+            "direction": "in",
+            "inherited": false,
+            "name": "reference-width",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasColumnGrid",
+            "default": "12",
+            "direction": "in",
+            "inherited": false,
+            "name": "columns",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasColumnGrid",
+            "default": "LayoutGap.normal",
+            "direction": "in",
+            "inherited": false,
+            "name": "gap",
+            "type": "LayoutGap"
+          },
+          {
+            "declared_in": "AtlasColumnGrid",
+            "default": "root.gap == LayoutGap.none ? AtlasGrid.zero : root.gap == LayoutGap.compact ? AtlasGrid.gutter-compact : root.gap == LayoutGap.spacious ? AtlasGrid.gutter-wide : AtlasGrid.gutter-normal",
+            "direction": "out",
+            "inherited": false,
+            "name": "resolved-gap",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasColumnGrid",
+            "default": "(root.reference-width - max(0, root.columns - 1) * root.resolved-gap) / max(1, root.columns)",
+            "direction": "out",
+            "inherited": false,
+            "name": "column-width",
+            "type": "length"
+          }
+        ],
+        "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
+        "source_line": 124
+      },
+      {
+        "callbacks": [],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [
+          "reference-width"
+        ],
+        "maturity": "preview",
+        "minimal_example": "import { AtlasGridItem } from \"preview.slint\";\n\nAtlasGridItem { reference-width: 960px; }",
+        "name": "AtlasGridItem",
+        "properties": [
+          {
+            "declared_in": "AtlasGridItem",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "reference-width",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "12",
+            "direction": "in",
+            "inherited": false,
+            "name": "columns",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "LayoutGap.normal",
+            "direction": "in",
+            "inherited": false,
+            "name": "gap",
+            "type": "LayoutGap"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "12",
+            "direction": "in",
+            "inherited": false,
+            "name": "compact-span",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "root.compact-span",
+            "direction": "in",
+            "inherited": false,
+            "name": "normal-span",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "root.normal-span",
+            "direction": "in",
+            "inherited": false,
+            "name": "wide-span",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "root.reference-width < AtlasGrid.breakpoint-compact ? max(1, min(root.columns, root.compact-span)) : root.reference-width < AtlasGrid.breakpoint-wide ? max(1, min(root.columns, root.normal-span)) : max(1, min(root.columns, root.wide-span))",
+            "direction": "out",
+            "inherited": false,
+            "name": "active-span",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "root.gap == LayoutGap.none ? AtlasGrid.zero : root.gap == LayoutGap.compact ? AtlasGrid.gutter-compact : root.gap == LayoutGap.spacious ? AtlasGrid.gutter-wide : AtlasGrid.gutter-normal",
+            "direction": "out",
+            "inherited": false,
+            "name": "resolved-gap",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasGridItem",
+            "default": "root.active-span * ((root.reference-width - max(0, root.columns - 1) * root.resolved-gap) / max(1, root.columns)) + max(0, root.active-span - 1) * root.resolved-gap",
+            "direction": "out",
+            "inherited": false,
+            "name": "resolved-width",
+            "type": "length"
+          }
+        ],
+        "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
+        "source_line": 147
       },
       {
         "callbacks": [],
@@ -566,6 +711,14 @@
           },
           {
             "declared_in": "AtlasButton",
+            "default": "\"Loading\"",
+            "direction": "in",
+            "inherited": false,
+            "name": "loading-label",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasButton",
             "default": "false",
             "direction": "in",
             "inherited": false,
@@ -582,7 +735,189 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/button.slint",
-        "source_line": 9
+        "source_line": 10
+      },
+      {
+        "callbacks": [
+          {
+            "declared_in": "AtlasIconButton",
+            "inherited": false,
+            "name": "clicked",
+            "parameters": [],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "inherited": false,
+            "name": "traversal-requested",
+            "parameters": [
+              "bool"
+            ],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "inherited": false,
+            "name": "dismiss-requested",
+            "parameters": [],
+            "return_type": null
+          }
+        ],
+        "inherits": "ComponentFrame",
+        "inputs_without_explicit_default": [
+          "icon-name"
+        ],
+        "maturity": "stable",
+        "minimal_example": "import { AtlasIconButton, IconName } from \"stable.slint\";\n\nAtlasIconButton { icon-name: IconName.add; accessible-label: \"Add\"; }",
+        "name": "AtlasIconButton",
+        "properties": [
+          {
+            "declared_in": "ComponentFrame",
+            "default": "AtlasSettings.density",
+            "direction": "in",
+            "inherited": true,
+            "name": "density",
+            "type": "Density"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "true",
+            "direction": "in",
+            "inherited": true,
+            "name": "enabled",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "interactive",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "hovered",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "pressed",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "selected",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "raised",
+            "type": "bool"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "density == Density.compact ? AtlasDensity.control-height-compact : density == Density.comfortable ? AtlasDensity.control-height-comfortable : AtlasDensity.control-height-normal",
+            "direction": "out",
+            "inherited": true,
+            "name": "control-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "density == Density.compact ? AtlasDensity.control-padding-x-compact : density == Density.comfortable ? AtlasDensity.control-padding-x-comfortable : AtlasDensity.control-padding-x-normal",
+            "direction": "out",
+            "inherited": true,
+            "name": "control-padding-x",
+            "type": "length"
+          },
+          {
+            "declared_in": "ComponentFrame",
+            "default": "density == Density.compact ? AtlasDensity.control-gap-compact : density == Density.comfortable ? AtlasDensity.control-gap-comfortable : AtlasDensity.control-gap-normal",
+            "direction": "out",
+            "inherited": true,
+            "name": "control-gap",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "icon-name",
+            "type": "IconName"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "\"atlas-icon-button-\" + root.accessible-label",
+            "direction": "in",
+            "inherited": false,
+            "name": "automation-id",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "IconButtonTone.neutral",
+            "direction": "in",
+            "inherited": false,
+            "name": "tone",
+            "type": "IconButtonTone"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "loading",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "\"Loading\"",
+            "direction": "in",
+            "inherited": false,
+            "name": "loading-label",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "toggle",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "contained-focus",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasIconButton",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "preview-focus-visible",
+            "type": "bool"
+          }
+        ],
+        "source": "crates/atlas-ui-components/ui/icon-button.slint",
+        "source_line": 11
       },
       {
         "callbacks": [
@@ -848,7 +1183,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 25
+        "source_line": 51
       },
       {
         "callbacks": [
@@ -940,7 +1275,7 @@
           "commands"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasCommandPalette } from \"preview.slint\";\n\nAtlasCommandPalette { }",
+        "minimal_example": "import { AtlasCommandPalette } from \"preview-nonresponsive.slint\";\n\nAtlasCommandPalette { }",
         "name": "AtlasCommandPalette",
         "properties": [
           {
@@ -1026,7 +1361,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 848
+        "source_line": 851
       },
       {
         "callbacks": [
@@ -1312,7 +1647,7 @@
           "rows"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasDataList } from \"preview.slint\";\n\nAtlasDataList { }",
+        "minimal_example": "import { AtlasDataList } from \"preview-nonresponsive.slint\";\n\nAtlasDataList { }",
         "name": "AtlasDataList",
         "properties": [
           {
@@ -1373,15 +1708,87 @@
           },
           {
             "declared_in": "AtlasDataTable",
+            "default": "false",
+            "direction": "in",
+            "inherited": true,
+            "name": "rich-rows",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasDataTable",
             "default": "-1",
             "direction": "in-out",
             "inherited": true,
             "name": "focused-row",
             "type": "int"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasDensity.row-height",
+            "direction": "in",
+            "inherited": true,
+            "name": "header-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasDensity.row-height",
+            "direction": "in",
+            "inherited": true,
+            "name": "row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-12 + AtlasGrid.space-8",
+            "direction": "in",
+            "inherited": true,
+            "name": "rich-row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-3",
+            "direction": "in",
+            "inherited": true,
+            "name": "cell-padding-x",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-2",
+            "direction": "in",
+            "inherited": true,
+            "name": "cell-padding-y",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-2",
+            "direction": "in",
+            "inherited": true,
+            "name": "column-gap",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "root.rich-rows ? root.rich-row-height : root.row-height",
+            "direction": "out",
+            "inherited": true,
+            "name": "active-row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "false",
+            "direction": "out",
+            "inherited": true,
+            "name": "horizontal-overflow",
+            "type": "bool"
           }
         ],
         "source": "crates/atlas-ui-components/ui/data-table.slint",
-        "source_line": 91
+        "source_line": 479
       },
       {
         "callbacks": [
@@ -1477,7 +1884,7 @@
           "rows"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasDataTable } from \"preview.slint\";\n\nAtlasDataTable { }",
+        "minimal_example": "import { AtlasDataTable } from \"preview-nonresponsive.slint\";\n\nAtlasDataTable { }",
         "name": "AtlasDataTable",
         "properties": [
           {
@@ -1538,15 +1945,87 @@
           },
           {
             "declared_in": "AtlasDataTable",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "rich-rows",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasDataTable",
             "default": "-1",
             "direction": "in-out",
             "inherited": false,
             "name": "focused-row",
             "type": "int"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasDensity.row-height",
+            "direction": "in",
+            "inherited": false,
+            "name": "header-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasDensity.row-height",
+            "direction": "in",
+            "inherited": false,
+            "name": "row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-12 + AtlasGrid.space-8",
+            "direction": "in",
+            "inherited": false,
+            "name": "rich-row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-3",
+            "direction": "in",
+            "inherited": false,
+            "name": "cell-padding-x",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-2",
+            "direction": "in",
+            "inherited": false,
+            "name": "cell-padding-y",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "AtlasGrid.space-2",
+            "direction": "in",
+            "inherited": false,
+            "name": "column-gap",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "root.rich-rows ? root.rich-row-height : root.row-height",
+            "direction": "out",
+            "inherited": false,
+            "name": "active-row-height",
+            "type": "length"
+          },
+          {
+            "declared_in": "AtlasDataTable",
+            "default": "false",
+            "direction": "out",
+            "inherited": false,
+            "name": "horizontal-overflow",
+            "type": "bool"
           }
         ],
         "source": "crates/atlas-ui-components/ui/data-table.slint",
-        "source_line": 6
+        "source_line": 209
       },
       {
         "callbacks": [],
@@ -1700,7 +2179,7 @@
           "preview-toc-focus-id"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasDocumentationShell } from \"preview.slint\";\n\nAtlasDocumentationShell { }",
+        "minimal_example": "import { AtlasDocumentationShell } from \"preview-nonresponsive.slint\";\n\nAtlasDocumentationShell { }",
         "name": "AtlasDocumentationShell",
         "properties": [
           {
@@ -1956,7 +2435,7 @@
           "results"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasDocumentSearch } from \"preview.slint\";\n\nAtlasDocumentSearch { }",
+        "minimal_example": "import { AtlasDocumentSearch } from \"preview-nonresponsive.slint\";\n\nAtlasDocumentSearch { }",
         "name": "AtlasDocumentSearch",
         "properties": [
           {
@@ -2048,7 +2527,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 616
+        "source_line": 619
       },
       {
         "callbacks": [
@@ -2090,7 +2569,7 @@
           "secondary-action"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasDrawer } from \"preview.slint\";\n\nAtlasDrawer { }",
+        "minimal_example": "import { AtlasDrawer } from \"preview-nonresponsive.slint\";\n\nAtlasDrawer { }",
         "name": "AtlasDrawer",
         "properties": [
           {
@@ -2172,6 +2651,50 @@
       {
         "callbacks": [],
         "inherits": "Rectangle",
+        "inputs_without_explicit_default": [],
+        "maturity": "stable",
+        "minimal_example": "import { AtlasEdgeSurface } from \"stable.slint\";\n\nAtlasEdgeSurface { }",
+        "name": "AtlasEdgeSurface",
+        "properties": [
+          {
+            "declared_in": "AtlasEdgeSurface",
+            "default": "DividerEdge.bottom",
+            "direction": "in",
+            "inherited": false,
+            "name": "divider-edge",
+            "type": "DividerEdge"
+          },
+          {
+            "declared_in": "AtlasEdgeSurface",
+            "default": "true",
+            "direction": "in",
+            "inherited": false,
+            "name": "show-divider",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasEdgeSurface",
+            "default": "AtlasTheme.border-subtle",
+            "direction": "in",
+            "inherited": false,
+            "name": "divider-color",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasEdgeSurface",
+            "default": "AtlasShape.border-width",
+            "direction": "in",
+            "inherited": false,
+            "name": "divider-width",
+            "type": "length"
+          }
+        ],
+        "source": "crates/atlas-ui-core/ui/edge-surface.slint",
+        "source_line": 9
+      },
+      {
+        "callbacks": [],
+        "inherits": "Rectangle",
         "inputs_without_explicit_default": [
           "message"
         ],
@@ -2212,7 +2735,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { AtlasErrorPage } from \"preview.slint\";\n\nAtlasErrorPage { }",
+        "minimal_example": "import { AtlasErrorPage } from \"preview-nonresponsive.slint\";\n\nAtlasErrorPage { }",
         "name": "AtlasErrorPage",
         "properties": [
           {
@@ -2443,7 +2966,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 714
+        "source_line": 717
       },
       {
         "callbacks": [
@@ -2701,7 +3224,7 @@
           "message"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasInlineAlert } from \"preview.slint\";\n\nAtlasInlineAlert { }",
+        "minimal_example": "import { AtlasInlineAlert } from \"preview-nonresponsive.slint\";\n\nAtlasInlineAlert { }",
         "name": "AtlasInlineAlert",
         "properties": [
           {
@@ -2828,7 +3351,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 98
+        "source_line": 178
       },
       {
         "callbacks": [],
@@ -2838,7 +3361,7 @@
           "items"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasKeyValueList } from \"preview.slint\";\n\nAtlasKeyValueList { }",
+        "minimal_example": "import { AtlasKeyValueList } from \"preview-nonresponsive.slint\";\n\nAtlasKeyValueList { }",
         "name": "AtlasKeyValueList",
         "properties": [
           {
@@ -2947,7 +3470,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/migration-wave.slint",
-        "source_line": 85
+        "source_line": 127
       },
       {
         "callbacks": [
@@ -3137,7 +3660,7 @@
           "items"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasMenu } from \"preview.slint\";\n\nAtlasMenu { }",
+        "minimal_example": "import { AtlasMenu } from \"preview-nonresponsive.slint\";\n\nAtlasMenu { }",
         "name": "AtlasMenu",
         "properties": [
           {
@@ -3177,8 +3700,8 @@
           "meta",
           "help-text"
         ],
-        "maturity": "preview",
-        "minimal_example": "import { AtlasMetricCard } from \"preview.slint\";\n\nAtlasMetricCard { }",
+        "maturity": "stable",
+        "minimal_example": "import { AtlasMetricCard } from \"stable.slint\";\n\nAtlasMetricCard { }",
         "name": "AtlasMetricCard",
         "properties": [
           {
@@ -3310,8 +3833,8 @@
             "type": "string"
           }
         ],
-        "source": "crates/atlas-ui-components/ui/migration-wave.slint",
-        "source_line": 17
+        "source": "crates/atlas-ui-components/ui/metric-card.slint",
+        "source_line": 8
       },
       {
         "callbacks": [
@@ -3344,7 +3867,7 @@
           "description"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasModal } from \"preview.slint\";\n\nAtlasModal { }",
+        "minimal_example": "import { AtlasModal } from \"preview-nonresponsive.slint\";\n\nAtlasModal { }",
         "name": "AtlasModal",
         "properties": [
           {
@@ -3440,7 +3963,7 @@
           "items"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasNoticeStack } from \"preview.slint\";\n\nAtlasNoticeStack { }",
+        "minimal_example": "import { AtlasNoticeStack } from \"preview-nonresponsive.slint\";\n\nAtlasNoticeStack { }",
         "name": "AtlasNoticeStack",
         "properties": [
           {
@@ -3478,7 +4001,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { AtlasPagination } from \"preview.slint\";\n\nAtlasPagination { }",
+        "minimal_example": "import { AtlasPagination } from \"preview-nonresponsive.slint\";\n\nAtlasPagination { }",
         "name": "AtlasPagination",
         "properties": [
           {
@@ -3507,7 +4030,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/migration-wave.slint",
-        "source_line": 75
+        "source_line": 117
       },
       {
         "callbacks": [],
@@ -3517,7 +4040,7 @@
           "meta"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasPanel } from \"preview.slint\";\n\nAtlasPanel { }",
+        "minimal_example": "import { AtlasPanel } from \"preview-nonresponsive.slint\";\n\nAtlasPanel { }",
         "name": "AtlasPanel",
         "properties": [
           {
@@ -3680,7 +4203,7 @@
           "meta"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasProgressBar } from \"preview.slint\";\n\nAtlasProgressBar { }",
+        "minimal_example": "import { AtlasProgressBar } from \"preview-nonresponsive.slint\";\n\nAtlasProgressBar { }",
         "name": "AtlasProgressBar",
         "properties": [
           {
@@ -3725,6 +4248,30 @@
           },
           {
             "declared_in": "AtlasProgressBar",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "indeterminate",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasProgressBar",
+            "default": "true",
+            "direction": "in",
+            "inherited": false,
+            "name": "show-labels",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasProgressBar",
+            "default": "root.indeterminate ? \"In progress\" : round(root.percent * 100) + \"%\"",
+            "direction": "in",
+            "inherited": false,
+            "name": "value-text",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasProgressBar",
             "default": "root.maximum <= 0 ? 0 : max(0, min(1, root.value / root.maximum))",
             "direction": "out",
             "inherited": false,
@@ -3733,7 +4280,70 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/migration-wave.slint",
-        "source_line": 55
+        "source_line": 44
+      },
+      {
+        "callbacks": [],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [
+          "label",
+          "meta"
+        ],
+        "maturity": "preview",
+        "minimal_example": "import { AtlasRadialProgress } from \"preview-nonresponsive.slint\";\n\nAtlasRadialProgress { }",
+        "name": "AtlasRadialProgress",
+        "properties": [
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": "0",
+            "direction": "in",
+            "inherited": false,
+            "name": "value",
+            "type": "float"
+          },
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": "100",
+            "direction": "in",
+            "inherited": false,
+            "name": "maximum",
+            "type": "float"
+          },
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "label",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "meta",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": "ProgressTone.neutral",
+            "direction": "in",
+            "inherited": false,
+            "name": "tone",
+            "type": "ProgressTone"
+          },
+          {
+            "declared_in": "AtlasRadialProgress",
+            "default": "root.maximum <= 0 ? 0 : max(0, min(1, root.value / root.maximum))",
+            "direction": "out",
+            "inherited": false,
+            "name": "percent",
+            "type": "float"
+          }
+        ],
+        "source": "crates/atlas-ui-components/ui/migration-wave.slint",
+        "source_line": 67
       },
       {
         "callbacks": [
@@ -3753,7 +4363,7 @@
           "unit"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasRangeControl } from \"preview.slint\";\n\nAtlasRangeControl { }",
+        "minimal_example": "import { AtlasRangeControl } from \"preview-nonresponsive.slint\";\n\nAtlasRangeControl { }",
         "name": "AtlasRangeControl",
         "properties": [
           {
@@ -3814,7 +4424,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/migration-wave.slint",
-        "source_line": 67
+        "source_line": 109
       },
       {
         "callbacks": [
@@ -3908,7 +4518,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 162
+        "source_line": 242
       },
       {
         "callbacks": [
@@ -4128,7 +4738,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { AtlasScrollViewport } from \"preview.slint\";\n\nAtlasScrollViewport { }",
+        "minimal_example": "import { AtlasScrollViewport } from \"preview-nonresponsive.slint\";\n\nAtlasScrollViewport { }",
         "name": "AtlasScrollViewport",
         "properties": [
           {
@@ -4218,7 +4828,7 @@
           "options"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasSegmentedControl } from \"preview.slint\";\n\nAtlasSegmentedControl { }",
+        "minimal_example": "import { AtlasSegmentedControl } from \"preview-nonresponsive.slint\";\n\nAtlasSegmentedControl { }",
         "name": "AtlasSegmentedControl",
         "properties": [
           {
@@ -4288,7 +4898,7 @@
           "selection-end"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasSelectableText } from \"preview.slint\";\n\nAtlasSelectableText { }",
+        "minimal_example": "import { AtlasSelectableText } from \"preview-nonresponsive.slint\";\n\nAtlasSelectableText { }",
         "name": "AtlasSelectableText",
         "properties": [
           {
@@ -4377,7 +4987,7 @@
           "error"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasSelectField } from \"preview.slint\";\n\nAtlasSelectField { }",
+        "minimal_example": "import { AtlasSelectField } from \"preview-nonresponsive.slint\";\n\nAtlasSelectField { }",
         "name": "AtlasSelectField",
         "properties": [
           {
@@ -4578,7 +5188,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 45
+        "source_line": 71
       },
       {
         "callbacks": [],
@@ -4616,7 +5226,7 @@
           "label"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasSparkline } from \"preview.slint\";\n\nAtlasSparkline { }",
+        "minimal_example": "import { AtlasSparkline } from \"preview-nonresponsive.slint\";\n\nAtlasSparkline { }",
         "name": "AtlasSparkline",
         "properties": [
           {
@@ -4654,6 +5264,52 @@
         ],
         "source": "crates/atlas-ui-components/ui/final-wave.slint",
         "source_line": 16
+      },
+      {
+        "callbacks": [],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [
+          "label"
+        ],
+        "maturity": "preview",
+        "minimal_example": "import { AtlasSpinner } from \"preview-nonresponsive.slint\";\n\nAtlasSpinner { label: \"Loading workspace\"; }",
+        "name": "AtlasSpinner",
+        "properties": [
+          {
+            "declared_in": "AtlasSpinner",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "label",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasSpinner",
+            "default": "\"In progress\"",
+            "direction": "in",
+            "inherited": false,
+            "name": "value-text",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasSpinner",
+            "default": "AtlasTheme.info",
+            "direction": "in",
+            "inherited": false,
+            "name": "indicator-color",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasSpinner",
+            "default": "AtlasTypography.size-title-small",
+            "direction": "in",
+            "inherited": false,
+            "name": "size",
+            "type": "length"
+          }
+        ],
+        "source": "crates/atlas-ui-components/ui/activity-indicator.slint",
+        "source_line": 8
       },
       {
         "callbacks": [],
@@ -4713,7 +5369,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 144
+        "source_line": 224
       },
       {
         "callbacks": [],
@@ -4773,7 +5429,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 122
+        "source_line": 202
       },
       {
         "callbacks": [],
@@ -4809,7 +5465,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 9
+        "source_line": 35
       },
       {
         "callbacks": [
@@ -4828,7 +5484,7 @@
           "steps"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasStepper } from \"preview.slint\";\n\nAtlasStepper { }",
+        "minimal_example": "import { AtlasStepper } from \"preview-nonresponsive.slint\";\n\nAtlasStepper { }",
         "name": "AtlasStepper",
         "properties": [
           {
@@ -4901,7 +5557,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 230
+        "source_line": 310
       },
       {
         "callbacks": [],
@@ -5081,7 +5737,7 @@
           }
         ],
         "source": "crates/atlas-ui-core/ui/responsive-layout.slint",
-        "source_line": 61
+        "source_line": 87
       },
       {
         "callbacks": [
@@ -5108,7 +5764,7 @@
           "automation-id"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasTab } from \"preview.slint\";\n\nAtlasTab { }",
+        "minimal_example": "import { AtlasTab } from \"preview-nonresponsive.slint\";\n\nAtlasTab { }",
         "name": "AtlasTab",
         "properties": [
           {
@@ -5193,7 +5849,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/tabs.slint",
-        "source_line": 6
+        "source_line": 7
       },
       {
         "callbacks": [],
@@ -5202,7 +5858,7 @@
           "accessible-name"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasTabPanel } from \"preview.slint\";\n\nAtlasTabPanel { }",
+        "minimal_example": "import { AtlasTabPanel } from \"preview-nonresponsive.slint\";\n\nAtlasTabPanel { }",
         "name": "AtlasTabPanel",
         "properties": [
           {
@@ -5215,7 +5871,229 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/tabs.slint",
-        "source_line": 64
+        "source_line": 65
+      },
+      {
+        "callbacks": [
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "inherited": false,
+            "name": "activated",
+            "parameters": [],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "inherited": false,
+            "name": "close-requested",
+            "parameters": [],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "inherited": false,
+            "name": "navigation-requested",
+            "parameters": [
+              "int"
+            ],
+            "return_type": null
+          }
+        ],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [
+          "tab-id",
+          "text"
+        ],
+        "maturity": "stable",
+        "minimal_example": "import { AtlasWorkspaceTab } from \"stable.slint\";\n\nAtlasWorkspaceTab { tab-id: \"overview\"; text: \"Overview\"; }",
+        "name": "AtlasWorkspaceTab",
+        "properties": [
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "tab-id",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": null,
+            "direction": "in",
+            "inherited": false,
+            "name": "text",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "selected",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "true",
+            "direction": "in",
+            "inherited": false,
+            "name": "enabled",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "dirty",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "closable",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "active-in-roving-group",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "0",
+            "direction": "in",
+            "inherited": false,
+            "name": "index",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "1",
+            "direction": "in",
+            "inherited": false,
+            "name": "count",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "\"atlas-workspace-tab-\" + root.tab-id",
+            "direction": "in",
+            "inherited": false,
+            "name": "automation-id",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "preview-focus-visible",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTab",
+            "default": "false",
+            "direction": "in",
+            "inherited": false,
+            "name": "preview-close-focus-visible",
+            "type": "bool"
+          }
+        ],
+        "source": "crates/atlas-ui-components/ui/tabs.slint",
+        "source_line": 74
+      },
+      {
+        "callbacks": [
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "inherited": false,
+            "name": "activated",
+            "parameters": [
+              "int"
+            ],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "inherited": false,
+            "name": "close-requested",
+            "parameters": [
+              "int"
+            ],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "inherited": false,
+            "name": "focus-requested",
+            "parameters": [
+              "int"
+            ],
+            "return_type": null
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "inherited": false,
+            "name": "overflow-requested",
+            "parameters": [],
+            "return_type": null
+          }
+        ],
+        "inherits": "Rectangle",
+        "inputs_without_explicit_default": [],
+        "maturity": "stable",
+        "minimal_example": "import { AtlasWorkspaceTabList } from \"stable.slint\";\n\nAtlasWorkspaceTabList { accessible-label: \"Workspace tabs\"; }",
+        "name": "AtlasWorkspaceTabList",
+        "properties": [
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "default": "0",
+            "direction": "in",
+            "inherited": false,
+            "name": "tab-count",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "default": "-1",
+            "direction": "in",
+            "inherited": false,
+            "name": "selected-index",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "default": "root.selected-index >= 0 ? root.selected-index : 0",
+            "direction": "in-out",
+            "inherited": false,
+            "name": "active-index",
+            "type": "int"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "default": "true",
+            "direction": "in",
+            "inherited": false,
+            "name": "wrap-navigation",
+            "type": "bool"
+          },
+          {
+            "declared_in": "AtlasWorkspaceTabList",
+            "default": "content.preferred-width > root.width",
+            "direction": "out",
+            "inherited": false,
+            "name": "overflowed",
+            "type": "bool"
+          }
+        ],
+        "source": "crates/atlas-ui-components/ui/tabs.slint",
+        "source_line": 203
       },
       {
         "callbacks": [
@@ -5272,7 +6150,7 @@
           }
         ],
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 795
+        "source_line": 798
       },
       {
         "callbacks": [
@@ -5406,7 +6284,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { AtlasThemeControl } from \"preview.slint\";\n\nAtlasThemeControl { }",
+        "minimal_example": "import { AtlasThemeControl } from \"preview-nonresponsive.slint\";\n\nAtlasThemeControl { }",
         "name": "AtlasThemeControl",
         "properties": [
           {
@@ -5444,7 +6322,7 @@
           "text"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasTooltip } from \"preview.slint\";\n\nAtlasTooltip { }",
+        "minimal_example": "import { AtlasTooltip } from \"preview-nonresponsive.slint\";\n\nAtlasTooltip { }",
         "name": "AtlasTooltip",
         "properties": [
           {
@@ -5516,7 +6394,7 @@
           "action-text"
         ],
         "maturity": "preview",
-        "minimal_example": "import { AtlasWorkflowBanner } from \"preview.slint\";\n\nAtlasWorkflowBanner { }",
+        "minimal_example": "import { AtlasWorkflowBanner } from \"preview-nonresponsive.slint\";\n\nAtlasWorkflowBanner { }",
         "name": "AtlasWorkflowBanner",
         "properties": [
           {
@@ -5740,7 +6618,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { LayoutGridOverlay } from \"preview.slint\";\n\nLayoutGridOverlay { }",
+        "minimal_example": "import { LayoutGridOverlay } from \"preview-nonresponsive.slint\";\n\nLayoutGridOverlay { }",
         "name": "LayoutGridOverlay",
         "properties": [
           {
@@ -5808,7 +6686,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { OverlayFocusController } from \"preview.slint\";\n\nOverlayFocusController { }",
+        "minimal_example": "import { OverlayFocusController } from \"preview-nonresponsive.slint\";\n\nOverlayFocusController { }",
         "name": "OverlayFocusController",
         "properties": [
           {
@@ -5838,7 +6716,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { RovingFocusController } from \"preview.slint\";\n\nRovingFocusController { }",
+        "minimal_example": "import { RovingFocusController } from \"preview-nonresponsive.slint\";\n\nRovingFocusController { }",
         "name": "RovingFocusController",
         "properties": [
           {
@@ -5886,7 +6764,7 @@
         "inherits": "Rectangle",
         "inputs_without_explicit_default": [],
         "maturity": "preview",
-        "minimal_example": "import { SelectionController } from \"preview.slint\";\n\nSelectionController { }",
+        "minimal_example": "import { SelectionController } from \"preview-nonresponsive.slint\";\n\nSelectionController { }",
         "name": "SelectionController",
         "properties": [
           {
@@ -6003,6 +6881,142 @@
       }
     ],
     "globals": [
+      {
+        "callbacks": [],
+        "kind": "global",
+        "maturity": "stable",
+        "name": "AtlasCategoryTokens",
+        "properties": [
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#7db7ff",
+            "direction": "out",
+            "name": "dark-category-1",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#f0b56a",
+            "direction": "out",
+            "name": "dark-category-2",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#c3a6ff",
+            "direction": "out",
+            "name": "dark-category-3",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#67d5d1",
+            "direction": "out",
+            "name": "dark-category-4",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#ef9ac1",
+            "direction": "out",
+            "name": "dark-category-5",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#b8cf6a",
+            "direction": "out",
+            "name": "dark-category-6",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#315a78",
+            "direction": "out",
+            "name": "light-category-1",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#865100",
+            "direction": "out",
+            "name": "light-category-2",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#6b4f91",
+            "direction": "out",
+            "name": "light-category-3",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#246b68",
+            "direction": "out",
+            "name": "light-category-4",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#8a3f67",
+            "direction": "out",
+            "name": "light-category-5",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "#5f6826",
+            "direction": "out",
+            "name": "light-category-6",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-1 : dark-category-1",
+            "direction": "out",
+            "name": "category-1",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-2 : dark-category-2",
+            "direction": "out",
+            "name": "category-2",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-3 : dark-category-3",
+            "direction": "out",
+            "name": "category-3",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-4 : dark-category-4",
+            "direction": "out",
+            "name": "category-4",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-5 : dark-category-5",
+            "direction": "out",
+            "name": "category-5",
+            "type": "color"
+          },
+          {
+            "declared_in": "AtlasCategoryTokens",
+            "default": "AtlasSettings.resolved-theme-mode == ThemeMode.light ? light-category-6 : dark-category-6",
+            "direction": "out",
+            "name": "category-6",
+            "type": "color"
+          }
+        ],
+        "source": "crates/atlas-ui-tokens/ui/categorical.slint",
+        "source_line": 6
+      },
       {
         "callbacks": [],
         "kind": "global",
@@ -6603,6 +7617,20 @@
             "default": "AtlasSettings.motion == MotionPreference.reduced ? 0ms : 280ms",
             "direction": "out",
             "name": "slow",
+            "type": "duration"
+          },
+          {
+            "declared_in": "AtlasMotion",
+            "default": "1200ms",
+            "direction": "out",
+            "name": "spinner-cycle",
+            "type": "duration"
+          },
+          {
+            "declared_in": "AtlasMotion",
+            "default": "1400ms",
+            "direction": "out",
+            "name": "indeterminate-cycle",
             "type": "duration"
           }
         ],
@@ -7461,9 +8489,16 @@
         "properties": [
           {
             "declared_in": "AtlasTypography",
-            "default": "\"Inter\"",
+            "default": "\"Atlas\"",
             "direction": "out",
             "name": "font-sans",
+            "type": "string"
+          },
+          {
+            "declared_in": "AtlasTypography",
+            "default": "\"Inter\"",
+            "direction": "out",
+            "name": "font-display",
             "type": "string"
           },
           {
@@ -7748,7 +8783,7 @@
           }
         ],
         "source": "crates/atlas-ui-tokens/ui/typography.slint",
-        "source_line": 5
+        "source_line": 8
       },
       {
         "callbacks": [],
@@ -7969,7 +9004,7 @@
         "maturity": "preview",
         "name": "CellEditorKind",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 7,
+        "source_line": 9,
         "values": [
           "none",
           "text",
@@ -7983,7 +9018,7 @@
         "maturity": "preview",
         "name": "ColumnPin",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 8,
+        "source_line": 10,
         "values": [
           "none",
           "start",
@@ -8038,7 +9073,7 @@
         "maturity": "preview",
         "name": "ContentTabItem",
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 846
+        "source_line": 849
       },
       {
         "fields": [
@@ -8115,13 +9150,88 @@
           {
             "name": "editable",
             "type": "bool"
+          },
+          {
+            "name": "kind",
+            "type": "DataCellKind"
+          },
+          {
+            "name": "primary-text",
+            "type": "string"
+          },
+          {
+            "name": "secondary-text",
+            "type": "string"
+          },
+          {
+            "name": "badge-text",
+            "type": "string"
+          },
+          {
+            "name": "badge-tone",
+            "type": "BadgeTone"
+          },
+          {
+            "name": "tags",
+            "type": "[DataCellTag]"
+          },
+          {
+            "name": "alignment",
+            "type": "DataCellAlignment"
+          },
+          {
+            "name": "wrap",
+            "type": "bool"
           }
         ],
         "kind": "struct",
         "maturity": "preview",
         "name": "DataCell",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 25
+        "source_line": 34
+      },
+      {
+        "kind": "enum",
+        "maturity": "preview",
+        "name": "DataCellAlignment",
+        "source": "crates/atlas-ui-components/ui/data-contracts.slint",
+        "source_line": 12,
+        "values": [
+          "start",
+          "center",
+          "end"
+        ]
+      },
+      {
+        "kind": "enum",
+        "maturity": "preview",
+        "name": "DataCellKind",
+        "source": "crates/atlas-ui-components/ui/data-contracts.slint",
+        "source_line": 11,
+        "values": [
+          "text",
+          "stacked",
+          "badge",
+          "stacked-with-badge",
+          "tags"
+        ]
+      },
+      {
+        "fields": [
+          {
+            "name": "text",
+            "type": "string"
+          },
+          {
+            "name": "tone",
+            "type": "BadgeTone"
+          }
+        ],
+        "kind": "struct",
+        "maturity": "preview",
+        "name": "DataCellTag",
+        "source": "crates/atlas-ui-components/ui/data-contracts.slint",
+        "source_line": 14
       },
       {
         "fields": [
@@ -8178,7 +9288,7 @@
         "maturity": "preview",
         "name": "DataColumn",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 10
+        "source_line": 19
       },
       {
         "fields": [
@@ -8199,7 +9309,7 @@
         "maturity": "preview",
         "name": "DataFilter",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 47
+        "source_line": 64
       },
       {
         "fields": [
@@ -8232,7 +9342,7 @@
         "maturity": "preview",
         "name": "DataRow",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 33
+        "source_line": 50
       },
       {
         "fields": [
@@ -8249,14 +9359,14 @@
         "maturity": "preview",
         "name": "DataSort",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 42
+        "source_line": 59
       },
       {
         "kind": "enum",
         "maturity": "preview",
         "name": "DataViewState",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 4,
+        "source_line": 6,
         "values": [
           "ready",
           "loading",
@@ -8274,6 +9384,19 @@
           "compact",
           "normal",
           "comfortable"
+        ]
+      },
+      {
+        "kind": "enum",
+        "maturity": "stable",
+        "name": "DividerEdge",
+        "source": "crates/atlas-ui-core/ui/edge-surface.slint",
+        "source_line": 5,
+        "values": [
+          "top",
+          "right",
+          "bottom",
+          "left"
         ]
       },
       {
@@ -8370,7 +9493,7 @@
         "maturity": "preview",
         "name": "DocumentTableColumn",
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 613
+        "source_line": 616
       },
       {
         "fields": [
@@ -8383,7 +9506,7 @@
         "maturity": "preview",
         "name": "DocumentTableRow",
         "source": "crates/atlas-ui-components/ui/rich-content.slint",
-        "source_line": 614
+        "source_line": 617
       },
       {
         "kind": "enum",
@@ -8489,6 +9612,18 @@
       {
         "kind": "enum",
         "maturity": "stable",
+        "name": "IconButtonTone",
+        "source": "crates/atlas-ui-components/ui/icon-button.slint",
+        "source_line": 8,
+        "values": [
+          "neutral",
+          "primary",
+          "danger"
+        ]
+      },
+      {
+        "kind": "enum",
+        "maturity": "stable",
         "name": "IconName",
         "source": "crates/atlas-ui-icons/ui/icons.slint",
         "source_line": 3,
@@ -8507,7 +9642,16 @@
           "search",
           "shield",
           "warning",
-          "chevron-down"
+          "chevron-down",
+          "chevron-right",
+          "grid",
+          "terminal",
+          "gamepad",
+          "cpu",
+          "memory",
+          "play",
+          "stop",
+          "layers"
         ]
       },
       {
@@ -8845,7 +9989,7 @@
         "maturity": "preview",
         "name": "SortDirection",
         "source": "crates/atlas-ui-components/ui/data-contracts.slint",
-        "source_line": 6,
+        "source_line": 8,
         "values": [
           "none",
           "ascending",
@@ -8995,9 +10139,9 @@
       },
       {
         "kind": "enum",
-        "maturity": "preview",
+        "maturity": "stable",
         "name": "ValueTone",
-        "source": "crates/atlas-ui-components/ui/migration-wave.slint",
+        "source": "crates/atlas-ui-components/ui/metric-card.slint",
         "source_line": 6,
         "values": [
           "neutral",
@@ -9010,12 +10154,13 @@
     ]
   },
   "counts": {
-    "components": 81,
-    "preview_components": 61,
-    "preview_symbols": 110,
-    "stable_components": 20,
-    "stable_symbols": 48,
-    "visual_scenarios": 72
+    "components": 89,
+    "preview_components": 64,
+    "preview_nonresponsive_symbols": 73,
+    "preview_symbols": 115,
+    "stable_components": 25,
+    "stable_symbols": 57,
+    "visual_scenarios": 77
   },
   "documentation": {
     "architecture": "docs/ARCHITECTURE.md",
@@ -9023,11 +10168,13 @@
     "component_index": "docs/AGENT_COMPONENT_INDEX.md",
     "gallery": "apps/gallery",
     "integration_guide": "docs/AI_INTEGRATION_GUIDE.md",
-    "manifest_schema": "docs/AGENT_MANIFEST.md"
+    "manifest_schema": "docs/AGENT_MANIFEST.md",
+    "visual_workflow": "docs/AGENT_VISUAL_WORKFLOW.md"
   },
   "facades": {
     "aggregate": "crates/atlas-ui-components/ui/components.slint",
     "preview": "crates/atlas-ui-components/ui/preview.slint",
+    "preview_nonresponsive": "crates/atlas-ui-components/ui/preview-nonresponsive.slint",
     "stable": "crates/atlas-ui-components/ui/stable.slint"
   },
   "generated_by": "atlas-ui-tooling generate-agent-manifest",
@@ -9054,11 +10201,18 @@
       "animation"
     ]
   },
+  "preview_compatibility_exports": [
+    "AtlasEdgeSurface",
+    "AtlasMetricCard",
+    "DividerEdge",
+    "ValueTone"
+  ],
   "preview_components": [
     "ActionArea",
     "AtlasAdmonition",
     "AtlasAnchorAction",
     "AtlasAutoGrid",
+    "AtlasColumnGrid",
     "AtlasCallout",
     "AtlasCaption",
     "AtlasCluster",
@@ -9077,18 +10231,19 @@
     "AtlasFigure",
     "AtlasFootnoteList",
     "AtlasFootnoteReference",
+    "AtlasGridItem",
     "AtlasInlineAlert",
     "AtlasIntrinsicFrame",
     "AtlasKeyValueList",
     "AtlasLink",
     "AtlasLinkCard",
     "AtlasMenu",
-    "AtlasMetricCard",
     "AtlasModal",
     "AtlasNoticeStack",
     "AtlasPagination",
     "AtlasPanel",
     "AtlasProgressBar",
+    "AtlasRadialProgress",
     "AtlasRangeControl",
     "AtlasResizeHandle",
     "AtlasRichText",
@@ -9100,6 +10255,7 @@
     "AtlasSettingsTemplate",
     "AtlasSidebar",
     "AtlasSparkline",
+    "AtlasSpinner",
     "AtlasSplitPane",
     "AtlasSplitView",
     "AtlasStack",
@@ -9117,6 +10273,81 @@
     "RovingFocusController",
     "SelectionController"
   ],
+  "preview_nonresponsive_symbols": [
+    "ActionArea",
+    "AlertTone",
+    "AtlasAnchorAction",
+    "AtlasCommandPalette",
+    "AtlasDataList",
+    "AtlasDataTable",
+    "AtlasDocumentSearch",
+    "AtlasDocumentationShell",
+    "AtlasDrawer",
+    "AtlasEdgeSurface",
+    "AtlasErrorPage",
+    "AtlasInlineAlert",
+    "AtlasKeyValueList",
+    "AtlasMenu",
+    "AtlasMetricCard",
+    "AtlasModal",
+    "AtlasNoticeStack",
+    "AtlasPagination",
+    "AtlasPanel",
+    "AtlasProgressBar",
+    "AtlasRadialProgress",
+    "AtlasRangeControl",
+    "AtlasScrollViewport",
+    "AtlasSegmentedControl",
+    "AtlasSelectField",
+    "AtlasSelectableText",
+    "AtlasSparkline",
+    "AtlasSpinner",
+    "AtlasStepper",
+    "AtlasTab",
+    "AtlasTabPanel",
+    "AtlasThemeControl",
+    "AtlasTooltip",
+    "AtlasWorkflowBanner",
+    "BreadcrumbItem",
+    "CellEditorKind",
+    "ColumnPin",
+    "CommandPaletteItem",
+    "DataCell",
+    "DataCellAlignment",
+    "DataCellKind",
+    "DataCellTag",
+    "DataColumn",
+    "DataFilter",
+    "DataRow",
+    "DataSort",
+    "DataViewState",
+    "DividerEdge",
+    "DocumentSearchResult",
+    "DocumentationNavItem",
+    "DrawerSide",
+    "FooterLink",
+    "KeyValueItem",
+    "LayoutGridOverlay",
+    "LayoutWidth",
+    "MenuItem",
+    "ModalSize",
+    "NoticeItem",
+    "NoticeTone",
+    "OverlayFocusController",
+    "ProgressTone",
+    "RovingFocusController",
+    "SegmentOption",
+    "SelectionController",
+    "SelectionMode",
+    "SortDirection",
+    "SparklineTone",
+    "StepItem",
+    "TabVariant",
+    "TocItem",
+    "TooltipPlacement",
+    "TooltipTone",
+    "ValueTone"
+  ],
   "schema_version": 2,
   "slint_version": "1.17.1",
   "stable_components": [
@@ -9126,22 +10357,28 @@
     "AtlasCheckbox",
     "AtlasCodeBlock",
     "AtlasDivider",
+    "AtlasEdgeSurface",
     "AtlasEmptyState",
     "AtlasErrorState",
     "AtlasHeading",
     "AtlasIcon",
+    "AtlasIconButton",
     "AtlasInlineCode",
+    "AtlasMetricCard",
     "AtlasParagraph",
     "AtlasSkeleton",
     "AtlasStyledText",
     "AtlasSwitch",
     "AtlasTextField",
+    "AtlasWorkspaceTab",
+    "AtlasWorkspaceTabList",
     "ComponentFrame",
     "ContentFrame",
     "FocusRing",
     "Surface"
   ],
   "stable_globals": [
+    "AtlasCategoryTokens",
     "AtlasControlTokens",
     "AtlasDensity",
     "AtlasElevation",
@@ -9162,19 +10399,22 @@
     "BadgeTone",
     "ButtonTone",
     "Density",
+    "DividerEdge",
     "EditorialEmphasis",
     "EditorialTone",
     "HeadingLevel",
     "IconName",
+    "IconButtonTone",
     "IconSize",
     "IconTone",
     "MotionPreference",
     "SwitchTone",
     "ThemeMode",
-    "TypographyScale"
+    "TypographyScale",
+    "ValueTone"
   ],
   "version": "0.2.1",
   "visual_validation": {
-    "scenario_count": 72
+    "scenario_count": 77
   }
 }

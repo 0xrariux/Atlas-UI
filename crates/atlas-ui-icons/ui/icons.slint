@@ -2,7 +2,8 @@ import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
 
 export enum IconName {
     none, add, back, check, close, info, lock, logs, menu, profile,
-    refresh, search, shield, warning, chevron-down
+    refresh, search, shield, warning, chevron-down, chevron-right,
+    grid, terminal, gamepad, cpu, memory, play, stop, layers
 }
 export enum IconTone { primary, secondary, accent, success, warning, danger, info }
 export enum IconSize { compact, normal, large }
@@ -48,6 +49,15 @@ export component AtlasIcon inherits Rectangle {
             : root.name == IconName.shield ? @image-url("../assets/shield.svg")
             : root.name == IconName.warning ? @image-url("../assets/warning.svg")
             : root.name == IconName.chevron-down ? @image-url("../assets/chevron-down.svg")
+            : root.name == IconName.chevron-right ? @image-url("../assets/chevron-right.svg")
+            : root.name == IconName.grid ? @image-url("../assets/grid.svg")
+            : root.name == IconName.terminal ? @image-url("../assets/terminal.svg")
+            : root.name == IconName.gamepad ? @image-url("../assets/gamepad.svg")
+            : root.name == IconName.cpu ? @image-url("../assets/cpu.svg")
+            : root.name == IconName.memory ? @image-url("../assets/memory.svg")
+            : root.name == IconName.play ? @image-url("../assets/play.svg")
+            : root.name == IconName.stop ? @image-url("../assets/stop.svg")
+            : root.name == IconName.layers ? @image-url("../assets/layers.svg")
             : @image-url("../assets/none.svg");
     }
     if !root.decorative: Rectangle {

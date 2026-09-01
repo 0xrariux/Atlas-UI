@@ -5,7 +5,6 @@ import {
 export enum LayoutGap { none, compact, normal, spacious }
 export enum SplitOrientation { horizontal, vertical }
 export enum StickyEdge { top, bottom }
-
 export component AtlasStack inherits Rectangle {
     in property <LayoutGap> gap: LayoutGap.normal;
     in property <length> inset: AtlasGrid.zero;
@@ -90,6 +89,60 @@ export component AtlasAutoGrid inherits Rectangle {
         cross-axis-alignment: stretch;
         @children
     }
+}
+
+// Explicit responsive grid for asymmetric application layouts. Consumers bind
+// each item's reference-width to this grid so nested grids respond to their
+// container rather than to the application window.
+export component AtlasColumnGrid inherits Rectangle {
+    in property <length> reference-width: root.width;
+    in property <int> columns: 12;
+    in property <LayoutGap> gap: LayoutGap.normal;
+    out property <length> resolved-gap: root.gap == LayoutGap.none ? AtlasGrid.zero
+        : root.gap == LayoutGap.compact ? AtlasGrid.gutter-compact
+        : root.gap == LayoutGap.spacious ? AtlasGrid.gutter-wide
+        : AtlasGrid.gutter-normal;
+    out property <length> column-width: (root.reference-width
+        - max(0, root.columns - 1) * root.resolved-gap) / max(1, root.columns);
+
+    background: transparent;
+    FlexboxLayout {
+        spacing: root.resolved-gap;
+        flex-direction: row;
+        flex-wrap: wrap;
+        cross-axis-alignment: stretch;
+        @children
+    }
+}
+
+// Direct child of AtlasColumnGrid. Span values are clamped to the configured
+// column count. Bind columns and gap when the parent grid overrides its defaults.
+export component AtlasGridItem inherits Rectangle {
+    in property <length> reference-width;
+    in property <int> columns: 12;
+    in property <LayoutGap> gap: LayoutGap.normal;
+    in property <int> compact-span: 12;
+    in property <int> normal-span: root.compact-span;
+    in property <int> wide-span: root.normal-span;
+    out property <int> active-span: root.reference-width < AtlasGrid.breakpoint-compact
+        ? max(1, min(root.columns, root.compact-span))
+        : root.reference-width < AtlasGrid.breakpoint-wide
+            ? max(1, min(root.columns, root.normal-span))
+            : max(1, min(root.columns, root.wide-span));
+    out property <length> resolved-gap: root.gap == LayoutGap.none ? AtlasGrid.zero
+        : root.gap == LayoutGap.compact ? AtlasGrid.gutter-compact
+        : root.gap == LayoutGap.spacious ? AtlasGrid.gutter-wide
+        : AtlasGrid.gutter-normal;
+    out property <length> resolved-width: root.active-span
+        * ((root.reference-width - max(0, root.columns - 1) * root.resolved-gap)
+            / max(1, root.columns))
+        + max(0, root.active-span - 1) * root.resolved-gap;
+
+    flex-basis: max(AtlasGrid.zero, root.resolved-width);
+    flex-grow: 0;
+    flex-shrink: 0;
+    background: transparent;
+    @children
 }
 
 // A bounded content contract for text, editors and other intrinsically-sized

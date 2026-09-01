@@ -23,6 +23,15 @@
     { "id": "search", "asset": "assets/search.svg", "sha256": "400363e25a1284f7a5b59958944d1a37b97517e84fdbc402c6fac269d70481a9" },
     { "id": "shield", "asset": "assets/shield.svg", "sha256": "781354ccec2947691e4765d778dd0c3294da2775fcddb06380801e73364cc6a2" },
     { "id": "warning", "asset": "assets/warning.svg", "sha256": "37876886893fb652ec36493c4fc13ea9773b7756e60166f3d8f3dd64286bf85c" },
-    { "id": "chevron-down", "asset": "assets/chevron-down.svg", "sha256": "29026d5fc9ae357e539eb5d829bcccc0ef01807d6b7866a8f7a1baece2807f0a" }
+    { "id": "chevron-down", "asset": "assets/chevron-down.svg", "sha256": "29026d5fc9ae357e539eb5d829bcccc0ef01807d6b7866a8f7a1baece2807f0a" },
+    { "id": "chevron-right", "asset": "assets/chevron-right.svg", "sha256": "47d48e447304c1b2fd776203312fecc3f8ead8350258622ea69c3ae99559622c" },
+    { "id": "grid", "asset": "assets/grid.svg", "sha256": "a9b00e41ec53977b171e9f9553b6d8d981aa8e83bed343ace7f1add8450a0347" },
+    { "id": "terminal", "asset": "assets/terminal.svg", "sha256": "882c0995ef2a73d9df22b8cbd460c52a5c861bb555bc6479cc32d5c3d23f296e" },
+    { "id": "gamepad", "asset": "assets/gamepad.svg", "sha256": "3f64ed70c927cb852053686685c599c3b925f0788d0b4db3297933105a0481b5" },
+    { "id": "cpu", "asset": "assets/cpu.svg", "sha256": "160a72c251366f66cfa66601c8847be91d011f1a3c4491e93653c21a1610bb68" },
+    { "id": "memory", "asset": "assets/memory.svg", "sha256": "1afb5ffd14a29cd5e27d2d90129b4299e47054330f8f2db93b135b20c47c373e" },
+    { "id": "play", "asset": "assets/play.svg", "sha256": "38acb2c4b5e0b02b8a03ce3c428464bdd6a3bc323787abe401e6b79f161901f3" },
+    { "id": "stop", "asset": "assets/stop.svg", "sha256": "69162b7220b08249b2f54abd9154dca2d2587b23c6ce4c95be58ca53d9bf11d3" },
+    { "id": "layers", "asset": "assets/layers.svg", "sha256": "808febab861b378f0f6dbf5207ec8c9ba17362fda637c648a619ef22e7a6b3d2" }
   ]
 }

@@ -1,0 +1,63 @@
+{
+  "$schema": "../Talos/Control-center/contracts/talos.schema.json",
+  "schema_version": 1,
+  "project": {
+    "id": "atlas",
+    "name": "Atlas",
+    "description": "Rust and Slint UI framework exposing versioned design tokens, components, facades, and validation tooling.",
+    "kind": "UI framework",
+    "language": "Rust + Slint",
+    "manifest_path": "Cargo.toml"
+  },
+  "adapter": {
+    "type": "none"
+  },
+  "tracked_dependencies": [
+    "slint"
+  ],
+  "dependency_policies": [
+    {
+      "name": "slint",
+      "relationship": "platform",
+      "managed_by": "Atlas stable and preview facades",
+      "compatible_versions": "=1.17.1",
+      "allow_migration": false
+    },
+    {
+      "name": "Rust",
+      "relationship": "platform",
+      "managed_by": "Slint 1.17.1 and the Atlas workspace MSRV",
+      "compatible_versions": ">=1.92",
+      "allow_migration": false
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Versioned Slint facades",
+      "description": "Provides SemVer-governed stable imports and explicitly evolving preview imports for Slint consumers.",
+      "state": "implemented",
+      "coverage": 90
+    },
+    {
+      "name": "Design tokens and components",
+      "description": "Provides shared typography, color, geometry, motion, interaction, and application component contracts.",
+      "state": "implemented",
+      "coverage": 88
+    },
+    {
+      "name": "Deterministic visual validation",
+      "description": "Maintains cross-platform compile gates and deterministic visual scenarios for consumer review.",
+      "state": "implemented",
+      "coverage": 84
+    }
+  ],
+  "support_packages": [
+    {
+      "name": "Rust",
+      "ecosystem": "toolchain",
+      "requirement": ">=1.92 · edition 2024",
+      "current_version": "1.92",
+      "detected_version": "1.92"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "approval": {
+    "approved_at": null,
+    "note": null,
+    "reviewer": null,
+    "status": "pending-human"
+  },
+  "architecture": "aarch64",
+  "identity": {
+    "density": "normal",
+    "fixture": "access-control-matrix-v1",
+    "grid": false,
+    "id": "data-rich.dark.normal.overflow",
+    "motion": "reduced",
+    "page": "data-rich",
+    "renderer": "software",
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 1000,
+      "width": 640
+    }
+  },
+  "image": {
+    "height": 1000,
+    "width": 640
+  },
+  "platform": "macos"
+}

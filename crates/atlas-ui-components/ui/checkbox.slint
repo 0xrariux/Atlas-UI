@@ -1,4 +1,4 @@
-import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasMotion } from "@atlas-ui-tokens/tokens.slint";
 import { ActionArea, FocusRing } from "@atlas-ui-core/stable.slint";
 import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
 
@@ -23,6 +23,7 @@ export component AtlasCheckbox inherits Rectangle {
     height: max(AtlasDensity.pointer-target-min, root.description == "" ? AtlasGrid.space-6 : AtlasGrid.space-10);
     background: AtlasTheme.transparent;
     opacity: root.enabled ? 1 : 0.55;
+    animate opacity { duration: AtlasMotion.fast; }
 
     box := Rectangle {
         x: AtlasGrid.space-1; y: (parent.height - AtlasGrid.space-5) / 2;
@@ -31,6 +32,8 @@ export component AtlasCheckbox inherits Rectangle {
         border-color: root.checked ? AtlasTheme.success : AtlasTheme.border-strong;
         border-radius: AtlasShape.radius-small;
         background: root.checked ? AtlasTheme.surface-selected : AtlasTheme.canvas;
+        animate background { duration: AtlasMotion.fast; }
+        animate border-color { duration: AtlasMotion.fast; }
         AtlasIcon { name: root.checked ? IconName.check : IconName.none; size: AtlasTypography.size-body; icon-color: AtlasTheme.content-primary; }
         FocusRing {
             x: -(AtlasShape.focus-offset + AtlasShape.focus-width); y: -(AtlasShape.focus-offset + AtlasShape.focus-width);

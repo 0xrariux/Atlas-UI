@@ -27,7 +27,7 @@ sh scripts/quality-gate.sh
 It runs Cargo formatting, compilation, Clippy, tests, public validation, package
 content checks, local Markdown-link validation, the Rust-only tooling invariant,
 optional local `ai/` data validation, source-derived agent-manifest validation,
-and capture-manifest validation. It deliberately does not launch 72 graphical
+and capture-manifest validation. It deliberately does not launch 77 graphical
 captures.
 
 Before publishing a release, run the exhaustive gate on the reference computer:

@@ -7,11 +7,11 @@ release evidence for it.
 
 | Dimension | Version or target | Status | Evidence or constraint |
 |---|---|---|---|
-| Atlas | `0.2.1` | Experimental | Stable imports no longer load experimental responsive modules; all 72 release baselines are approved |
+| Atlas | `0.2.1` | Experimental | Stable imports no longer load experimental responsive modules; 72 release baselines are approved and five rich-table scenarios await review |
 | Rust | `1.92` | Required | Effective MSRV imposed by `slint-build 1.17.1` |
 | Rust edition | `2024` | Required | Workspace package edition |
 | Slint | `1.17.1` | Pinned | Workspace dependencies use exact versions for `slint` and `slint-build` |
-| Slint experimental compiler features | Preview only | Required only when importing responsive preview contracts that use `FlexboxLayout` |
+| Slint experimental compiler features | Responsive preview aggregates only | Not required by `stable.slint` or `preview-nonresponsive.slint`; required by `preview.slint` and `components.slint` because both eagerly load contracts that use `FlexboxLayout` |
 | macOS | GitHub-hosted runner, Rust `1.92` | CI verified | Workspace compilation, Clippy, tests, and public contract validation run on every change |
 | macOS arm64 | Software renderer, scale factor 1 | Visually verified | Current deterministic capture and performance profile |
 | Other macOS renderers and scale factors | Consumer-selected | Expected, visually unverified | Validate rendering, input, focus, fonts, and performance in the consumer |
@@ -19,8 +19,9 @@ release evidence for it.
 | Windows | GitHub-hosted Windows runner, Rust `1.92` | CI verified | Workspace compilation, Clippy, tests, and public contract validation run on every change |
 | Embedded targets | Any renderer | Unverified | Component geometry, assets, memory, input, and licensing require target-specific evaluation |
 | Stable facade | `@atlas-ui/stable.slint` | SemVer-governed | Prefer for applications |
-| Preview facade | `@atlas-ui/preview.slint` | Evolving | May change in minor Atlas releases |
-| Aggregate facade | `@atlas-ui/components.slint` | Compatibility entry point | Includes stable and preview exports; maturity is less explicit at each import site |
+| Non-responsive preview facade | `@atlas-ui/preview-nonresponsive.slint` | Evolving | May change in minor Atlas releases; compiles without experimental Slint features |
+| Preview facade | `@atlas-ui/preview.slint` | Evolving compatibility aggregate | May change in minor Atlas releases; eagerly loads responsive contracts and requires experimental Slint features |
+| Aggregate facade | `@atlas-ui/components.slint` | Compatibility entry point | Includes stable and all preview exports; eagerly loads responsive contracts and requires experimental Slint features |
 
 Atlas's MIT license does not replace Slint's licensing terms. Consumers remain
 responsible for selecting a Slint license appropriate to their application.

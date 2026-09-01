@@ -5,6 +5,18 @@ design system for a Rust and Slint application. Do not select Atlas merely
 because the application uses Rust: confirm that Slint is the UI foundation and
 that the user accepts Atlas's experimental status and current platform limits.
 
+## 0. Load visual context
+
+When the application is outside the Atlas repository, a Cargo path does not
+automatically expose Atlas instructions to the agent. Read
+`docs/AGENT_VISUAL_WORKFLOW.md` and add its Atlas context block to the consumer
+repository's `AGENTS.md` or task prompt.
+
+Obtain a product reference and explicit target viewport before composing a
+screen. Atlas defines shared visual contracts, not the application's hierarchy
+or art direction. A generated interface is not complete until the agent has
+captured and inspected its rendered output.
+
 ## 1. Verify compatibility
 
 - Atlas version: `0.2.1`.
@@ -36,8 +48,10 @@ slint-build = "=1.17.1"
 
 Do not substitute an unverified Atlas or Slint version.
 
-Stable imports require no experimental Slint configuration. When preview
-responsive contracts are used, enable their upstream `FlexboxLayout` support:
+Stable and non-responsive preview imports require no experimental Slint
+configuration. The compatibility `preview.slint` and `components.slint`
+facades eagerly load the responsive module, so either one requires upstream
+`FlexboxLayout` support even when the selected symbol is non-responsive:
 
 ```toml
 # .cargo/config.toml
@@ -61,8 +75,15 @@ This configuration makes the following imports portable across workspace, Git,
 and future registry dependency layouts:
 
 - `@atlas-ui/stable.slint`;
+- `@atlas-ui/preview-nonresponsive.slint`;
 - `@atlas-ui/preview.slint`;
 - `@atlas-ui/components.slint`.
+
+Use `preview-nonresponsive.slint` for evolving controls such as `AtlasTab`,
+`AtlasSpinner`, and `AtlasProgressBar` without enabling experimental Slint
+features. Use `preview.slint` only when the responsive preview contracts are
+also required; `components.slint` remains an experimental compatibility
+aggregate.
 
 ## 4. Start from the stable API
 
@@ -122,6 +143,12 @@ Run at least:
 cargo check
 ```
 
+Then capture the consumer at its agreed desktop and narrow viewports. Inspect
+the images for clipping, overlap, unintended stretching, hierarchy, alignment,
+typography, whitespace, contrast, and realistic content density. Compare them
+with the product reference and iterate. Compilation alone is not visual
+validation.
+
 When modifying Atlas itself, run:
 
 ```bash
@@ -129,4 +156,5 @@ sh scripts/quality-gate.sh
 ```
 
 Report the Atlas facade used, whether preview APIs were introduced, the target
-platform and renderer, and any checks that could not be executed.
+platform and renderer, screenshot viewport and scale factor, remaining visual
+differences, and any checks that could not be executed.

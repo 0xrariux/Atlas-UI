@@ -1,66 +1,386 @@
 import { ListView } from "std-widgets.slint";
-import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
-import { DataColumn, DataRow, DataViewState, SelectionMode, SortDirection } from "data-contracts.slint";
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity,
+    AtlasStatusTokens
+} from "@atlas-ui-tokens/tokens.slint";
+import { FocusRing } from "@atlas-ui-core/stable.slint";
+import {
+    DataCell, DataCellAlignment, DataCellKind, DataColumn, DataRow,
+    DataViewState, SelectionMode, SortDirection
+} from "data-contracts.slint";
+import { BadgeTone } from "badge.slint";
 import { AtlasSkeleton, AtlasEmptyState, AtlasErrorState } from "data-states.slint";
 
+// Every header and body track uses this exact constraint adapter. Slint's box
+// allocator therefore receives the same preferred, minimum, maximum and grow
+// values for every track. The final track absorbs the allocator's deterministic
+// logical-pixel remainder. When minimums exceed the viewport, ListView exposes
+// horizontal scrolling instead of shrinking a track below its minimum.
+component DataColumnTrack inherits Rectangle {
+    in property <DataColumn> column;
+    min-width: max(AtlasGrid.space-4, root.column.min-width);
+    preferred-width: max(
+        self.min-width,
+        root.column.max-width > AtlasGrid.zero
+            ? min(root.column.max-width, root.column.width)
+            : root.column.width
+    );
+    max-width: root.column.max-width > AtlasGrid.zero
+        ? max(self.min-width, root.column.max-width)
+        : AtlasGrid.content-wide * 100;
+    horizontal-stretch: max(0, root.column.grow);
+}
+
+component DataCellBadge inherits Rectangle {
+    in property <string> text;
+    in property <BadgeTone> tone: BadgeTone.neutral;
+    private property <color> tone-color: root.tone == BadgeTone.healthy ? AtlasStatusTokens.healthy
+        : root.tone == BadgeTone.warning ? AtlasStatusTokens.warning
+        : root.tone == BadgeTone.danger ? AtlasStatusTokens.danger
+        : root.tone == BadgeTone.info ? AtlasStatusTokens.info
+        : root.tone == BadgeTone.live ? AtlasStatusTokens.live : AtlasStatusTokens.neutral;
+
+    height: AtlasGrid.space-5;
+    min-width: badge-label.preferred-width + AtlasGrid.space-4;
+    preferred-width: self.min-width;
+    max-width: self.min-width;
+    background: root.tone-color.with-alpha(0.08);
+    border-width: AtlasShape.border-width;
+    border-color: root.tone-color.with-alpha(0.28);
+    border-radius: AtlasShape.radius-small;
+    accessible-role: AccessibleRole.none;
+
+    badge-label := Text {
+        x: AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-4;
+        text: root.text;
+        color: root.tone-color;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-caption;
+        font-weight: AtlasTypography.weight-semibold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+        accessible-role: AccessibleRole.none;
+    }
+}
+
+component DataCellView inherits Rectangle {
+    in property <DataCell> cell;
+    in property <length> padding-x: AtlasGrid.space-3;
+    in property <length> padding-y: AtlasGrid.space-2;
+    in property <bool> rich: false;
+
+    private property <string> primary: root.cell.primary-text != ""
+        ? root.cell.primary-text
+        : root.cell.kind == DataCellKind.text || root.cell.kind == DataCellKind.stacked
+            ? root.cell.text
+            : "";
+    private property <string> structured-accessible-label:
+        (root.cell.badge-text != "" ? root.cell.badge-text + ", " : "")
+        + root.primary
+        + (root.cell.secondary-text != "" ? ", " + root.cell.secondary-text : "");
+    private property <string> generated-accessible-label:
+        root.cell.accessible-text != "" ? root.cell.accessible-text
+        : root.cell.kind == DataCellKind.tags && root.cell.text != "" ? root.cell.text
+        : root.structured-accessible-label != "" ? root.structured-accessible-label
+        : root.cell.text;
+    private property <TextHorizontalAlignment> text-alignment:
+        root.cell.alignment == DataCellAlignment.end ? right
+        : root.cell.alignment == DataCellAlignment.center ? center : left;
+
+    clip: true;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.generated-accessible-label;
+
+    if root.cell.kind == DataCellKind.text: Text {
+        x: root.padding-x;
+        y: root.padding-y;
+        width: parent.width - root.padding-x * 2;
+        height: parent.height - root.padding-y * 2;
+        text: root.primary;
+        color: AtlasTheme.content-primary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-body-small;
+        horizontal-alignment: root.text-alignment;
+        vertical-alignment: center;
+        wrap: root.cell.wrap ? word-wrap : no-wrap;
+        overflow: root.cell.wrap ? clip : elide;
+        accessible-role: AccessibleRole.none;
+    }
+
+    if root.cell.kind == DataCellKind.stacked: VerticalLayout {
+        x: root.padding-x;
+        y: root.padding-y;
+        width: parent.width - root.padding-x * 2;
+        height: parent.height - root.padding-y * 2;
+        alignment: center;
+        spacing: AtlasGrid.space-1;
+        Text {
+            height: AtlasTypography.line-body-small;
+            text: root.primary;
+            color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            font-weight: AtlasTypography.weight-semibold;
+            horizontal-alignment: root.text-alignment;
+            wrap: root.cell.wrap ? word-wrap : no-wrap;
+            overflow: root.cell.wrap ? clip : elide;
+            accessible-role: AccessibleRole.none;
+        }
+        Text {
+            height: root.cell.secondary-text == "" ? AtlasGrid.zero : AtlasTypography.line-caption;
+            text: root.cell.secondary-text;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            horizontal-alignment: root.text-alignment;
+            overflow: elide;
+            accessible-role: AccessibleRole.none;
+        }
+    }
+
+    if root.cell.kind == DataCellKind.badge: Rectangle {
+        x: root.padding-x;
+        y: (parent.height - AtlasGrid.space-6) / 2;
+        width: parent.width - root.padding-x * 2;
+        DataCellBadge {
+            x: root.cell.alignment == DataCellAlignment.end ? parent.width - self.width
+                : root.cell.alignment == DataCellAlignment.center ? (parent.width - self.width) / 2
+                : AtlasGrid.zero;
+            width: min(parent.width, self.preferred-width);
+            text: root.cell.badge-text != "" ? root.cell.badge-text
+                : root.cell.primary-text != "" ? root.cell.primary-text
+                : root.cell.text;
+            tone: root.cell.badge-tone;
+        }
+    }
+
+    if root.cell.kind == DataCellKind.stacked-with-badge: VerticalLayout {
+        x: root.padding-x;
+        y: root.padding-y;
+        width: parent.width - root.padding-x * 2;
+        height: parent.height - root.padding-y * 2;
+        alignment: center;
+        spacing: AtlasGrid.space-1;
+        Rectangle {
+            height: root.cell.badge-text == "" ? AtlasGrid.zero : AtlasGrid.space-6;
+            DataCellBadge {
+                visible: root.cell.badge-text != "";
+                x: root.cell.alignment == DataCellAlignment.end ? parent.width - self.width
+                    : root.cell.alignment == DataCellAlignment.center ? (parent.width - self.width) / 2
+                    : AtlasGrid.zero;
+                width: min(parent.width, self.preferred-width);
+                text: root.cell.badge-text;
+                tone: root.cell.badge-tone;
+            }
+        }
+        Text {
+            height: root.primary == "" ? AtlasGrid.zero : AtlasTypography.line-body-small;
+            text: root.primary;
+            color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            font-weight: AtlasTypography.weight-semibold;
+            horizontal-alignment: root.text-alignment;
+            overflow: elide;
+            accessible-role: AccessibleRole.none;
+        }
+        Text {
+            height: root.cell.secondary-text == "" ? AtlasGrid.zero : AtlasTypography.line-caption;
+            text: root.cell.secondary-text;
+            color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-caption;
+            horizontal-alignment: root.text-alignment;
+            overflow: elide;
+            accessible-role: AccessibleRole.none;
+        }
+    }
+
+    if root.cell.kind == DataCellKind.tags: HorizontalLayout {
+        x: root.padding-x;
+        y: root.padding-y;
+        width: parent.width - root.padding-x * 2;
+        height: parent.height - root.padding-y * 2;
+        alignment: root.cell.alignment == DataCellAlignment.end ? end
+            : root.cell.alignment == DataCellAlignment.center ? center : start;
+        spacing: AtlasGrid.space-1;
+        for tag in root.cell.tags: DataCellBadge {
+            text: tag.text;
+            tone: tag.tone;
+        }
+    }
+}
+
 export component AtlasDataTable inherits Rectangle {
-    in property <[DataColumn]> columns; in property <[DataRow]> rows;
+    in property <[DataColumn]> columns;
+    in property <[DataRow]> rows;
     in property <DataViewState> state: DataViewState.ready;
     in property <SelectionMode> selection-mode: SelectionMode.single;
-    in property <string> label: "Data table"; in property <string> empty-text: "No data";
-    in property <bool> compact: false; in-out property <int> focused-row: -1;
-    callback row-activated(string); callback selection-requested(string, bool, bool);
-    callback sort-requested(string, SortDirection); callback filter-requested(string);
-    callback column-resize-requested(string, length); callback edit-requested(string, string);
-    callback context-menu-requested(string); callback expansion-requested(string, bool); callback retry();
+    in property <string> label: "Data table";
+    in property <string> empty-text: "No data";
+    in property <bool> compact: false;
+    in property <bool> rich-rows: false;
+    in-out property <int> focused-row: -1;
+    in property <length> header-height: AtlasDensity.row-height;
+    in property <length> row-height: AtlasDensity.row-height;
+    in property <length> rich-row-height: AtlasGrid.space-12 + AtlasGrid.space-8;
+    in property <length> cell-padding-x: AtlasGrid.space-3;
+    in property <length> cell-padding-y: AtlasGrid.space-2;
+    in property <length> column-gap: AtlasGrid.space-2;
+    out property <length> active-row-height: root.rich-rows ? root.rich-row-height : root.row-height;
+    out property <bool> horizontal-overflow: false;
 
-    min-height: AtlasGrid.space-12 * 4; clip: true;
-    border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle;
-    border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
-    accessible-role: AccessibleRole.table; accessible-label: root.label;
+    callback row-activated(string);
+    callback selection-requested(string, bool, bool);
+    callback sort-requested(string, SortDirection);
+    callback filter-requested(string);
+    callback column-resize-requested(string, length);
+    callback edit-requested(string, string);
+    callback context-menu-requested(string);
+    callback expansion-requested(string, bool);
+    callback retry();
+
+    min-height: AtlasGrid.space-12 * 4;
+    clip: true;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface;
+    background: AtlasTheme.surface;
+    accessible-role: AccessibleRole.table;
+    accessible-label: root.label;
     accessible-item-count: root.rows.length;
+    forward-focus: keyboard;
 
     if root.state == DataViewState.loading: AtlasSkeleton { lines: 5; }
-    if root.state == DataViewState.empty: AtlasEmptyState { title: root.empty-text; message: "Adjust filters or create the first item."; }
-    if root.state == DataViewState.error: AtlasErrorState { title: "Data unavailable"; message: "The dataset could not be loaded."; retry => { root.retry(); } }
+    if root.state == DataViewState.empty: AtlasEmptyState {
+        title: root.empty-text;
+        message: "Adjust filters or create the first item.";
+    }
+    if root.state == DataViewState.error: AtlasErrorState {
+        title: "Data unavailable";
+        message: "The dataset could not be loaded.";
+        retry => { root.retry(); }
+    }
 
     if root.state == DataViewState.ready && !root.compact: VerticalLayout {
         spacing: AtlasGrid.zero;
         header := Rectangle {
-            height: AtlasDensity.row-height; background: AtlasTheme.surface-raised;
-            HorizontalLayout { padding-left: AtlasGrid.space-3; padding-right: AtlasGrid.space-3; spacing: AtlasGrid.space-2;
-                for column in root.columns: Rectangle {
-                    width: column.width;
-                    Text { width: parent.width - AtlasGrid.space-3; text: column.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; font-weight: AtlasTypography.weight-bold; vertical-alignment: center; overflow: elide; }
-                    TouchArea { enabled: column.sortable; clicked => { root.sort-requested(column.id, SortDirection.ascending); } }
-                    if column.resizable: TouchArea {
-                        x: parent.width - AtlasGrid.space-2; width: AtlasGrid.space-2; mouse-cursor: col-resize;
-                        pointer-event(event) => { if (event.kind == PointerEventKind.move && self.pressed) { root.column-resize-requested(column.id, max(column.min-width, self.mouse-x)); } }
+            height: root.header-height;
+            clip: true;
+            background: AtlasTheme.surface-raised;
+            header-layout := HorizontalLayout {
+                x: table-list.viewport-x;
+                width: max(self.min-width, parent.width);
+                height: parent.height;
+                padding-left: root.cell-padding-x;
+                padding-right: root.cell-padding-x;
+                spacing: root.column-gap;
+                for column in root.columns: DataColumnTrack {
+                    column: column;
+                    Text {
+                        x: AtlasGrid.zero;
+                        width: parent.width - (column.resizable ? AtlasGrid.space-2 : AtlasGrid.zero);
+                        text: column.label;
+                        color: AtlasTheme.content-secondary;
+                        font-family: AtlasTypography.font-sans;
+                        font-size: AtlasTypography.size-caption;
+                        font-weight: AtlasTypography.weight-bold;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+                    TouchArea {
+                        width: parent.width - (column.resizable ? AtlasGrid.space-2 : AtlasGrid.zero);
+                        enabled: column.sortable;
+                        clicked => { root.sort-requested(column.id, SortDirection.ascending); }
+                    }
+                    if column.resizable: resize := TouchArea {
+                        x: parent.width - AtlasGrid.space-2;
+                        width: AtlasGrid.space-2;
+                        mouse-cursor: col-resize;
+                        moved => {
+                            if (self.pressed) {
+                                root.column-resize-requested(
+                                    column.id,
+                                    column.max-width > AtlasGrid.zero
+                                        ? min(
+                                            column.max-width,
+                                            max(column.min-width, column.width + self.mouse-x - self.pressed-x)
+                                        )
+                                        : max(column.min-width, column.width + self.mouse-x - self.pressed-x)
+                                );
+                            }
+                        }
                     }
                 }
             }
         }
-        ListView { vertical-stretch: 1;
+
+        table-list := ListView {
+            vertical-stretch: 1;
+            changed viewport-width => {
+                root.horizontal-overflow = self.viewport-width > self.visible-width;
+            }
+            changed visible-width => {
+                root.horizontal-overflow = self.viewport-width > self.visible-width;
+            }
             for row[index] in root.rows: Rectangle {
-                height: AtlasDensity.row-height + (row.expanded ? AtlasGrid.space-8 : AtlasGrid.zero);
-                background: row.selected || index == root.focused-row ? AtlasTheme.surface-selected : touch.has-hover ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+                min-width: row-layout.min-width;
+                height: root.active-row-height
+                    + (row.expanded ? AtlasGrid.space-8 : AtlasGrid.zero);
+                background: row.selected || index == root.focused-row
+                    ? AtlasTheme.surface-selected
+                    : touch.has-hover ? AtlasTheme.surface-hover : AtlasTheme.transparent;
                 opacity: row.disabled ? 0.55 : 1;
-                accessible-role: AccessibleRole.list-item; accessible-label: row.id;
-                accessible-item-index: index; accessible-item-selectable: root.selection-mode != SelectionMode.none; accessible-item-selected: row.selected;
-                HorizontalLayout { height: AtlasDensity.row-height; padding-left: AtlasGrid.space-3; padding-right: AtlasGrid.space-3; spacing: AtlasGrid.space-2;
-                    for cell[cell-index] in row.cells: Text {
-                        width: root.columns[cell-index].width; text: cell.text;
-                        accessible-label: cell.accessible-text == "" ? cell.text : cell.accessible-text;
-                        color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; overflow: elide;
+                accessible-role: AccessibleRole.list-item;
+                accessible-label: row.id;
+                accessible-item-index: index;
+                accessible-item-selectable: root.selection-mode != SelectionMode.none;
+                accessible-item-selected: row.selected;
+
+                row-layout := HorizontalLayout {
+                    width: max(self.min-width, table-list.visible-width);
+                    height: root.active-row-height;
+                    padding-left: root.cell-padding-x;
+                    padding-right: root.cell-padding-x;
+                    spacing: root.column-gap;
+                    for cell[cell-index] in row.cells: DataColumnTrack {
+                        column: root.columns[cell-index];
+                        DataCellView {
+                            width: parent.width;
+                            height: parent.height;
+                            cell: cell;
+                            padding-x: root.cell-padding-x;
+                            padding-y: root.cell-padding-y;
+                            rich: root.rich-rows;
+                        }
                     }
                 }
-                if row.expanded: Text { x: AtlasGrid.space-4; y: AtlasDensity.row-height; width: parent.width - AtlasGrid.space-8; height: AtlasGrid.space-8; text: row.detail; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; vertical-alignment: center; overflow: elide; }
+
+                if row.expanded: Text {
+                    x: root.cell-padding-x + AtlasGrid.space-1;
+                    y: root.active-row-height;
+                    width: parent.width - root.cell-padding-x * 2 - AtlasGrid.space-2;
+                    height: AtlasGrid.space-8;
+                    text: row.detail;
+                    color: AtlasTheme.content-secondary;
+                    font-family: AtlasTypography.font-sans;
+                    font-size: AtlasTypography.size-caption;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
                 touch := TouchArea {
                     enabled: !row.disabled;
                     pointer-event(event) => {
                         if (event.kind == PointerEventKind.up && event.button == PointerEventButton.left) {
                             root.focused-row = index;
-                            root.selection-requested(row.id, event.modifiers.control || event.modifiers.meta, event.modifiers.shift);
+                            root.selection-requested(
+                                row.id,
+                                event.modifiers.control || event.modifiers.meta,
+                                event.modifiers.shift
+                            );
                             root.row-activated(row.id);
                         }
                         if (event.kind == PointerEventKind.up && event.button == PointerEventButton.right) {
@@ -71,20 +391,95 @@ export component AtlasDataTable inherits Rectangle {
             }
         }
     }
+
     if root.state == DataViewState.ready && root.compact: ListView {
-        x: AtlasGrid.space-2; y: AtlasGrid.space-2; width: parent.width - AtlasGrid.space-4; height: parent.height - AtlasGrid.space-4;
-        for row in root.rows: Rectangle {
-            height: row.cells.length * AtlasDensity.row-height + AtlasGrid.space-4;
-            border-width: AtlasShape.border-width; border-color: row.selected ? AtlasTheme.info : AtlasTheme.border-subtle;
-            border-radius: AtlasShape.radius-control; background: AtlasTheme.surface-raised;
-            VerticalLayout { padding: AtlasGrid.space-2;
-                for cell[index] in row.cells: HorizontalLayout { height: AtlasDensity.row-height; spacing: AtlasGrid.space-3;
-                    Text { text: root.columns[index].label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
-                    Text { horizontal-stretch: 1; text: cell.text; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; horizontal-alignment: right; overflow: elide; }
+        x: AtlasGrid.space-2;
+        y: AtlasGrid.space-2;
+        width: parent.width - AtlasGrid.space-4;
+        height: parent.height - AtlasGrid.space-4;
+        for row[index] in root.rows: Rectangle {
+            height: row.cells.length * root.active-row-height + AtlasGrid.space-4;
+            border-width: AtlasShape.border-width;
+            border-color: row.selected ? AtlasTheme.info : AtlasTheme.border-subtle;
+            border-radius: AtlasShape.radius-control;
+            background: index == root.focused-row ? AtlasTheme.surface-selected : AtlasTheme.surface-raised;
+            opacity: row.disabled ? 0.55 : 1;
+            accessible-role: AccessibleRole.list-item;
+            accessible-label: row.id;
+            accessible-item-index: index;
+            accessible-item-selectable: root.selection-mode != SelectionMode.none;
+            accessible-item-selected: row.selected;
+
+            VerticalLayout {
+                padding: AtlasGrid.space-2;
+                for cell[cell-index] in row.cells: HorizontalLayout {
+                    height: root.active-row-height;
+                    spacing: root.column-gap;
+                    Text {
+                        width: min(AtlasGrid.column-min-width * 2, parent.width * 0.34);
+                        text: root.columns[cell-index].label;
+                        color: AtlasTheme.content-secondary;
+                        font-family: AtlasTypography.font-sans;
+                        font-size: AtlasTypography.size-caption;
+                        vertical-alignment: center;
+                        wrap: word-wrap;
+                    }
+                    DataCellView {
+                        horizontal-stretch: 1;
+                        cell: cell;
+                        padding-x: root.cell-padding-x;
+                        padding-y: root.cell-padding-y;
+                        rich: root.rich-rows;
+                    }
                 }
             }
-            TouchArea { clicked => { root.row-activated(row.id); } }
+
+            card-touch := TouchArea {
+                enabled: !row.disabled;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.up && event.button == PointerEventButton.left) {
+                        root.focused-row = index;
+                        root.selection-requested(
+                            row.id,
+                            event.modifiers.control || event.modifiers.meta,
+                            event.modifiers.shift
+                        );
+                        root.row-activated(row.id);
+                    }
+                    if (event.kind == PointerEventKind.up && event.button == PointerEventButton.right) {
+                        root.context-menu-requested(row.id);
+                    }
+                }
+            }
         }
+    }
+
+    keyboard := FocusScope {
+        focus-on-tab-navigation: root.state == DataViewState.ready && root.rows.length > 0;
+        key-pressed(event) => {
+            if (root.state != DataViewState.ready || root.rows.length == 0) { return reject; }
+            if (event.text == Key.UpArrow) {
+                root.focused-row = max(0, root.focused-row - 1);
+                return accept;
+            }
+            if (event.text == Key.DownArrow) {
+                root.focused-row = min(root.rows.length - 1, root.focused-row + 1);
+                return accept;
+            }
+            if ((event.text == Key.Return || event.text == Key.Space)
+                && root.focused-row >= 0 && root.focused-row < root.rows.length
+                && !root.rows[root.focused-row].disabled) {
+                root.selection-requested(root.rows[root.focused-row].id, false, false);
+                root.row-activated(root.rows[root.focused-row].id);
+                return accept;
+            }
+            return reject;
+        }
+    }
+
+    FocusRing {
+        active: keyboard.has-focus;
+        radius: AtlasShape.radius-surface;
     }
 }
 

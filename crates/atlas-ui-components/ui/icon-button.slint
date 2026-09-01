@@ -1,0 +1,101 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasTypography, AtlasControlTokens, AtlasMotion,
+    AtlasDensity, Density
+} from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, ComponentFrame, FocusRing } from "@atlas-ui-core/stable.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+import { AtlasSpinner } from "activity-indicator.slint";
+
+export enum IconButtonTone { neutral, primary, danger }
+
+export component AtlasIconButton inherits ComponentFrame {
+    in property <IconName> icon-name;
+    in property <string> automation-id: "atlas-icon-button-" + root.accessible-label;
+    in property <IconButtonTone> tone: IconButtonTone.neutral;
+    in property <bool> loading: false;
+    in property <string> loading-label: "Loading";
+    in property <bool> toggle: false;
+    in property <bool> contained-focus: false;
+    in property <bool> preview-focus-visible: false;
+    callback clicked();
+    callback traversal-requested(bool);
+    callback dismiss-requested();
+
+    accessible-role: AccessibleRole.button;
+    accessible-description: root.loading ? root.loading-label : "";
+    accessible-id: root.automation-id;
+    accessible-enabled: root.enabled && !root.loading;
+    accessible-checkable: root.toggle;
+    accessible-checked: root.toggle && root.selected;
+    accessible-action-default => { action.trigger(); }
+
+    interactive: true;
+    hovered: action.hovered;
+    pressed: action.pressed;
+    min-width: root.density == Density.comfortable
+        ? AtlasDensity.control-height-comfortable : AtlasDensity.pointer-target-min;
+    min-height: root.density == Density.comfortable
+        ? AtlasDensity.control-height-comfortable : AtlasDensity.pointer-target-min;
+    preferred-width: self.min-width;
+    preferred-height: self.min-height;
+    horizontal-stretch: 0;
+    border-color: root.tone == IconButtonTone.danger ? AtlasTheme.danger
+        : root.tone == IconButtonTone.primary ? AtlasControlTokens.primary-background
+        : AtlasControlTokens.border;
+    background: root.tone == IconButtonTone.primary
+        ? (root.pressed ? AtlasControlTokens.primary-background-pressed
+            : root.hovered ? AtlasControlTokens.primary-background-hover
+            : AtlasControlTokens.primary-background)
+        : (root.pressed ? AtlasControlTokens.background-pressed
+            : root.hovered ? AtlasControlTokens.background-hover
+            : root.selected ? AtlasControlTokens.background-selected
+            : AtlasControlTokens.background);
+    opacity: root.enabled || root.loading ? 1 : AtlasControlTokens.disabled-opacity;
+    animate background { duration: AtlasMotion.fast; }
+    animate border-color { duration: AtlasMotion.fast; }
+    animate opacity { duration: AtlasMotion.fast; }
+
+    if !root.loading: AtlasIcon {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        size: AtlasTypography.size-title-small;
+        name: root.icon-name;
+        icon-color: !root.enabled ? AtlasControlTokens.foreground-disabled
+            : root.tone == IconButtonTone.primary ? AtlasControlTokens.primary-foreground
+            : root.tone == IconButtonTone.danger ? AtlasTheme.danger
+            : AtlasControlTokens.foreground;
+        decorative: true;
+    }
+
+    if root.loading: AtlasSpinner {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        size: AtlasTypography.size-title-small;
+        label: root.accessible-label;
+        value-text: root.loading-label;
+        indicator-color: root.tone == IconButtonTone.primary
+            ? AtlasControlTokens.primary-foreground : AtlasControlTokens.foreground;
+    }
+
+    FocusRing {
+        x: -(AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        y: -(AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        width: parent.width + 2 * (AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        height: parent.height + 2 * (AtlasControlTokens.focus-offset + AtlasControlTokens.focus-width);
+        active: action.focus-visible || root.preview-focus-visible;
+    }
+
+    action := ActionArea {
+        enabled: root.enabled && !root.loading;
+        selected: root.selected;
+        contained-focus: root.contained-focus;
+        accessible-name: root.accessible-label;
+        action-description: root.loading ? root.loading-label : "";
+        automation-id: root.automation-id;
+        activated => { root.clicked(); }
+        traversal-requested(backwards) => { root.traversal-requested(backwards); }
+        dismiss-requested => { root.dismiss-requested(); }
+    }
+
+    public function focus-from-keyboard() { action.focus-from-keyboard(); }
+}

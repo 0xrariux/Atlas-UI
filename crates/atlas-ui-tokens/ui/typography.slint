@@ -1,9 +1,13 @@
 import "../assets/fonts/inter/Inter-Variable.ttf";
+import "../assets/fonts/inter/AtlasText-Variable.ttf";
 import "../assets/fonts/jetbrains-mono/JetBrainsMono-Variable.ttf";
 import { AtlasSettings, TypographyScale } from "settings.slint";
 
+// Body and monospace fonts use normalized 1.6 em vertical metrics so wrapped
+// text keeps readable leading. Display headings retain Inter's original metrics.
 export global AtlasTypography {
-    out property <string> font-sans: "Inter";
+    out property <string> font-sans: "Atlas";
+    out property <string> font-display: "Inter";
     out property <string> font-mono: "JetBrains Mono";
     out property <float> scale-factor: AtlasSettings.typography-scale == TypographyScale.compact
         ? 0.875 : AtlasSettings.typography-scale == TypographyScale.large ? 1.25 : 1;
