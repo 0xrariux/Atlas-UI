@@ -19,7 +19,7 @@ captured and inspected its rendered output.
 
 ## 1. Verify compatibility
 
-- Atlas version: `0.1.0`.
+- Atlas version: `0.1.1`.
 - Effective Rust MSRV: `1.92`.
 - Slint version: exactly `1.17.1`.
 - CI-verified systems: Linux, Windows, and macOS with Rust `1.92`.
@@ -33,15 +33,15 @@ does not guarantee pixel-identical rendering on every deployment profile.
 
 ## 2. Add dependencies
 
-Use the crates.io `0.1.0` release as both a runtime and build dependency.
+Use the crates.io `0.1.1` release as both a runtime and build dependency.
 
 ```toml
 [dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint-build = "=1.17.1"
 ```
 

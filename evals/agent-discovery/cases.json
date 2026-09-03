@@ -29,8 +29,8 @@
     {
       "id": "published-package-installation",
       "mode": "integration",
-      "prompt": "Give me the Git dependency line for the Atlas UI v0.1.0 release.",
-      "expected": ["Use the v0.1.0 GitHub tag", "Add atlas-ui to dependencies and build-dependencies", "Pin Slint and slint-build to 1.17.1"]
+      "prompt": "Give me the crates.io dependency line for the Atlas UI v0.1.1 release.",
+      "expected": ["Use atlas-ui = \"=0.1.1\"", "Add atlas-ui to dependencies and build-dependencies", "Pin Slint and slint-build to 1.17.1"]
     }
   ]
 }

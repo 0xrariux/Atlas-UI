@@ -8,7 +8,7 @@ Atlas does not replace Slint. Slint provides the declarative language, runtime,
 and rendering foundation; Atlas provides reusable visual and interaction
 contracts on top of it.
 
-Atlas `0.1.0` effectively requires Rust `1.92` and pins Slint `1.17.1`. Stable
+Atlas `0.1.1` effectively requires Rust `1.92` and pins Slint `1.17.1`. Stable
 and `preview-nonresponsive.slint` imports need no experimental configuration.
 The `preview.slint` and `components.slint` compatibility aggregates load
 responsive contracts and require `SLINT_ENABLE_EXPERIMENTAL_FEATURES=1`. The
@@ -21,8 +21,8 @@ proven profile is macOS arm64 with Slint's software renderer at scale factor 1.
 - [Visual workflow for coding agents](https://github.com/0xrariux/Atlas-UI/blob/main/docs/AGENT_VISUAL_WORKFLOW.md)
 - [Companion template showcase](https://github.com/0xrariux/template-atlas)
 
-This crate README describes the crates.io `0.1.0` release and its matching
-tagged `v0.1.0` GitHub source snapshot.
+This crate README describes the crates.io `0.1.1` release and its matching
+tagged `v0.1.1` GitHub source snapshot.
 
 Use `atlas_ui::slint_library_paths()` from `build.rs`, then import stable Slint
 contracts from `@atlas-ui/stable.slint`. Prefer

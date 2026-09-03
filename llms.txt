@@ -4,11 +4,11 @@
 > tokens, accessible components, responsive compositions, application
 > templates, and deterministic visual validation without replacing Slint.
 
-Atlas 0.1.0 effectively requires Rust 1.92 and pins Slint 1.17.1. Stable
+Atlas 0.1.1 effectively requires Rust 1.92 and pins Slint 1.17.1. Stable
 imports need no experimental configuration. Consumers of responsive preview
 contracts must set SLINT_ENABLE_EXPERIMENTAL_FEATURES=1. The proven platform
 profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
-0.1.0 is distributed through crates.io and the matching v0.1.0 GitHub source tag.
+0.1.1 is distributed through crates.io and the matching v0.1.1 GitHub source tag.
 
 ## Start here
 
@@ -31,7 +31,7 @@ profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
 
 `AtlasScrollbar` is the controlled scrollbar for an existing scroll surface;
 `AtlasScrollViewport` owns the scrollable region, native flicking, and keyboard
-paging. Both are part of `v0.1.0`. Consult the component index and generated
+paging. Both are part of `v0.1.1`. Consult the component index and generated
 manifest before importing them.
 
 Prefer stable exports, never infer properties from component names, keep

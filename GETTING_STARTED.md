@@ -8,15 +8,15 @@ cargo check -p atlas-ui-getting-started
 ```
 
 Add the published Atlas facade as a normal and build dependency. This guide
-targets the crates.io `0.1.0` packages and their matching `v0.1.0` source tag.
+targets the crates.io `0.1.1` packages and their matching `v0.1.1` source tag.
 
 ```toml
 [dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint-build = "=1.17.1"
 ```
 

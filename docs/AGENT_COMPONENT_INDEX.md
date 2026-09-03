@@ -3,7 +3,7 @@
 This document is the entry point for agents building an interface with Atlas UI.
 Use it to find the right component before writing Slint.
 
-It indexes the public API shipped in the tagged `v0.1.0` GitHub release.
+It indexes the public API shipped in the tagged `v0.1.1` GitHub release.
 
 ## Selection rules
 

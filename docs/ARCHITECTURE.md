@@ -30,7 +30,7 @@ This layer composes tokens, core, and icons into the user-facing API. It
 contains controls, navigation, data presentation, editorial content,
 documentation, and templates. Four facades define the contract:
 
-- `stable.slint`: 58 symbols guaranteed by SemVer in the current `v0.1.0`
+- `stable.slint`: 58 symbols guaranteed by SemVer in the current `v0.1.1`
   source;
 - `preview-nonresponsive.slint`: 80 evolving symbols without experimental
   Slint dependencies;

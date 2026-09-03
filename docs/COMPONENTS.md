@@ -3,7 +3,7 @@
 For a quick task-oriented selection, especially from an AI agent, also see the
 [component index](AGENT_COMPONENT_INDEX.md).
 
-The `v0.1.0` release exposes 97 components. Public classification is enforced
+The `v0.1.1` release exposes 97 components. Public classification is enforced
 by the `stable.slint` and `preview.slint` facades.
 Non-responsive preview contracts are also available from
 `preview-nonresponsive.slint` without experimental Slint features. The full

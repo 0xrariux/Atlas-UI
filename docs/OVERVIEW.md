@@ -24,7 +24,7 @@ not perform silent remote actions or domain mutations.
 
 ## Current scope
 
-The `v0.1.0` release exposes 97 components and 180 public symbols: 58 stable
+The `v0.1.1` release exposes 97 components and 180 public symbols: 58 stable
 and 122 preview. It includes stable
 `AtlasStatusIndicator`, a compact semantic signal that shares `BadgeTone` with
 `AtlasBadge`, plus preview `AtlasScrollbar` for controlled vertical overflow.

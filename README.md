@@ -9,7 +9,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
   <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust-1.92-orange.svg" alt="Rust 1.92 MSRV"></a>
   <a href="https://github.com/slint-ui/slint"><img src="https://img.shields.io/badge/Slint-1.17.1-2379F4.svg" alt="Slint 1.17.1"></a>
-  <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.1.0"><img src="https://img.shields.io/badge/release-v0.1.0-2379F4.svg" alt="Atlas UI v0.1.0 release"></a>
+  <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.1.1"><img src="https://img.shields.io/badge/release-v0.1.1-2379F4.svg" alt="Atlas UI v0.1.1 release"></a>
 </p>
 
 > [!WARNING]
@@ -86,7 +86,7 @@ screen or in every Rust project.
 
 ## Project status
 
-- current release: `v0.1.0`;
+- current release: `v0.1.1`;
 - referenced Slint version: `1.17.1`;
 - continuous integration: Linux, Windows, and macOS with Rust `1.92`;
 - deterministic visual profile: macOS arm64, software renderer, scale factor 1;
@@ -189,24 +189,24 @@ The following table describes Atlas by technical category.
 | Documentation model | Public architecture, component catalog, agent manifest, integration guide, compiled consumer example, and executable native gallery |
 | Validation model | Automated architecture and API checks, deterministic fixtures, visual scenarios, contrast and accessibility contracts, and performance budgets |
 | Accessibility scope | Keyboard, focus, semantics, contrast, reduced motion, and explicit host-controlled interaction contracts are part of component validation |
-| Current API size | 97 public components, 58 stable symbols, and 122 preview symbols in Atlas `v0.1.0` |
+| Current API size | 97 public components, 58 stable symbols, and 122 preview symbols in Atlas `v0.1.1` |
 | Platform validation | Linux, Windows, and macOS continuously compile and pass Clippy, tests, and public contract checks; deterministic rendering evidence currently covers macOS arm64 with Slint's software renderer at scale factor 1 |
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
 
 ## Installation and local development
 
-Atlas `0.1.0` is published on crates.io, with the matching `v0.1.0` GitHub tag
+Atlas `0.1.1` is published on crates.io, with the matching `v0.1.1` GitHub tag
 as its source snapshot. Add the facade as both a runtime and build dependency
 so its helper can expose portable named Slint imports:
 
 ```toml
 [dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.1.0"
+atlas-ui = "=0.1.1"
 slint-build = "=1.17.1"
 ```
 

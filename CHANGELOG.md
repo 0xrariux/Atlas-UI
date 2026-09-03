@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-09-04
+
+- Pins `tinyvec` to `1.12.0` in the published facade so fresh Slint `1.17.1`
+  consumer resolutions avoid the upstream `tinyvec 1.13.0` alloc-only
+  compilation regression. Atlas UI and Slint API contracts are unchanged.
+
 ## 0.1.0 — 2026-09-03
 
 - Introduces the Atlas UI workspace architecture: tokens, core primitives,

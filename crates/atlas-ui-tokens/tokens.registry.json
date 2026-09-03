@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "library_version": "0.1.0",
+  "library_version": "0.1.1",
   "facade": "ui/tokens.slint",
   "base_grid_px": 4,
   "literal_policy": {
