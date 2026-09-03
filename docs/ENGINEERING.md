@@ -24,6 +24,8 @@ Before a component is considered complete, it has:
 The 77 scenarios are addressable by identifier. A comparison is valid only
 when its scenario, fixture, viewport, platform profile, and metadata match.
 Every recapture resets human approval so a new image is never accepted implicitly.
+Automated gallery captures use Slint's headless minimal software window, while
+interactive gallery sessions retain the native platform window and event loop.
 
 The quality gate runs, among other checks:
 

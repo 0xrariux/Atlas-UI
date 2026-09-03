@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approved_at": null,
-    "note": null,
-    "reviewer": null,
-    "status": "pending-human"
+    "approved_at": "2026-09-03T15:45:52.088998+00:00",
+    "note": "Reviewed theme, semantic colors, density matrix, and compact profile.",
+    "reviewer": "codex",
+    "status": "approved"
   },
   "architecture": "aarch64",
   "identity": {

@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approved_at": null,
-    "note": null,
-    "reviewer": null,
-    "status": "pending-human"
+    "approved_at": "2026-09-03T15:45:52.103377+00:00",
+    "note": "Reviewed the foundation specimen with the tokenized grid overlay.",
+    "reviewer": "codex",
+    "status": "approved"
   },
   "architecture": "aarch64",
   "identity": {

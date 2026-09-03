@@ -412,7 +412,7 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui-components",
  "atlas-ui-core",
@@ -423,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui-components"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui-core",
  "atlas-ui-icons",
@@ -432,14 +432,14 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui-core"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui-tokens",
 ]
 
 [[package]]
 name = "atlas-ui-documents"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui-testing",
  "pulldown-cmark",
@@ -447,7 +447,7 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui-gallery"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui",
  "atlas-ui-components",
@@ -458,7 +458,7 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui-getting-started"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui",
  "slint",
@@ -467,25 +467,25 @@ dependencies = [
 
 [[package]]
 name = "atlas-ui-icons"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "atlas-ui-tokens",
 ]
 
 [[package]]
 name = "atlas-ui-testing"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "image",
 ]
 
 [[package]]
 name = "atlas-ui-tokens"
-version = "0.2.1"
+version = "0.1.0"
 
 [[package]]
 name = "atlas-ui-tooling"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "chrono",
  "regex",

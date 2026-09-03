@@ -1,0 +1,69 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity, AtlasControlTokens
+} from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/stable.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+
+// Compact single-value copy affordance. Clipboard access and feedback timing
+// remain host-owned; copied is controlled presentation state.
+export component AtlasCopyableValue inherits Rectangle {
+    in property <string> value;
+    in-out property <bool> copied: false;
+    in property <bool> copy-enabled: true;
+    in property <string> copy-label: "Copy value";
+    in property <string> copied-label: "Copied";
+    in property <string> automation-id: "atlas-copyable-value";
+    in property <length> text-inset: AtlasGrid.space-3;
+    in property <length> action-width: AtlasDensity.pointer-target-min;
+    in property <length> icon-size: AtlasGrid.space-3;
+    in property <length> icon-right-inset: (root.action-width - root.icon-size) / 2;
+    in property <length> icon-offset-y: (root.height - root.icon-size) / 2;
+    in property <color> text-color: AtlasTheme.content-secondary;
+    in property <string> text-font-family: AtlasTypography.font-mono;
+    in property <length> text-font-size: AtlasTypography.size-body-small;
+    in property <int> text-font-weight: AtlasTypography.weight-regular;
+    in property <color> icon-color: AtlasTheme.content-secondary;
+    in property <color> copied-color: AtlasTheme.success;
+    callback copy-requested(string);
+
+    height: AtlasDensity.control-height;
+    min-width: AtlasGrid.column-min-width * 2;
+    background: AtlasTheme.surface-raised;
+    opacity: root.copy-enabled ? 1 : AtlasControlTokens.disabled-opacity;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.value;
+    accessible-description: root.copied ? root.copied-label : root.copy-label;
+
+    Text {
+        x: root.text-inset;
+        width: max(AtlasGrid.zero, parent.width - root.text-inset - root.action-width);
+        text: root.value; color: root.text-color;
+        font-family: root.text-font-family; font-size: root.text-font-size;
+        font-weight: root.text-font-weight;
+        vertical-alignment: center; overflow: elide;
+    }
+    AtlasIcon {
+        x: parent.width - self.width - root.icon-right-inset;
+        y: root.icon-offset-y;
+        size: root.icon-size;
+        name: root.copied ? IconName.check : IconName.copy;
+        icon-color: root.copied ? root.copied-color : root.icon-color;
+    }
+    FocusRing {
+        x: parent.width - root.action-width;
+        width: root.action-width; height: parent.height;
+        active: action.focus-visible;
+        radius: AtlasShape.radius-control;
+    }
+    action := ActionArea {
+        x: parent.width - root.action-width;
+        width: root.action-width; height: parent.height;
+        enabled: root.copy-enabled;
+        accessible-role: AccessibleRole.button;
+        accessible-name: root.copied ? root.copied-label : root.copy-label;
+        action-description: root.value;
+        automation-id: root.automation-id;
+        activated => { root.copy-requested(root.value); }
+        accessible-action-default => { root.copy-requested(root.value); }
+    }
+}

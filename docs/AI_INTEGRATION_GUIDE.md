@@ -30,6 +30,23 @@ compatibility facade and `@atlas-ui/components.slint` eagerly load
 when an import names only a non-responsive symbol. Do not mix maturity levels
 unless the consumer explicitly acknowledges its preview dependency.
 
+## Choose the scroll contract
+
+Use preview `AtlasScrollViewport` when Atlas should own the content viewport,
+native flicking, and Page Up, Page Down, Home, and End behavior. Use preview
+`AtlasScrollbar` only when an existing list, flickable, or host-controlled
+surface already owns content movement and needs Atlas presentation and pointer
+interaction.
+
+`AtlasScrollbar` is controlled: bind `viewport-y`, `viewport-height`, and
+`content-height`, then apply `scroll-requested(length)` to the same positive
+offset state. Its inherited width defaults to the 16-pixel interaction
+corridor; do not narrow the component just to make the six-pixel rail look
+thinner. Set a contextual `accessible-label`. The component hides when
+`maximum-y` resolves to zero. If a standalone scrollbar customizes an
+`AtlasScrollViewport`, set the viewport's `show-scrollbar` to `false` so only
+one rail is exposed.
+
 ## Screen model
 
 ```slint

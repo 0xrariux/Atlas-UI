@@ -24,9 +24,12 @@ not perform silent remote actions or domain mutations.
 
 ## Current scope
 
-Version `0.2.1` exposes 57 stable symbols. The rest of the catalog is
-available as preview so it can evolve without creating a permanent compatibility
-commitment too early.
+The `v0.1.0` release exposes 97 components and 180 public symbols: 58 stable
+and 122 preview. It includes stable
+`AtlasStatusIndicator`, a compact semantic signal that shares `BadgeTone` with
+`AtlasBadge`, plus preview `AtlasScrollbar` for controlled vertical overflow.
+Preview contracts can evolve without creating a permanent
+compatibility commitment too early.
 
 Linux, Windows, and macOS are continuously validated for workspace compilation,
 Clippy, tests, and public contracts with Rust `1.92`. The deterministic visual
@@ -44,3 +47,19 @@ or input configuration. WebAssembly and embedded targets remain unverified.
 
 Atlas is a library, not a complete application framework: domain logic, routes,
 services, and infrastructure remain in the host application.
+
+## Companion application templates
+
+The [`template-atlas`](https://github.com/0xrariux/template-atlas) repository
+contains four complete native consumers—Command, Forge, Fleet, and Ledger—that
+demonstrate Atlas across distinct themes and application structures. Its README
+provides rendered previews, clone instructions, and commands for running each
+template.
+
+The companion repository is the recommended visual starting point when a
+consumer needs a complete screen or shell. Atlas remains the dependency and
+component authority; template-atlas owns product composition, demonstration
+data, navigation, and art direction. Its four applications also form external
+consumer suites for Atlas upgrades, covering 97 rendered states without moving
+product code into the library. See
+[External consumer scenarios](EXTERNAL_CONSUMER_SCENARIOS.md).

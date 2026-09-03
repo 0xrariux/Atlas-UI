@@ -11,6 +11,22 @@ export component AtlasSwitch inherits Rectangle {
     in property <bool> enabled: true;
     in property <string> automation-id;
     in property <bool> preview-focus-visible: false;
+    // Additive anatomy inputs let dense desktop consumers adapt the visible
+    // track without replacing the switch's accessibility and interaction.
+    // Defaults preserve the original Atlas switch exactly.
+    in property <bool> show-label: true;
+    in property <length> track-offset-x: AtlasGrid.space-1;
+    in property <length> track-width: AtlasGrid.space-10;
+    in property <length> track-height: AtlasGrid.space-6;
+    in property <length> track-padding: AtlasGrid.space-1;
+    in property <length> track-radius: AtlasShape.radius-round;
+    in property <length> track-border-width: AtlasShape.border-width;
+    in property <color> track-border-color: root.tone == SwitchTone.safety && root.checked ? AtlasTheme.danger
+        : root.tone == SwitchTone.operator && !root.checked ? AtlasTheme.warning
+        : root.checked ? AtlasTheme.success : AtlasTheme.border-strong;
+    in property <color> track-background: root.checked ? AtlasTheme.surface-selected : AtlasTheme.surface;
+    in property <length> thumb-size: AtlasGrid.space-4;
+    in property <color> thumb-color: root.checked ? AtlasTheme.success : AtlasTheme.content-secondary;
     callback toggled(bool);
 
     accessible-role: AccessibleRole.switch;
@@ -22,27 +38,27 @@ export component AtlasSwitch inherits Rectangle {
     accessible-action-default => { action.trigger(); }
 
     height: AtlasDensity.pointer-target-min;
-    min-width: switch-label.preferred-width + AtlasGrid.space-12 + AtlasGrid.space-6;
+    min-width: root.show-label
+        ? switch-label.preferred-width + AtlasGrid.space-12 + AtlasGrid.space-6
+        : root.track-offset-x + root.track-width;
     background: AtlasTheme.transparent;
     opacity: root.enabled ? 1 : 0.55;
     animate opacity { duration: AtlasMotion.fast; }
 
     track := Rectangle {
-        x: AtlasGrid.space-1; y: (parent.height - AtlasGrid.space-6) / 2;
-        width: AtlasGrid.space-10; height: AtlasGrid.space-6;
-        border-width: AtlasShape.border-width;
-        border-color: root.tone == SwitchTone.safety && root.checked ? AtlasTheme.danger
-            : root.tone == SwitchTone.operator && !root.checked ? AtlasTheme.warning
-            : root.checked ? AtlasTheme.success : AtlasTheme.border-strong;
-        border-radius: AtlasShape.radius-round;
-        background: root.checked ? AtlasTheme.surface-selected : AtlasTheme.surface;
+        x: root.track-offset-x; y: (parent.height - root.track-height) / 2;
+        width: root.track-width; height: root.track-height;
+        border-width: root.track-border-width;
+        border-color: root.track-border-color;
+        border-radius: root.track-radius;
+        background: root.track-background;
         animate background { duration: AtlasMotion.fast; }
         animate border-color { duration: AtlasMotion.fast; }
         Rectangle {
-            x: root.checked ? parent.width - self.width - AtlasGrid.space-1 : AtlasGrid.space-1;
-            y: AtlasGrid.space-1; width: AtlasGrid.space-4; height: AtlasGrid.space-4;
+            x: root.checked ? parent.width - self.width - root.track-padding : root.track-padding;
+            y: (parent.height - self.height) / 2; width: root.thumb-size; height: root.thumb-size;
             border-radius: AtlasShape.radius-round;
-            background: root.checked ? AtlasTheme.success : AtlasTheme.content-secondary;
+            background: root.thumb-color;
             animate x { duration: AtlasMotion.fast; }
             animate background { duration: AtlasMotion.fast; }
         }
@@ -55,6 +71,7 @@ export component AtlasSwitch inherits Rectangle {
         }
     }
     switch-label := Text {
+        visible: root.show-label;
         x: AtlasGrid.space-12 + AtlasGrid.space-2;
         width: parent.width - AtlasGrid.space-12 - AtlasGrid.space-2;
         text: root.checked || root.inactive-label == "" ? root.label : root.inactive-label;

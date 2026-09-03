@@ -42,6 +42,18 @@ Run the complete gate before publishing:
 sh scripts/quality-gate.sh
 ```
 
+When the companion checkout is available, compile its four applications
+against the release candidate. For changes that can affect rendering, capture
+and review all 97 external consumer states:
+
+```bash
+sh scripts/template-consumer-gate.sh
+sh scripts/template-consumer-gate.sh --capture
+```
+
+The external gate is separate because a standalone Atlas clone must remain
+fully verifiable without another repository.
+
 The gate checks the public language and publication boundary in addition to the
 Rust, Slint, agent-manifest, and visual-scenario contracts. Before tagging a
 release, also inspect the Git index itself and confirm that no ignored file was

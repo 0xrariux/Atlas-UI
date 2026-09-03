@@ -1,0 +1,69 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasTypography, AtlasDensity
+} from "@atlas-ui-tokens/tokens.slint";
+
+// A setting row owns semantic label/detail presentation while its child slot
+// remains controlled application content (switch, field, select, or action).
+export component AtlasSettingsRow inherits Rectangle {
+    in property <string> title;
+    in property <string> description;
+    in property <bool> enabled: true;
+    in property <length> content-right-inset: AtlasGrid.column-min-width * 3 + AtlasGrid.space-4;
+    in property <length> title-y: AtlasGrid.space-2;
+    in property <length> title-height: AtlasTypography.line-body-small;
+    in property <length> description-y: root.title-y + root.title-height;
+    in property <length> description-height: AtlasTypography.line-caption;
+    in property <color> title-color: AtlasTheme.content-primary;
+    in property <color> description-color: AtlasTheme.content-secondary;
+    in property <length> title-font-size: AtlasTypography.size-body-small;
+    in property <length> description-font-size: AtlasTypography.size-caption;
+    in property <int> title-font-weight: AtlasTypography.weight-semibold;
+    in property <bool> show-divider: false;
+    in property <color> divider-color: AtlasTheme.border-subtle;
+
+    height: max(
+        AtlasDensity.pointer-target-min,
+        root.description-y + (root.description == "" ? AtlasGrid.zero : root.description-height)
+            + AtlasGrid.space-2
+    );
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: root.title;
+    accessible-description: root.description;
+    accessible-enabled: root.enabled;
+
+    Text {
+        x: AtlasGrid.zero;
+        y: root.title-y;
+        width: max(AtlasGrid.zero, parent.width - root.content-right-inset);
+        height: root.title-height;
+        text: root.title;
+        color: root.title-color;
+        font-family: AtlasTypography.font-sans;
+        font-size: root.title-font-size;
+        font-weight: root.title-font-weight;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+    if root.description != "": Text {
+        x: AtlasGrid.zero;
+        y: root.description-y;
+        width: max(AtlasGrid.zero, parent.width - root.content-right-inset);
+        height: root.description-height;
+        text: root.description;
+        color: root.description-color;
+        font-family: AtlasTypography.font-sans;
+        font-size: root.description-font-size;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+    if root.show-divider: Rectangle {
+        y: parent.height - AtlasGrid.hairline;
+        width: parent.width;
+        height: AtlasGrid.hairline;
+        background: root.divider-color;
+        accessible-role: AccessibleRole.none;
+    }
+    @children
+}

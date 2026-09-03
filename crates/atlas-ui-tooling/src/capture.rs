@@ -133,7 +133,9 @@ pub fn run(root: &Path, args: &[String]) -> Result {
                 "ATLAS_UI_GALLERY_HEIGHT",
                 scenario["viewport"]["height"].to_string(),
             ),
-            ("ATLAS_UI_GALLERY_DELAY_MS", "300".into()),
+            // Leave enough time for the expanded gallery and bundled fonts to
+            // complete their first software-rendered frame before snapshotting.
+            ("ATLAS_UI_GALLERY_DELAY_MS", "1000".into()),
             (
                 "SLINT_BACKEND",
                 scenario["renderer"].as_str().unwrap().into(),

@@ -1,9 +1,11 @@
 import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
 
 export enum IconName {
-    none, add, back, check, close, info, lock, logs, menu, profile,
+    none, add, back, check, close, copy, info, lock, logs, menu, profile,
     refresh, search, shield, warning, chevron-down, chevron-right,
-    grid, terminal, gamepad, cpu, memory, play, stop, layers
+    grid, terminal, gamepad, cpu, memory, play, stop, layers,
+    activity, analytics, bell, clock, cloud, database, download, filter,
+    globe, settings, trash, users, webhook
 }
 export enum IconTone { primary, secondary, accent, success, warning, danger, info }
 export enum IconSize { compact, normal, large }
@@ -39,6 +41,7 @@ export component AtlasIcon inherits Rectangle {
             : root.name == IconName.back ? @image-url("../assets/back.svg")
             : root.name == IconName.check ? @image-url("../assets/check.svg")
             : root.name == IconName.close ? @image-url("../assets/close.svg")
+            : root.name == IconName.copy ? @image-url("../assets/copy.svg")
             : root.name == IconName.info ? @image-url("../assets/info.svg")
             : root.name == IconName.lock ? @image-url("../assets/lock.svg")
             : root.name == IconName.logs ? @image-url("../assets/logs.svg")
@@ -58,6 +61,19 @@ export component AtlasIcon inherits Rectangle {
             : root.name == IconName.play ? @image-url("../assets/play.svg")
             : root.name == IconName.stop ? @image-url("../assets/stop.svg")
             : root.name == IconName.layers ? @image-url("../assets/layers.svg")
+            : root.name == IconName.activity ? @image-url("../assets/activity.svg")
+            : root.name == IconName.analytics ? @image-url("../assets/analytics.svg")
+            : root.name == IconName.bell ? @image-url("../assets/bell.svg")
+            : root.name == IconName.clock ? @image-url("../assets/clock.svg")
+            : root.name == IconName.cloud ? @image-url("../assets/cloud.svg")
+            : root.name == IconName.database ? @image-url("../assets/database.svg")
+            : root.name == IconName.download ? @image-url("../assets/download.svg")
+            : root.name == IconName.filter ? @image-url("../assets/filter.svg")
+            : root.name == IconName.globe ? @image-url("../assets/globe.svg")
+            : root.name == IconName.settings ? @image-url("../assets/settings.svg")
+            : root.name == IconName.trash ? @image-url("../assets/trash.svg")
+            : root.name == IconName.users ? @image-url("../assets/users.svg")
+            : root.name == IconName.webhook ? @image-url("../assets/webhook.svg")
             : @image-url("../assets/none.svg");
     }
     if !root.decorative: Rectangle {

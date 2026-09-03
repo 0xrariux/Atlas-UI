@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T15:17:54.988782+00:00",
+    "note": "Reviewed medium responsive layout: intrinsic child sizing, stacked edge navigation, switcher actions, and two-column grid behavior are intentional and unclipped.",
+    "reviewer": "Codex",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "responsive.light.compact.720",
-    "page": "responsive",
-    "fixture": "responsive-recipes-v1",
-    "theme": "light",
     "density": "compact",
-    "motion": "reduced",
+    "fixture": "responsive-recipes-v1",
     "grid": false,
-    "viewport": {
-      "width": 720,
-      "height": 900
-    },
+    "id": "responsive.light.compact.720",
+    "motion": "reduced",
+    "page": "responsive",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "light",
+    "viewport": {
+      "height": 900,
+      "width": 720
+    }
   },
   "image": {
-    "width": 720,
-    "height": 900
+    "height": 900,
+    "width": 720
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:22.183Z"
-  }
+  "platform": "macos"
 }

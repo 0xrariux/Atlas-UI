@@ -1,8 +1,10 @@
 # Machine-readable API manifest
 
 `docs/atlas-ui-agent-manifest.json` is the compact machine-readable contract for
-tools and coding agents that consume Atlas UI. It is generated from the public
-Slint source declarations and must not be edited by hand.
+tools and coding agents that consume Atlas UI. The checked-in signature records
+are maintained with public API changes, and Atlas tooling derives declaration
+locations, direct component bases, and effective public-component inheritance
+from the current Slint source.
 
 ## Purpose
 
@@ -24,12 +26,14 @@ final authority.
 ## Schema overview
 
 The root metadata records Atlas and Slint versions, public facades, ownership
-boundaries, documentation entry points, symbol counts, and the recommended
-agent workflow. `preview_nonresponsive_symbols` lists the exact evolving
+boundaries, documentation entry points, component/symbol/icon counts, and the
+recommended agent workflow. `release_context` records the workspace and tagged
+release state; the top-level `version` remains the workspace package version.
+`preview_nonresponsive_symbols` lists the exact evolving
 surface that compiles without experimental Slint features; `preview.slint` and
 the aggregate facade still load the responsive module.
 
-The `api` object contains three generated collections:
+The `api` object contains three tool-maintained collections:
 
 - `components`: public stable and preview components;
 - `types`: public enums and structs;
@@ -38,6 +42,9 @@ The `api` object contains three generated collections:
 `preview_compatibility_exports` lists stable contracts that remain importable
 from the preview facade after promotion. Their `maturity` is still `stable`;
 the duplicate export exists only to avoid breaking earlier preview consumers.
+`counts.preview_symbols` counts evolving symbols and excludes these stable
+compatibility exports, while `preview_nonresponsive_symbols` is the exact
+physical export list for that facade.
 
 Each component entry contains:
 
@@ -53,9 +60,10 @@ Each component entry contains:
 | `minimal_example` | Minimal facade import and component expression |
 
 Every property records `name`, `type`, `direction`, `default`, `declared_in`,
-and whether it is inherited. A `null` default means the declaration has no
-explicit default expression; Slint may still provide the type's implicit
-default value.
+and whether it is inherited. A `null` default means the owning declaration has
+no explicit default expression; Slint may still provide the type's implicit
+default value or a derived component may bind it internally. Consequently,
+`inputs_without_explicit_default` is not a list of required consumer inputs.
 
 Every callback records its parameter types, return type, declaration owner, and
 inheritance status. Callbacks express intentions and do not transfer ownership
@@ -93,7 +101,9 @@ jq '.api.types[] | select(.name == "DataRow")' \
 
 ## Generation and freshness
 
-Regenerate the manifest after changing a public Slint declaration or facade:
+After changing a public Slint declaration, update its curated type, direction,
+default, example, and maturity record as part of the same change, then
+regenerate the manifest:
 
 ```bash
 cargo run -p atlas-ui-tooling -- generate-agent-manifest
@@ -105,9 +115,13 @@ Check that the committed file is current without modifying it:
 cargo run -p atlas-ui-tooling -- generate-agent-manifest --check
 ```
 
-`scripts/quality-gate.sh` runs check mode automatically. It also verifies symbol
-classification, source paths, signature completeness, duplicate members,
-same-line declarations, and inherited Atlas properties.
+`scripts/quality-gate.sh` runs check mode automatically. It also verifies
+symbol classification and facade parity. Generation parses every public source
+declaration to synchronize exact source lines and direct bases, requires every
+direct property and callback to have a signature record, and recursively
+rebuilds inherited Atlas properties and callbacks. Check mode fails if any of
+those derived fields are stale. The referenced Slint declaration remains the
+authority for behavior and built-in Slint inheritance.
 
 ## Consumer rules
 

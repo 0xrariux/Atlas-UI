@@ -6,13 +6,13 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
-documentation = "https://docs.rs/atlas-ui-icons/0.2.1"
+documentation = "https://docs.rs/atlas-ui-icons/0.1.0"
 repository.workspace = true
 homepage.workspace = true
 readme = false
 
 [dependencies]
-atlas-ui-tokens = { path = "../atlas-ui-tokens", version = "=0.2.1" }
+atlas-ui-tokens = { path = "../atlas-ui-tokens", version = "=0.1.0" }
 
 [lints]
 workspace = true

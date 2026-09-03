@@ -1,31 +1,31 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T16:22:09.946089+00:00",
+    "note": "Reviewed in paired desktop/mobile and dark/light contact sheets for the Atlas UI 0.1.0 release.",
+    "reviewer": "Codex release audit",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "typography-stress.light.compact.mobile",
-    "page": "typography-stress",
-    "fixture": "typography-stress-v1",
-    "theme": "light",
     "density": "compact",
-    "motion": "reduced",
+    "fixture": "typography-stress-v1",
     "grid": false,
-    "viewport": {
-      "width": 360,
-      "height": 900
-    },
+    "id": "typography-stress.light.compact.mobile",
+    "motion": "reduced",
+    "page": "typography-stress",
     "renderer": "software",
     "scale_factor": 1,
-    "typography_scale": "compact"
+    "schema_version": 1,
+    "theme": "light",
+    "typography_scale": "compact",
+    "viewport": {
+      "height": 900,
+      "width": 360
+    }
   },
   "image": {
-    "width": 360,
-    "height": 900
+    "height": 900,
+    "width": 360
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:22.403Z"
-  }
+  "platform": "macos"
 }

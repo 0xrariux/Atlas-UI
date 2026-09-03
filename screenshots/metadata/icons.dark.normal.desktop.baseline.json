@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approved_at": null,
-    "note": null,
-    "reviewer": null,
-    "status": "pending-human"
+    "approved_at": "2026-09-03T15:45:52.109451+00:00",
+    "note": "Reviewed all eight rows of the current 38-icon catalog and semantic tones.",
+    "reviewer": "codex",
+    "status": "approved"
   },
   "architecture": "aarch64",
   "identity": {
@@ -18,12 +18,12 @@
     "schema_version": 1,
     "theme": "dark",
     "viewport": {
-      "height": 760,
+      "height": 1200,
       "width": 1080
     }
   },
   "image": {
-    "height": 760,
+    "height": 1200,
     "width": 1080
   },
   "platform": "macos"

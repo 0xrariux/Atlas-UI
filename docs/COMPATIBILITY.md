@@ -7,7 +7,7 @@ release evidence for it.
 
 | Dimension | Version or target | Status | Evidence or constraint |
 |---|---|---|---|
-| Atlas | `0.2.1` | Experimental | Stable imports no longer load experimental responsive modules; 72 release baselines are approved and five rich-table scenarios await review |
+| Atlas | `0.1.0` | Experimental | Stable imports no longer load experimental responsive modules; 72 release baselines are approved and five rich-table scenarios await review |
 | Rust | `1.92` | Required | Effective MSRV imposed by `slint-build 1.17.1` |
 | Rust edition | `2024` | Required | Workspace package edition |
 | Slint | `1.17.1` | Pinned | Workspace dependencies use exact versions for `slint` and `slint-build` |

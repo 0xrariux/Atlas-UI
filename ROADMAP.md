@@ -5,9 +5,11 @@ before the components that depend on them. This roadmap records priorities,
 dependency chains, and the boundary between Slint, Atlas, and application code.
 It communicates direction rather than delivery dates.
 
-New Atlas APIs begin in the preview facade. They move to stable only after their
-behavior, accessibility, responsive layout, performance, and migration risks are
-validated in real applications.
+New Atlas APIs normally begin in the preview facade. They move to stable only
+after their behavior, accessibility, responsive layout, performance, and
+migration risks are validated in real applications. Small additive contracts
+may enter stable directly only when equivalent evidence already covers their
+complete behavior, as with `AtlasStatusIndicator`.
 
 ## Responsibility model
 
@@ -172,13 +174,18 @@ responsive compositions, and application shells all consume its results.
             ├── AtlasPopover                                          new
             ├── AtlasCombobox / AtlasAutocomplete                     new
             ├── date and time pickers                                 new
-            ├── AtlasModal                                            evolve
-            └── AtlasDrawer                                           evolve
+            ├── AtlasModalFrame                                       existing
+            │   └── AtlasModal                                        evolve
+            └── AtlasDrawerFrame                                      existing
+                └── AtlasDrawer                                       evolve
 ```
 
 Overlay geometry can be computed by Atlas, but native focus state and the
 accessible tree must remain in Slint. Components expose controlled intentions;
-the host owns navigation and external effects.
+the host owns navigation and external effects. The existing modal and drawer
+frames cover controlled panel, dismissal, traversal, and focus-restoration
+boundaries; the unresolved `evolve` work is shared anchor placement, collision,
+nested overlay, and broader platform evidence.
 
 ### Required outcomes
 
@@ -297,8 +304,23 @@ Slint built-ins unless a smaller, brand-neutral primitive is discovered.
     │
     ├── status and progress
     │   ├── AtlasBadge
+    │   ├── AtlasStatusIndicator
     │   ├── AtlasProgressBar
     │   └── AtlasRadialProgress
+    │
+    ├── scrolling
+    │   ├── AtlasScrollbar
+    │   └── AtlasScrollViewport
+    │
+    ├── domain-neutral composition
+    │   ├── AtlasSettingsRow
+    │   ├── AtlasChartFrame (frame and grid only)
+    │   ├── AtlasMetric (unframed content)
+    │   └── AtlasCopyableValue (host-owned clipboard)
+    │
+    ├── overlay composition
+    │   ├── AtlasModalFrame → AtlasModal
+    │   └── AtlasDrawerFrame → AtlasDrawer
     │
     ├── controlled data states
     │   ├── AtlasSkeleton
@@ -315,6 +337,12 @@ Slint built-ins unless a smaller, brand-neutral primitive is discovered.
         ├── AtlasSettingsTemplate
         └── AtlasDashboardTemplate
 ```
+
+`AtlasScrollbar` and `AtlasScrollViewport` remain preview. They have a real
+Talos consumer plus direct and composed dark/light gallery evidence; promotion
+still requires repeatable keyboard and accessibility inspection,
+cross-platform rendering review, and migration evidence from an external
+consumer.
 
 ## P2 — Direction, drag and drop, and platform breadth
 
@@ -340,9 +368,10 @@ platforms before defining stable recipes. It should not recreate the underlying
 drag source, drop target, or payload negotiation mechanism.
 
 Additional P2 candidates include advanced desktop navigation, nested context
-menus, desktop menubars, floating panels, color pickers, data-visualization
-primitives and legends, responsive visibility, aspect-ratio, and overflow
-helpers.
+menus, desktop menubars, floating panels, color pickers, dynamic
+data-visualization series and legends, responsive visibility, aspect-ratio,
+and overflow helpers. `AtlasChartFrame` already supplies the accessible plot
+background and grid; it does not close the dynamic-series work.
 
 ## Cross-cutting evidence gates
 
@@ -418,4 +447,4 @@ Feedback should include a concrete application case, the missing primitive,
 the expected ownership boundary, and at least one credible reuse case. Use the
 [structured issue forms](https://github.com/0xrariux/Atlas-UI/issues/new/choose)
 or the pinned
-[Atlas UI 0.2 early-adopter feedback issue](https://github.com/0xrariux/Atlas-UI/issues/2).
+[Atlas UI 0.1 early-adopter feedback issue](https://github.com/0xrariux/Atlas-UI/issues/2).

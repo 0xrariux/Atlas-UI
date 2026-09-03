@@ -1,7 +1,35 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 — 2026-09-03
 
+- Introduces the Atlas UI workspace architecture: tokens, core primitives,
+  icons, components, documents, testing helpers, the Rust facade, native
+  tooling, the gallery, and a compiled consumer example.
+- Exposes 58 stable symbols governed by SemVer and 122 preview symbols that may
+  evolve between minor releases.
+- Adds preview `AtlasScrollbar`, a controlled standalone vertical scrollbar
+  with a 16-pixel interaction corridor, proportional thumb, six-pixel rail,
+  two-pixel corners, accessible value semantics, and bounded appearance inputs;
+  `AtlasScrollViewport` now composes the same primitive.
+- Adds stable `AtlasStatusIndicator` for accessible standalone semantic state
+  signals.
+- Adds preview `AtlasSettingsRow`, `AtlasChartFrame`, `AtlasModalFrame`,
+  `AtlasMetric`, `AtlasCopyableValue`, and `AtlasDrawerFrame` composition
+  contracts.
+- Extends preview `AtlasProgressBar` with configurable track height, radius,
+  track color, and indicator color while preserving its existing defaults.
+- Extends stable `AtlasSwitch` with additive label, track, border, background,
+  and thumb anatomy properties while preserving its existing behavior and
+  defaults.
+- Refactors preview `AtlasModal` and `AtlasDrawer` to inherit their slotted
+  frame components without removing their standard title, body, or action
+  APIs.
+- Adds `activity`, `analytics`, `bell`, `clock`, `cloud`, `copy`, `database`,
+  `download`, `filter`, `globe`, `settings`, `trash`, `users`, and `webhook` to
+  the stable `IconName` registry.
+- Removes, renames, and deprecates no public API. The template campaign adds no
+  typography roles, enum types, structs, globals, or Rust runtime helpers; the
+  scrollbar follow-up extends the existing stable viewport-token global.
 - Adds stable `AtlasIconButton`, `AtlasWorkspaceTab`, and
   `AtlasWorkspaceTabList` contracts with controlled intentions, keyboard focus,
   deterministic automation IDs, and accessible close behavior.
@@ -23,40 +51,31 @@
   features.
 - Documents that `preview.slint` and `components.slint` remain compatibility
   aggregates that eagerly load responsive `FlexboxLayout` contracts.
-
-## 0.2.1 — 2026-08-09
-
 - Makes `@atlas-ui/stable.slint` compile without Slint experimental features.
 - Adds a dedicated non-experimental Atlas Core facade for stable components.
 - Keeps `FlexboxLayout` and responsive preview contracts isolated from the
   stable import graph.
 - Adds a regression test for the stable-to-preview dependency boundary.
-- Corrects the effective Rust MSRV to 1.92, as required by Slint 1.17.1.
-- Includes the native Rust maintenance-tooling migration and refreshed agent
-  documentation introduced after the 0.2.0 tag.
-
-## 0.2.0 — 2026-08-09
-
-- Establishes 48 stable-contract symbols in `stable.slint`.
-- Isolates 110 evolving symbols in `preview.slint`.
+- Sets the effective Rust MSRV to 1.92, as required by Slint 1.17.1.
+- Includes native Rust maintenance tooling and agent-oriented documentation.
 - Retains `components.slint` as the aggregate compatibility facade.
 - Automatically enforces the stable/preview partition and its SemVer rules.
 - Adopts the MIT License for Atlas code.
 - Tightens documentation rhythm and improves the hierarchy of link cards and callouts.
-
-## 0.1.0-preview — 2026-08-08
-
-- Introduced the tokens/core/icons/components/testing/gallery architecture.
-- Added dark and light themes, density modes, and reduced motion.
-- Added foundational components, overlays, navigation, and data presentation.
-- Added 27 deterministic visual scenarios.
-- Snapshotted 101 public symbols.
-- Added panels, metric cards, selects, segmented controls, progress, ranges,
+- Adds dark and light themes, density modes, and reduced motion.
+- Adds foundational components, overlays, navigation, and data presentation.
+- Provides 77 deterministic visual scenarios across 32 gallery pages.
+- Adds an external consumer gate for the four `template-atlas` applications,
+  covering 97 rendered states during Atlas upgrades, and records the
+  no-overflow scrollbar state found through the Talos adoption audit.
+- Adds panels, metric cards, selects, segmented controls, progress, ranges,
   pagination, and key/value lists.
-- Added sparklines, icons, alerts, notices, workflow banners, steppers, drawers,
+- Adds sparklines, icons, alerts, notices, workflow banners, steppers, drawers,
   and error pages.
-- Added the first editorial set: headings, paragraphs, code, quotations, and dividers.
-- Added 15 original SVG icons, an asset registry, and provenance validation.
-- Bundled Inter Variable and JetBrains Mono Variable under OFL-1.1 with checksums.
-- Added Stack, Cluster, Sidebar, Switcher, and AutoGrid with evidence from 360–1440 px.
-- Kept the API in preview pending validation of the desktop matrix.
+- Adds an editorial set with headings, paragraphs, code, quotations, and
+  dividers.
+- Ships 38 original SVG icons with an asset registry and provenance validation.
+- Bundles Inter Variable and JetBrains Mono Variable under OFL-1.1 with
+  checksums.
+- Adds Stack, Cluster, Sidebar, Switcher, and AutoGrid with evidence from
+  360–1440 px.

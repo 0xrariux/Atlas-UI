@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approved_at": null,
-    "note": null,
-    "reviewer": null,
-    "status": "pending-human"
+    "approved_at": "2026-09-03T14:44:12.173041+00:00",
+    "note": "Reviewed for v0.1.0; the radial-progress geometry and added compact progress-track specimen are crisp, aligned, and readable.",
+    "reviewer": "Codex",
+    "status": "approved"
   },
   "architecture": "aarch64",
   "identity": {

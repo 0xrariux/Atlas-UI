@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T16:13:06.375361+00:00",
+    "note": "Reviewed link cards, destinations, and callout composition at desktop width.",
+    "reviewer": "codex",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "content-navigation.dark.normal.desktop",
-    "page": "content-navigation",
-    "fixture": "content-navigation-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "full",
+    "fixture": "content-navigation-v1",
     "grid": false,
-    "viewport": {
-      "width": 1080,
-      "height": 1000
-    },
+    "id": "content-navigation.dark.normal.desktop",
+    "motion": "full",
+    "page": "content-navigation",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 1000,
+      "width": 1080
+    }
   },
   "image": {
-    "width": 1080,
-    "height": 1000
+    "height": 1000,
+    "width": 1080
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:21.063Z"
-  }
+  "platform": "macos"
 }

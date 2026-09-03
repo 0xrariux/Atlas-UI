@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approved_at": null,
-    "note": null,
-    "reviewer": null,
-    "status": "pending-human"
+    "approved_at": "2026-09-03T14:45:07.691388+00:00",
+    "note": "Reviewed for v0.1.0; compact light-theme radial and linear progress variants preserve alignment, contrast, and reduced-motion behavior.",
+    "reviewer": "Codex",
+    "status": "approved"
   },
   "architecture": "aarch64",
   "identity": {

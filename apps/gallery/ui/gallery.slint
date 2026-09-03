@@ -1,18 +1,18 @@
 import { ScrollView } from "std-widgets.slint";
 import {
-    AtlasPalette, AtlasTheme, AtlasCategoryTokens, AtlasGrid, AtlasShape, AtlasDensity, AtlasTypography,
+    AtlasPalette, AtlasTheme, AtlasCategoryTokens, AtlasGrid, AtlasShape, AtlasDensity, AtlasTypography, AtlasOverlayTokens,
     Density, AtlasButton, ButtonTone, AtlasIconButton, IconButtonTone, AtlasTextField, AtlasCheckbox,
-    AtlasSwitch, SwitchTone, AtlasBadge, BadgeTone, AtlasIcon, IconName, IconTone, Surface,
+    AtlasSwitch, SwitchTone, AtlasBadge, AtlasStatusIndicator, BadgeTone, AtlasIcon, IconName, IconTone, Surface, AtlasScrollbar,
     AtlasTab, AtlasWorkspaceTab, AtlasWorkspaceTabList, TabVariant, AtlasTooltip, TooltipTone, TooltipPlacement, AtlasMenu, MenuItem,
-    AtlasModal, ModalSize, ContentFrame, LayoutGridOverlay
+    AtlasModal, AtlasModalFrame, ModalSize, ContentFrame, LayoutGridOverlay
     , AtlasDataTable, AtlasSkeleton, AtlasEmptyState, AtlasErrorState,
     DataColumn, DataRow, DataViewState, DataCellKind, DataCellAlignment,
     CellEditorKind, ColumnPin
-    , AtlasPanel, AtlasMetricCard, AtlasSelectField, AtlasSpinner, AtlasProgressBar, AtlasRadialProgress, ProgressTone,
-    AtlasRangeControl, AtlasPagination, AtlasKeyValueList, KeyValueItem, ValueTone
-    , AtlasSparkline, SparklineTone, AtlasInlineAlert, AlertTone, AtlasNoticeStack,
+    , AtlasPanel, AtlasMetricCard, AtlasMetric, AtlasCopyableValue, AtlasSelectField, AtlasSpinner, AtlasProgressBar, AtlasRadialProgress, ProgressTone,
+    AtlasRangeControl, AtlasPagination, AtlasKeyValueList, KeyValueItem, ValueTone, AtlasSettingsRow
+    , AtlasChartFrame, AtlasSparkline, SparklineTone, AtlasInlineAlert, AlertTone, AtlasNoticeStack,
     NoticeItem, NoticeTone, AtlasWorkflowBanner, AtlasStepper, StepItem,
-    AtlasDrawer, DrawerSide, AtlasErrorPage
+    AtlasDrawer, AtlasDrawerFrame, DrawerSide, AtlasErrorPage
     , AtlasHeading, AtlasParagraph, AtlasStyledText, AtlasSelectableText, AtlasInlineCode, AtlasCodeBlock,
     AtlasBlockQuote, AtlasDivider, HeadingLevel, EditorialTone, EditorialEmphasis
     , AtlasEdgeSurface, DividerEdge, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
@@ -191,12 +191,47 @@ component InteractionStatePreview inherits Rectangle {
     }
 }
 
+component ScrollbarPreview inherits Rectangle {
+    in property <string> label;
+    in property <bool> active: false;
+    in property <bool> overflow: true;
+
+    background: AtlasTheme.canvas;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-small;
+    clip: true;
+
+    Text {
+        x: AtlasGrid.space-3;
+        y: AtlasGrid.space-2;
+        text: root.label;
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-mono;
+        font-size: AtlasTypography.size-caption;
+    }
+    Rectangle { x: AtlasGrid.space-3; y: AtlasGrid.space-8; width: parent.width / 2; height: AtlasGrid.hairline; background: AtlasTheme.border-subtle; }
+    Rectangle { x: AtlasGrid.space-3; y: AtlasGrid.space-12; width: parent.width * 0.7; height: AtlasGrid.hairline; background: AtlasTheme.border-subtle; }
+    Rectangle { x: AtlasGrid.space-3; y: AtlasGrid.space-12 + AtlasGrid.space-4; width: parent.width * 0.42; height: AtlasGrid.hairline; background: AtlasTheme.border-subtle; }
+    AtlasScrollbar {
+        x: parent.width - self.width;
+        height: parent.height;
+        viewport-y: root.active ? self.height * 1.2 : self.height * 0.4;
+        viewport-height: self.height;
+        content-height: root.overflow ? self.height * 3 : self.height;
+        preview-active: root.active;
+        accessible-label: root.label + " scroll position";
+    }
+}
+
 component EditorialArticlePreview inherits Rectangle {
     min-height: AtlasGrid.space-12 * 13;
     background: AtlasTheme.transparent;
     VerticalLayout { spacing: AtlasGrid.space-4;
         AtlasHeading {
-            height: AtlasTypography.line-display * 2;
+            height: root.width <= AtlasTypography.measure-compact
+                ? AtlasTypography.line-display * 2.5
+                : AtlasTypography.line-display * 2;
             text: "Designing native interfaces with a web-quality rhythm";
             level: HeadingLevel.h1; anchor-id: "editorial-foundations";
         }
@@ -475,6 +510,20 @@ export component Gallery inherits Window {
                 }
             }
 
+            SectionLabel { visible: root.preview-page == "interactions"; text: "CONTROLLED SCROLLBAR ANATOMY"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
+            Surface {
+                visible: root.preview-page == "interactions";
+                height: self.visible ? AtlasGrid.space-12 * 3 : AtlasGrid.zero;
+                raised: true;
+                HorizontalLayout {
+                    padding: AtlasGrid.space-4;
+                    spacing: AtlasGrid.space-4;
+                    ScrollbarPreview { horizontal-stretch: 1; label: "IDLE · PROPORTIONAL"; }
+                    ScrollbarPreview { horizontal-stretch: 1; label: "ACTIVE · CONTROLLED"; active: true; }
+                    ScrollbarPreview { horizontal-stretch: 1; label: "FITS · HIDDEN"; overflow: false; }
+                }
+            }
+
             SectionLabel { visible: root.preview-page == "interactions"; text: "CONTROLLED GROUPS"; height: self.visible ? AtlasGrid.space-4 : AtlasGrid.zero; }
             Surface {
                 visible: root.preview-page == "interactions";
@@ -575,7 +624,39 @@ export component Gallery inherits Window {
                 AtlasSwitch { width: AtlasGrid.column-min-width * 3; label: "Enabled"; inactive-label: "Disabled"; checked: true; }
                 AtlasSwitch { width: AtlasGrid.column-min-width * 4; label: "Operator active"; inactive-label: "Operator paused"; tone: SwitchTone.operator; }
                 AtlasSwitch { width: AtlasGrid.column-min-width * 3; label: "Safety override"; tone: SwitchTone.safety; checked: true; preview-focus-visible: true; }
+                AtlasSwitch {
+                    width: 32px; height: 16px; show-label: false; label: "Compact custom track"; checked: true;
+                    track-offset-x: 0px; track-width: 32px; track-height: 16px; track-padding: 2px;
+                    track-border-width: 0px; thumb-size: 12px;
+                }
                 Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
+            }
+            AtlasSettingsRow {
+                height: AtlasGrid.space-12;
+                title: "Automatic deployment";
+                description: "Apply validated releases without another confirmation.";
+                AtlasSwitch {
+                    x: parent.width - self.width;
+                    y: (parent.height - self.height) / 2;
+                    width: AtlasGrid.column-min-width * 2;
+                    label: "Automatic deployment";
+                    show-label: false;
+                    checked: true;
+                }
+            }
+            AtlasSettingsRow {
+                height: AtlasGrid.space-12;
+                title: "Archived environment";
+                description: "Unavailable settings preserve their semantic grouping.";
+                enabled: false;
+                show-divider: true;
+                AtlasButton {
+                    x: parent.width - self.width;
+                    y: (parent.height - self.height) / 2;
+                    width: AtlasGrid.column-min-width * 2;
+                    text: "Review";
+                    enabled: false;
+                }
             }
             SectionLabel { text: "STATUS BADGES"; height: AtlasGrid.space-4; }
             HorizontalLayout {
@@ -587,6 +668,13 @@ export component Gallery inherits Window {
                 AtlasBadge { text: "Danger"; tone: BadgeTone.danger; dot: true; }
                 AtlasBadge { text: "Information"; tone: BadgeTone.info; }
                 AtlasBadge { text: "Live"; tone: BadgeTone.live; dot: true; }
+                AtlasStatusIndicator { label: "Healthy signal"; tone: BadgeTone.healthy; }
+                AtlasStatusIndicator { label: "Warning signal"; tone: BadgeTone.warning; }
+                AtlasStatusIndicator { label: "Danger signal"; tone: BadgeTone.danger; }
+                AtlasStatusIndicator { label: "Live signal"; tone: BadgeTone.live; }
+                AtlasStatusIndicator { label: "Neutral signal"; tone: BadgeTone.neutral; }
+                AtlasStatusIndicator { label: "Information signal"; tone: BadgeTone.info; }
+                AtlasStatusIndicator { label: "Custom product signal"; indicator-color: AtlasCategoryTokens.category-3; }
                 Rectangle { horizontal-stretch: 1; background: AtlasTheme.transparent; }
             }
         }
@@ -648,17 +736,47 @@ export component Gallery inherits Window {
                         tone: TooltipTone.warning; placement: TooltipPlacement.bottom; force-open: true;
                     }
                 }
-                Rectangle {
-                    horizontal-stretch: 2; border-width: AtlasShape.border-width;
-                    border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
-                    background: AtlasTheme.surface;
-                    AtlasModal {
-                        x: AtlasGrid.space-3; y: AtlasGrid.space-3;
-                        width: parent.width - AtlasGrid.space-6; height: parent.height - AtlasGrid.space-6;
-                        open: true; contained: true; size: ModalSize.small; danger: true;
-                        title: "Delete this environment?"; meta: "IRREVERSIBLE ACTION";
-                        description: "This preview demonstrates a contained modal, its semantic danger state and the shared focus boundary.";
-                        cancel-text: "Keep environment"; confirm-text: "Delete";
+                HorizontalLayout {
+                    horizontal-stretch: 2;
+                    spacing: AtlasGrid.space-4;
+                    Rectangle {
+                        horizontal-stretch: 1; vertical-stretch: 1;
+                        border-width: AtlasShape.border-width;
+                        border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
+                        background: AtlasTheme.surface;
+                        AtlasModal {
+                            x: AtlasGrid.space-3; y: AtlasGrid.space-3;
+                            width: parent.width - AtlasGrid.space-6; height: parent.height - AtlasGrid.space-6;
+                            open: true; contained: true; size: ModalSize.small;
+                            title: "Standard modal"; meta: "HIGH-LEVEL BODY";
+                            description: "AtlasModal retains its title, body and standard actions.";
+                            cancel-text: "Later"; confirm-text: "Continue";
+                        }
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1; vertical-stretch: 1;
+                        border-width: AtlasShape.border-width;
+                        border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
+                        background: AtlasTheme.surface;
+                        AtlasModalFrame {
+                            x: AtlasGrid.space-3; y: AtlasGrid.space-3;
+                            width: parent.width - AtlasGrid.space-6; height: parent.height - AtlasGrid.space-6;
+                            open: true; contained: true; panel-width: AtlasOverlayTokens.modal-width-small;
+                            panel-height: AtlasGrid.space-12 * 5; panel-border-color: AtlasTheme.danger;
+                            label: "Delete this environment?";
+                            description: "This preview demonstrates a contained modal, its semantic danger state and the shared focus boundary.";
+                            VerticalLayout {
+                                width: parent.width; height: parent.height;
+                                padding: AtlasGrid.space-6; spacing: AtlasGrid.space-3;
+                                Text { text: "Delete environment?"; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title; font-weight: AtlasTypography.weight-bold; }
+                                Text { text: "CUSTOM FRAME CONTENT"; color: AtlasTheme.danger; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-body-small; font-weight: AtlasTypography.weight-semibold; }
+                                Text { text: "This preview demonstrates a contained modal, its semantic danger state and the shared focus boundary."; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body; wrap: word-wrap; vertical-stretch: 1; }
+                                HorizontalLayout { height: AtlasGrid.space-10; spacing: AtlasGrid.space-2; alignment: end;
+                                    AtlasButton { text: "Keep environment"; tone: ButtonTone.secondary; }
+                                    AtlasButton { text: "Delete"; tone: ButtonTone.danger; }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -803,6 +921,17 @@ export component Gallery inherits Window {
                     indeterminate: true;
                     show-labels: false;
                 }
+                AtlasProgressBar {
+                    width: AtlasGrid.column-min-width * 3;
+                    horizontal-stretch: 1;
+                    label: "Compact deployment progress";
+                    value: 64;
+                    show-labels: false;
+                    track-height: AtlasGrid.hairline * 3;
+                    track-radius: AtlasShape.radius-none;
+                    track-color: AtlasTheme.border-subtle;
+                    indicator-color: AtlasTheme.content-accent;
+                }
             }
             AtlasRangeControl { label: "Traffic allocation"; value: 65; unit: "%"; }
             AtlasPagination { page: 4; page-count: 12; }
@@ -815,6 +944,17 @@ export component Gallery inherits Window {
         background: AtlasTheme.transparent;
         VerticalLayout { spacing: AtlasGrid.space-4;
             Text { text: "Feedback → workflow navigation → contextual overlay → fatal recovery"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body; height: AtlasGrid.space-5; }
+            HorizontalLayout { height: AtlasGrid.space-12 * 3; spacing: AtlasGrid.space-4;
+                HorizontalLayout { horizontal-stretch: 1; spacing: AtlasGrid.space-3;
+                    AtlasMetric { horizontal-stretch: 1; label: "SETTLED VALUE"; value: "$1.28M"; meta: "+1.97% this month"; tone: ValueTone.positive; }
+                    AtlasMetric { horizontal-stretch: 1; label: "FAILED JOBS"; value: "3"; meta: "Needs review"; tone: ValueTone.negative; }
+                }
+                VerticalLayout { horizontal-stretch: 1; spacing: AtlasGrid.space-2;
+                    AtlasCopyableValue { value: "deployment_01HZX9"; copy-label: "Copy deployment identifier"; }
+                    AtlasCopyableValue { value: "already_copied"; copied: true; copy-label: "Copy completed value"; }
+                    AtlasCopyableValue { value: "copy_unavailable"; copy-enabled: false; copy-label: "Copy unavailable value"; }
+                }
+            }
             HorizontalLayout { height: AtlasGrid.space-12 * 2; spacing: AtlasGrid.space-4;
                 AtlasInlineAlert { horizontal-stretch: 1; title: "Configuration saved"; message: "The deployment configuration is now active."; tone: AlertTone.success; dismissible: true; }
                 AtlasWorkflowBanner { horizontal-stretch: 1; title: "Workflow paused"; message: "Review the failed validation before continuing."; action-text: "Resume"; }
@@ -822,7 +962,7 @@ export component Gallery inherits Window {
             HorizontalLayout { height: AtlasGrid.space-12 * 3; spacing: AtlasGrid.space-4;
                 AtlasNoticeStack { horizontal-stretch: 1; items: [{ id: "n1", title: "Build completed", message: "Artifacts are ready.", tone: NoticeTone.success, leaving: false }, { id: "n2", title: "Budget warning", message: "Usage reached 82%.", tone: NoticeTone.warning, leaving: false }]; }
                 AtlasStepper { horizontal-stretch: 1; current: 1; interactive: true; steps: [{ label: "Configure", description: "Complete" }, { label: "Validate", description: "Current" }, { label: "Deploy", description: "Upcoming" }]; }
-                Rectangle { horizontal-stretch: 1; border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface; background: AtlasTheme.surface;
+                AtlasChartFrame { horizontal-stretch: 1; label: "Request trend"; description: "Seven-sample request-rate trend"; horizontal-lines: 4; vertical-lines: 4; border-width: AtlasShape.border-width; border-color: AtlasTheme.border-subtle; border-radius: AtlasShape.radius-surface;
                     Text { x: AtlasGrid.space-4; y: AtlasGrid.space-3; text: "REQUEST TREND"; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
                     AtlasSparkline { x: AtlasGrid.space-4; y: AtlasGrid.space-8; width: parent.width - AtlasGrid.space-8; label: "Request trend"; tone: SparklineTone.positive; values: [0.15, 0.35, 0.28, 0.62, 0.55, 0.82, 0.9]; }
                 }
@@ -830,6 +970,15 @@ export component Gallery inherits Window {
             HorizontalLayout { height: AtlasGrid.space-12 * 6; spacing: AtlasGrid.space-4;
                 Rectangle { horizontal-stretch: 1; clip: true; border-radius: AtlasShape.radius-surface;
                     AtlasDrawer { open: true; contained: true; side: DrawerSide.right; title: "Environment details"; meta: "production · eu-west-3"; body-text: "Contextual information remains attached to the current screen without becoming a blocking confirmation."; primary-action: "Open"; secondary-action: "Close"; }
+                }
+                Rectangle { horizontal-stretch: 1; clip: true; border-radius: AtlasShape.radius-surface;
+                    AtlasDrawerFrame { open: true; contained: true; side: DrawerSide.left; dismiss-on-backdrop: true; panel-width: parent.width - AtlasGrid.space-6; label: "Custom left drawer"; description: "Consumer-owned content in the shared drawer frame";
+                        VerticalLayout { padding: AtlasGrid.space-5; spacing: AtlasGrid.space-3;
+                            AtlasHeading { text: "Custom content"; level: HeadingLevel.h4; }
+                            AtlasParagraph { text: "The frame owns overlay behavior while the application owns its anatomy."; muted: true; }
+                            AtlasButton { text: "Apply"; tone: ButtonTone.primary; }
+                        }
+                    }
                 }
                 Rectangle { horizontal-stretch: 1; clip: true; border-radius: AtlasShape.radius-surface;
                     AtlasErrorPage { compact: true; contained: true; code: "503"; title: "Service unavailable"; message: "Try again when connectivity is restored."; action-text: "Retry"; }
@@ -949,7 +1098,28 @@ export component Gallery inherits Window {
                     IconPreview { icon-name: IconName.stop; label: "stop"; tone: IconTone.danger; }
                     IconPreview { icon-name: IconName.chevron-right; label: "chevron-right"; }
                     IconPreview { icon-name: IconName.layers; label: "layers"; tone: IconTone.accent; }
-                    IconPreview { icon-name: IconName.add; label: "decorative-example"; }
+                    IconPreview { icon-name: IconName.copy; label: "copy"; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.activity; label: "activity"; }
+                    IconPreview { icon-name: IconName.analytics; label: "analytics"; }
+                    IconPreview { icon-name: IconName.bell; label: "bell"; }
+                    IconPreview { icon-name: IconName.clock; label: "clock"; }
+                    IconPreview { icon-name: IconName.cloud; label: "cloud"; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.database; label: "database"; }
+                    IconPreview { icon-name: IconName.download; label: "download"; }
+                    IconPreview { icon-name: IconName.filter; label: "filter"; }
+                    IconPreview { icon-name: IconName.globe; label: "globe"; }
+                    IconPreview { icon-name: IconName.settings; label: "settings"; }
+                }
+                Row {
+                    IconPreview { icon-name: IconName.trash; label: "trash"; tone: IconTone.danger; }
+                    IconPreview { icon-name: IconName.users; label: "users"; }
+                    IconPreview { icon-name: IconName.webhook; label: "webhook"; }
+                    IconPreview { icon-name: IconName.shield; label: "shield-success"; tone: IconTone.success; }
+                    IconPreview { icon-name: IconName.warning; label: "warning-danger"; tone: IconTone.danger; }
                 }
             }
         }

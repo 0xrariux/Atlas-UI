@@ -172,32 +172,90 @@ export component AtlasStepper inherits Rectangle {
     }
 }
 
-export component AtlasDrawer inherits Rectangle {
+// Slotted side-panel behavior for application-specific detail content. The
+// higher-level AtlasDrawer below preserves the standard title/body/actions.
+export component AtlasDrawerFrame inherits Rectangle {
     in-out property <bool> open: false;
+    in property <string> label;
+    in property <string> description;
+    in property <DrawerSide> side: DrawerSide.right;
+    in property <bool> contained: false;
+    in property <bool> dismiss-on-backdrop: false;
+    in property <length> panel-width: AtlasOverlayTokens.modal-width-small;
+    in property <color> backdrop-color: AtlasOverlayTokens.backdrop;
+    in property <color> panel-background: AtlasTheme.surface;
+    in property <color> panel-border-color: AtlasTheme.border-subtle;
+    in property <length> panel-border-width: AtlasShape.border-width;
+    in property <length> panel-radius: AtlasShape.radius-surface;
+    in property <bool> panel-clip: false;
+    in property <color> panel-shadow-color: AtlasTheme.transparent;
+    in property <length> panel-shadow-blur: AtlasGrid.zero;
+    in property <length> panel-shadow-offset-x: AtlasGrid.zero;
+    in property <length> panel-shadow-offset-y: AtlasGrid.zero;
+    callback dismissed();
+    callback traversal-requested(bool /* backwards */);
+    callback focus-restore-requested();
+
+    visible: root.open;
+    background: root.contained ? AtlasTheme.transparent : root.backdrop-color;
+    clip: true;
+    accessible-role: AccessibleRole.region;
+    accessible-label: root.label;
+    accessible-description: root.description;
+    accessible-expandable: true;
+    accessible-expanded: root.open;
+
+    dismiss-area := TouchArea {
+        enabled: root.dismiss-on-backdrop;
+        clicked => { root.dismissed(); }
+    }
+    panel := Rectangle {
+        x: root.side == DrawerSide.left ? AtlasGrid.zero : parent.width - self.width;
+        width: min(root.panel-width, parent.width);
+        height: parent.height;
+        border-width: root.panel-border-width;
+        border-color: root.panel-border-color;
+        border-radius: root.panel-radius;
+        background: root.panel-background;
+        clip: root.panel-clip;
+        drop-shadow-color: root.panel-shadow-color;
+        drop-shadow-blur: root.panel-shadow-blur;
+        drop-shadow-offset-x: root.panel-shadow-offset-x;
+        drop-shadow-offset-y: root.panel-shadow-offset-y;
+        panel-blocker := TouchArea { }
+        @children
+    }
+    focus := OverlayFocusController {
+        active: root.open;
+        dismiss-requested => { root.dismissed(); }
+        traverse-requested(backwards) => { root.traversal-requested(backwards); }
+        restore-focus-requested => { root.focus-restore-requested(); }
+    }
+    changed open => {
+        if (root.open) { focus.activate(); }
+        else { focus.deactivate(); }
+    }
+}
+
+export component AtlasDrawer inherits AtlasDrawerFrame {
     in property <string> title; in property <string> meta; in property <string> body-text;
     in property <string> primary-action; in property <string> secondary-action;
-    in property <DrawerSide> side: DrawerSide.right; in property <bool> contained: false; in property <bool> compact: false;
-    callback close(); callback primary-requested(); callback secondary-requested(); callback focus-restore-requested();
-    visible: root.open;
-    background: root.contained ? AtlasTheme.transparent : AtlasOverlayTokens.backdrop;
-    clip: true;
-    accessible-role: AccessibleRole.region; accessible-label: root.title; accessible-description: root.body-text; accessible-expanded: root.open;
-    panel := Surface {
-        x: root.side == DrawerSide.left ? AtlasGrid.zero : parent.width - self.width;
-        width: root.compact || root.contained
-            ? parent.width : min(AtlasOverlayTokens.modal-width-small, parent.width);
-        VerticalLayout { padding: AtlasGrid.space-5; spacing: AtlasGrid.space-3;
-            Text { text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; }
-            Text { text: root.meta; color: AtlasTheme.content-accent; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; }
-            Text { vertical-stretch: 1; text: root.body-text; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; wrap: word-wrap; }
-            HorizontalLayout { height: AtlasDensity.control-height; spacing: AtlasGrid.space-2; alignment: end;
-                if root.secondary-action != "": AtlasButton { text: root.secondary-action; clicked => { root.secondary-requested(); } }
-                if root.primary-action != "": AtlasButton { text: root.primary-action; tone: ButtonTone.primary; contained-focus: true; clicked => { root.primary-requested(); } dismiss-requested => { root.close(); } }
-            }
+    in property <bool> compact: false;
+    callback close(); callback primary-requested(); callback secondary-requested();
+    label: root.title;
+    description: root.body-text;
+    panel-width: root.compact || root.contained
+        ? root.width : AtlasOverlayTokens.modal-width-small;
+    dismissed => { root.close(); }
+    VerticalLayout { padding: AtlasGrid.space-5; spacing: AtlasGrid.space-3;
+        Text { text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; }
+        Text { text: root.meta; color: AtlasTheme.content-accent; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; }
+        Text { vertical-stretch: 1; text: root.body-text; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; wrap: word-wrap; }
+        HorizontalLayout { height: AtlasDensity.control-height; spacing: AtlasGrid.space-2; alignment: end;
+            if root.secondary-action != "": AtlasButton { text: root.secondary-action; clicked => { root.secondary-requested(); } }
+            if root.primary-action != "": AtlasButton { text: root.primary-action; tone: ButtonTone.primary; contained-focus: true; clicked => { root.primary-requested(); } dismiss-requested => { root.close(); } }
         }
     }
-    focus := OverlayFocusController { active: root.open; dismiss-requested => { root.close(); } restore-focus-requested => { root.focus-restore-requested(); } }
-    changed open => { if (root.open) { focus.activate(); } else { focus.deactivate(); } }
 }
 
 export component AtlasErrorPage inherits Rectangle {

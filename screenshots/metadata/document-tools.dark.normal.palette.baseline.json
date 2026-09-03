@@ -24,7 +24,7 @@
   "approval": {
     "status": "approved",
     "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
+    "note": "Reviewed and approved for the Atlas UI 0.1.0 release.",
     "approved_at": "2026-08-09T15:46:21.340Z"
   }
 }

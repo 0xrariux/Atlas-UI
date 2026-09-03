@@ -9,7 +9,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
   <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust-1.92-orange.svg" alt="Rust 1.92 MSRV"></a>
   <a href="https://github.com/slint-ui/slint"><img src="https://img.shields.io/badge/Slint-1.17.1-2379F4.svg" alt="Slint 1.17.1"></a>
-  <a href="https://crates.io/crates/atlas-ui"><img src="https://img.shields.io/crates/v/atlas-ui.svg" alt="Latest atlas-ui version on crates.io"></a>
+  <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.1.0"><img src="https://img.shields.io/badge/release-v0.1.0-2379F4.svg" alt="Atlas UI v0.1.0 release"></a>
 </p>
 
 > [!WARNING]
@@ -30,6 +30,28 @@ compositions, templates, a gallery, and deterministic visual validation.
 Atlas does not replace Slint. Slint provides the declarative language, runtime,
 native rendering, and low-level interactions; Atlas provides the conventions,
 contracts, and reusable catalog built on top of it.
+
+## Complete application templates
+
+The companion [`template-atlas`](https://github.com/0xrariux/template-atlas)
+repository contains four cloneable, native Rust + Slint applications built on
+Atlas. Its README includes rendered previews and commands for running each
+template locally.
+
+| Template | Demonstrated application surface |
+|---|---|
+| Command | Operations, analytics, services, alerts, and administration |
+| Forge | Code-oriented engineering workspace, explorer, and inspector |
+| Fleet | Infrastructure, telemetry, deployments, and incident control |
+| Ledger | Portfolio, assets, transactions, markets, and treasury settings |
+
+These applications provide realistic integration and visual-validation
+evidence without moving product-specific composition or art direction into
+Atlas's reusable library primitives. Browse the
+[template gallery](https://github.com/0xrariux/template-atlas#preview) or clone
+the companion repository when starting a complete application. Atlas upgrades
+can validate all four external consumer suites and their 97 rendered states
+with the documented [external consumer gate](docs/EXTERNAL_CONSUMER_SCENARIOS.md).
 
 > [!IMPORTANT]
 > **For coding agents, a Cargo path to Atlas is not enough to reproduce a good
@@ -64,15 +86,24 @@ screen or in every Rust project.
 
 ## Project status
 
-- Atlas version: `0.2.1`;
+- current release: `v0.1.0`;
 - referenced Slint version: `1.17.1`;
 - continuous integration: Linux, Windows, and macOS with Rust `1.92`;
 - deterministic visual profile: macOS arm64, software renderer, scale factor 1;
-- 89 public components and 172 public symbols;
-- 57 stable symbols governed by SemVer;
-- 115 preview symbols that may evolve;
+- 97 public components (26 stable and 71 preview),
+  180 public symbols (58 stable and 122 preview), and 38 registered icons;
 - 77 deterministic visual scenarios across 32 pages;
+- four external template consumer suites covering 97 rendered application
+  states;
 - MIT license.
+
+This release includes a stable standalone status indicator and preview
+composition primitives for a controlled vertical scrollbar, settings rows,
+chart frames, unframed metrics, copyable values, and slotted modal and drawer
+content. It also makes progress tracks and switch anatomy configurable. These
+are library-level presentation and interaction contracts: applications still
+own data, persistence, chart series, clipboard access, feedback timing, and
+every other external effect.
 
 Import stable contracts from `stable.slint`. Use `preview-nonresponsive.slint`
 for evolving controls that do not need experimental layout. The full
@@ -85,9 +116,14 @@ import { AtlasButton, AtlasTextField, AtlasTheme }
 ```
 
 ```slint
-import { AtlasProgressBar, AtlasTab }
+import { AtlasProgressBar, AtlasScrollbar, AtlasTab }
     from "@atlas-ui/preview-nonresponsive.slint";
 ```
+
+For vertical overflow, prefer `AtlasScrollViewport` when Atlas can own native
+flicking and keyboard paging. Use `AtlasScrollbar` when an existing list,
+flickable, or host-controlled surface already owns content movement and needs
+the Atlas rail, thumb, and pointer-target contract.
 
 ## When to use Atlas
 
@@ -115,6 +151,7 @@ changes.
 - [Component index for AI agents](docs/AGENT_COMPONENT_INDEX.md)
 - [Integration guide for AI agents](docs/AI_INTEGRATION_GUIDE.md)
 - [Visual workflow for coding agents](docs/AGENT_VISUAL_WORKFLOW.md)
+- [External consumer scenarios](docs/EXTERNAL_CONSUMER_SCENARIOS.md)
 - [Quickstart for coding agents](docs/AGENT_QUICKSTART.md)
 - [Machine-readable API manifest guide](docs/AGENT_MANIFEST.md)
 - [Native Rust tooling](docs/TOOLING.md)
@@ -152,23 +189,24 @@ The following table describes Atlas by technical category.
 | Documentation model | Public architecture, component catalog, agent manifest, integration guide, compiled consumer example, and executable native gallery |
 | Validation model | Automated architecture and API checks, deterministic fixtures, visual scenarios, contrast and accessibility contracts, and performance budgets |
 | Accessibility scope | Keyboard, focus, semantics, contrast, reduced motion, and explicit host-controlled interaction contracts are part of component validation |
-| Current API size | 89 public components, 57 stable symbols, and 115 preview symbols in Atlas `0.2.1` |
+| Current API size | 97 public components, 58 stable symbols, and 122 preview symbols in Atlas `v0.1.0` |
 | Platform validation | Linux, Windows, and macOS continuously compile and pass Clippy, tests, and public contract checks; deterministic rendering evidence currently covers macOS arm64 with Slint's software renderer at scale factor 1 |
 | Maturity | Experimental and work in progress, actively maintained, with stable and preview surfaces separated explicitly |
 | License | Atlas source is MIT licensed; Slint and third-party assets retain their own license terms |
 
 ## Installation and local development
 
-Atlas `0.2.1` is available from crates.io. Add the facade as both a runtime and
-build dependency so its helper can expose registry-safe named Slint imports:
+Atlas `0.1.0` is available from the tagged GitHub release. Add the facade as
+both a runtime and build dependency so its helper can expose portable named
+Slint imports:
 
 ```toml
 [dependencies]
-atlas-ui = "=0.2.1"
+atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.2.1"
+atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
 slint-build = "=1.17.1"
 ```
 

@@ -40,6 +40,27 @@ cargo run -p atlas-ui-tooling -- release-gate
 visual scenario, and compares each result with its approved baseline. It never
 updates baselines automatically.
 
+When `ATLAS_UI_GALLERY_CAPTURE` is set by the capture tooling, the gallery
+installs Slint's `MinimalSoftwareWindow` platform before constructing the UI.
+This headless path renders the requested logical viewport and writes its
+snapshot without registering a native operating-system window. Running the
+gallery normally still uses Slint's native event loop and window backend. The
+release tooling waits one second before each snapshot so bundled fonts and the
+expanded gallery finish their first software-rendered frame consistently.
+
+The companion applications are validated separately so the Atlas workspace
+does not depend on product code:
+
+```bash
+sh scripts/template-consumer-gate.sh
+sh scripts/template-consumer-gate.sh --capture
+```
+
+The first command compiles Command, Forge, Fleet, and Ledger against the local
+Atlas checkout. The second also renders their 97 declared states to
+`target/template-consumer-captures/` for release review. See
+[External consumer scenarios](EXTERNAL_CONSUMER_SCENARIOS.md).
+
 When the ignored local `ai/` directory is available, native validation covers:
 
 - exact Rust and Slint compatibility pins and capability policies;

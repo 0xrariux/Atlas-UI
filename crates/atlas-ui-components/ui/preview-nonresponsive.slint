@@ -1,8 +1,8 @@
-// Atlas UI 0.2 non-responsive preview surface. These exports may change
+// Atlas UI 0.1 non-responsive preview surface. These exports may change
 // between minor releases and compile without experimental Slint features.
 export {
     ActionArea, OverlayFocusController, SelectionController,
-    RovingFocusController, SelectionMode, AtlasScrollViewport,
+    RovingFocusController, SelectionMode, AtlasScrollbar, AtlasScrollViewport,
     AtlasEdgeSurface, DividerEdge
 } from "@atlas-ui-core/stable.slint";
 export { LayoutGridOverlay, LayoutWidth } from "@atlas-ui-core/layout-grid.slint";
@@ -10,12 +10,16 @@ export { AtlasTab, AtlasTabPanel, TabVariant } from "tabs.slint";
 export { AtlasSpinner } from "activity-indicator.slint";
 export { AtlasTooltip, TooltipTone, TooltipPlacement } from "tooltip.slint";
 export { AtlasMenu, MenuItem } from "menu.slint";
-export { AtlasModal, ModalSize } from "modal.slint";
+export { AtlasModal, AtlasModalFrame, ModalSize } from "modal.slint";
 export { AtlasDataTable, AtlasDataList } from "data-table.slint";
+export { AtlasMetric } from "metric.slint";
+export { AtlasCopyableValue } from "copyable-value.slint";
 // Compatibility re-export for the stable AtlasMetricCard and ValueTone.
 export { AtlasMetricCard, ValueTone } from "metric-card.slint";
 export { AtlasPanel, AtlasSelectField, AtlasSegmentedControl, AtlasProgressBar, AtlasRadialProgress, AtlasRangeControl, AtlasPagination, AtlasKeyValueList, SegmentOption, KeyValueItem, ProgressTone } from "migration-wave.slint";
-export { AtlasSparkline, AtlasInlineAlert, AtlasNoticeStack, AtlasWorkflowBanner, AtlasStepper, AtlasDrawer, AtlasErrorPage, SparklineTone, AlertTone, NoticeTone, DrawerSide, NoticeItem, StepItem } from "final-wave.slint";
+export { AtlasSettingsRow } from "settings-row.slint";
+export { AtlasChartFrame } from "chart-frame.slint";
+export { AtlasSparkline, AtlasInlineAlert, AtlasNoticeStack, AtlasWorkflowBanner, AtlasStepper, AtlasDrawer, AtlasDrawerFrame, AtlasErrorPage, SparklineTone, AlertTone, NoticeTone, DrawerSide, NoticeItem, StepItem } from "final-wave.slint";
 export { AtlasSelectableText } from "editorial.slint";
 export { AtlasDocumentationShell, DocumentationNavItem, BreadcrumbItem, TocItem, FooterLink } from "documentation-shell.slint";
 export { AtlasAnchorAction, AtlasDocumentSearch, AtlasCommandPalette, DocumentSearchResult, CommandPaletteItem } from "document-tools.slint";

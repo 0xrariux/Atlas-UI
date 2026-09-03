@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T15:10:15.907212+00:00",
+    "note": "Reviewed compact responsive layout: intrinsic badges, stacked edge navigation, cards, and primary action are intentional and unclipped.",
+    "reviewer": "Codex",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "responsive.dark.normal.360",
-    "page": "responsive",
-    "fixture": "responsive-recipes-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "reduced",
+    "fixture": "responsive-recipes-v1",
     "grid": false,
-    "viewport": {
-      "width": 360,
-      "height": 900
-    },
+    "id": "responsive.dark.normal.360",
+    "motion": "reduced",
+    "page": "responsive",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 900,
+      "width": 360
+    }
   },
   "image": {
-    "width": 360,
-    "height": 900
+    "height": 900,
+    "width": 360
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:22.141Z"
-  }
+  "platform": "macos"
 }

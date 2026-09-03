@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T16:22:09.888546+00:00",
+    "note": "Reviewed in paired desktop/mobile and dark/light contact sheets for the Atlas UI 0.1.0 release.",
+    "reviewer": "Codex release audit",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "documentation-keyboard.dark.normal.mobile-toc",
-    "page": "documentation-keyboard",
-    "fixture": "documentation-keyboard-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "reduced",
+    "fixture": "documentation-keyboard-v1",
     "grid": false,
-    "viewport": {
-      "width": 720,
-      "height": 800
-    },
+    "id": "documentation-keyboard.dark.normal.mobile-toc",
+    "motion": "reduced",
+    "page": "documentation-keyboard",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 800,
+      "width": 720
+    }
   },
   "image": {
-    "width": 720,
-    "height": 800
+    "height": 800,
+    "width": 720
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:21.404Z"
-  }
+  "platform": "macos"
 }

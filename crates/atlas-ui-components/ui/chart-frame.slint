@@ -1,0 +1,42 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasShape
+} from "@atlas-ui-tokens/tokens.slint";
+
+// A plot frame provides accessible grid composition. Series, axes, legends,
+// sampling and domain formatting remain controlled child content.
+export component AtlasChartFrame inherits Rectangle {
+    in property <string> label;
+    in property <string> description;
+    in property <int> horizontal-lines: 5;
+    in property <int> vertical-lines: 0;
+    in property <length> grid-line-width: AtlasShape.border-width;
+    in property <color> horizontal-line-color: AtlasTheme.border-subtle;
+    in property <color> vertical-line-color: AtlasTheme.border-subtle;
+    in property <color> plot-background: AtlasTheme.surface;
+
+    height: AtlasGrid.space-12 * 3;
+    background: root.plot-background;
+    accessible-role: AccessibleRole.image;
+    accessible-label: root.label;
+    accessible-description: root.description;
+
+    for line[index] in root.horizontal-lines: Rectangle {
+        y: root.horizontal-lines <= 1
+            ? AtlasGrid.zero
+            : index * root.height / (root.horizontal-lines - 1);
+        width: parent.width;
+        height: root.grid-line-width;
+        background: root.horizontal-line-color;
+        accessible-role: AccessibleRole.none;
+    }
+    for line[index] in root.vertical-lines: Rectangle {
+        x: root.vertical-lines <= 1
+            ? AtlasGrid.zero
+            : index * root.width / (root.vertical-lines - 1);
+        width: root.grid-line-width;
+        height: parent.height;
+        background: root.vertical-line-color;
+        accessible-role: AccessibleRole.none;
+    }
+    @children
+}

@@ -472,6 +472,20 @@ fn foundational_components_share_public_contracts() {
             assert!(source.contains(contract), "missing {contract} in {file}");
         }
     }
+
+    let status = fs::read_to_string(root.join("crates/atlas-ui-components/ui/badge.slint"))
+        .expect("status components");
+    for contract in [
+        "AtlasStatusIndicator",
+        "in property <string> label",
+        "in property <color> indicator-color",
+        "accessible-label: root.label",
+    ] {
+        assert!(
+            status.contains(contract),
+            "missing standalone status contract: {contract}"
+        );
+    }
 }
 
 #[test]
@@ -500,6 +514,10 @@ fn interaction_loading_primitives_are_accessible_and_motion_aware() {
     for contract in [
         "in property <bool> indeterminate: false",
         "in property <bool> show-labels: true",
+        "in property <length> track-height",
+        "in property <length> track-radius",
+        "in property <color> track-color",
+        "in property <color> indicator-color",
         "accessible-value: root.value-text",
         "MotionPreference.reduced",
         "AtlasMotion.indeterminate-cycle",
@@ -810,10 +828,45 @@ fn lazy_document_loading_is_bounded_and_runtime_neutral() {
 #[test]
 fn document_viewport_is_tokenized_scrollable_and_route_aware() {
     let root = workspace_root();
+    let scrollbar = fs::read_to_string(root.join("crates/atlas-ui-core/ui/scrollbar.slint"))
+        .expect("scrollbar");
+    for contract in [
+        "AtlasScrollbar",
+        "AtlasViewportTokens",
+        "scroll-requested(length)",
+        "accessible-role: AccessibleRole.slider",
+        "accessible-value-maximum",
+        "TouchArea",
+        "rail.height * root.viewport-height",
+        "root.thumb-min-height",
+        "root.effective-inset",
+        "root.effective-viewport-y",
+    ] {
+        assert!(
+            scrollbar.contains(contract),
+            "missing scrollbar contract: {contract}"
+        );
+    }
+
+    let tokens = fs::read_to_string(root.join("crates/atlas-ui-tokens/ui/component-tokens.slint"))
+        .expect("component tokens");
+    for contract in [
+        "scrollbar-hit-width: AtlasGrid.space-4",
+        "scrollbar-thumb-width: 6px",
+        "scrollbar-corner-radius: 2px",
+        "scrollbar-thumb-hover",
+    ] {
+        assert!(
+            tokens.contains(contract),
+            "missing scrollbar token: {contract}"
+        );
+    }
+
     let viewport = fs::read_to_string(root.join("crates/atlas-ui-core/ui/scroll-viewport.slint"))
         .expect("scroll viewport");
     for contract in [
         "AtlasScrollViewport",
+        "AtlasScrollbar",
         "AtlasViewportTokens",
         "Flickable",
         "viewport-y",
@@ -1036,6 +1089,115 @@ fn overlay_and_navigation_contracts_cover_focus_and_accessibility() {
 }
 
 #[test]
+fn fleet_harvest_exports_slotted_composition_contracts() {
+    let root = workspace_root();
+    let contracts = [
+        (
+            "settings-row.slint",
+            [
+                "AtlasSettingsRow",
+                "AccessibleRole.groupbox",
+                "accessible-description",
+                "@children",
+            ],
+        ),
+        (
+            "chart-frame.slint",
+            [
+                "AtlasChartFrame",
+                "AccessibleRole.image",
+                "horizontal-lines",
+                "@children",
+            ],
+        ),
+        (
+            "modal.slint",
+            [
+                "AtlasModalFrame",
+                "OverlayFocusController",
+                "focus-restore-requested",
+                "@children",
+            ],
+        ),
+    ];
+    for (file, required) in contracts {
+        let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(file))
+            .expect("Fleet-harvest component");
+        for contract in required {
+            assert!(source.contains(contract), "missing {contract} in {file}");
+        }
+    }
+
+    let modal = fs::read_to_string(root.join("crates/atlas-ui-components/ui/modal.slint"))
+        .expect("modal composition");
+    assert!(modal.contains("AtlasModal inherits AtlasModalFrame"));
+
+    for facade in [
+        "preview-nonresponsive.slint",
+        "preview.slint",
+        "components.slint",
+    ] {
+        let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(facade))
+            .expect("preview facade");
+        for contract in ["AtlasSettingsRow", "AtlasChartFrame", "AtlasModalFrame"] {
+            assert!(source.contains(contract), "missing {contract} in {facade}");
+        }
+    }
+}
+
+#[test]
+fn ledger_harvest_exports_composable_value_and_drawer_contracts() {
+    let root = workspace_root();
+    let contracts = [
+        (
+            "metric.slint",
+            ["AtlasMetric", "ValueTone", "accessible-value", "meta"],
+        ),
+        (
+            "copyable-value.slint",
+            [
+                "AtlasCopyableValue",
+                "copy-requested",
+                "AccessibleRole.button",
+                "IconName.copy",
+            ],
+        ),
+        (
+            "final-wave.slint",
+            [
+                "AtlasDrawerFrame",
+                "OverlayFocusController",
+                "dismiss-on-backdrop",
+                "@children",
+            ],
+        ),
+    ];
+    for (file, required) in contracts {
+        let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(file))
+            .expect("Ledger-harvest component");
+        for contract in required {
+            assert!(source.contains(contract), "missing {contract} in {file}");
+        }
+    }
+
+    let drawer = fs::read_to_string(root.join("crates/atlas-ui-components/ui/final-wave.slint"))
+        .expect("drawer composition");
+    assert!(drawer.contains("AtlasDrawer inherits AtlasDrawerFrame"));
+
+    for facade in [
+        "preview-nonresponsive.slint",
+        "preview.slint",
+        "components.slint",
+    ] {
+        let source = fs::read_to_string(root.join("crates/atlas-ui-components/ui").join(facade))
+            .expect("preview facade");
+        for contract in ["AtlasMetric", "AtlasCopyableValue", "AtlasDrawerFrame"] {
+            assert!(source.contains(contract), "missing {contract} in {facade}");
+        }
+    }
+}
+
+#[test]
 fn stable_workspace_tabs_cover_close_roving_focus_and_overflow() {
     let source =
         fs::read_to_string(workspace_root().join("crates/atlas-ui-components/ui/tabs.slint"))
@@ -1170,15 +1332,31 @@ fn data_components_expose_scalable_intentions_and_states() {
 }
 
 #[test]
+fn configurable_switch_anatomy_preserves_stable_defaults() {
+    let switch =
+        fs::read_to_string(workspace_root().join("crates/atlas-ui-components/ui/switch.slint"))
+            .expect("switch component");
+    for contract in [
+        "in property <bool> show-label: true",
+        "in property <length> track-width: AtlasGrid.space-10",
+        "in property <length> track-height: AtlasGrid.space-6",
+        "in property <length> track-padding: AtlasGrid.space-1",
+        "in property <length> thumb-size: AtlasGrid.space-4",
+        "radius: AtlasShape.radius-round",
+    ] {
+        assert!(
+            switch.contains(contract),
+            "missing switch anatomy: {contract}"
+        );
+    }
+}
+
+#[test]
 fn shared_visual_geometry_covers_reported_alignment_contracts() {
     let root = workspace_root();
     let core = fs::read_to_string(root.join("crates/atlas-ui-core/ui/stable.slint"))
         .expect("stable core facade");
     assert!(core.contains("in property <length> radius"));
-
-    let switch = fs::read_to_string(root.join("crates/atlas-ui-components/ui/switch.slint"))
-        .expect("switch component");
-    assert!(switch.contains("radius: AtlasShape.radius-round"));
 
     let badge = fs::read_to_string(root.join("crates/atlas-ui-components/ui/badge.slint"))
         .expect("badge component");
@@ -1248,7 +1426,7 @@ fn shared_visual_geometry_covers_reported_alignment_contracts() {
         fs::read_to_string(root.join("crates/atlas-ui-components/ui/final-wave.slint"))
             .expect("final wave components");
     for contract in [
-        "root.contained ? AtlasTheme.transparent : AtlasOverlayTokens.backdrop",
+        "root.contained ? AtlasTheme.transparent : root.backdrop-color",
         "root.compact || root.contained",
     ] {
         assert!(

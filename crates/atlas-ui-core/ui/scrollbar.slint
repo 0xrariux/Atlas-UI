@@ -1,0 +1,89 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasControlTokens, AtlasMotion, AtlasViewportTokens
+} from "@atlas-ui-tokens/tokens.slint";
+
+// Controlled vertical scrollbar presentation. The visible rail remains thin,
+// while the component preserves a wider pointer corridor around it.
+export component AtlasScrollbar inherits Rectangle {
+    in property <length> viewport-y: AtlasGrid.zero;
+    in property <length> maximum-y: max(
+        AtlasGrid.zero,
+        root.content-height - root.viewport-height
+    );
+    in property <length> viewport-height: root.height;
+    in property <length> content-height: root.height;
+    in property <bool> enabled: true;
+    in property <bool> preview-active: false;
+    in property <length> track-width: AtlasViewportTokens.scrollbar-thumb-width;
+    in property <length> thumb-width: AtlasViewportTokens.scrollbar-thumb-width;
+    in property <length> thumb-min-height: AtlasViewportTokens.scrollbar-thumb-min-height;
+    in property <length> corner-radius: AtlasViewportTokens.scrollbar-corner-radius;
+    in property <length> vertical-inset: AtlasGrid.space-1;
+    in property <color> track-color: AtlasViewportTokens.scrollbar-track;
+    in property <color> thumb-color: AtlasViewportTokens.scrollbar-thumb;
+    in property <color> thumb-hover-color: AtlasViewportTokens.scrollbar-thumb-hover;
+    in property <color> thumb-active-color: AtlasViewportTokens.scrollbar-thumb-active;
+    callback scroll-requested(length);
+
+    private property <length> effective-inset: min(root.vertical-inset, root.height / 2);
+    private property <length> effective-viewport-y: min(
+        root.maximum-y,
+        max(AtlasGrid.zero, root.viewport-y)
+    );
+    private property <length> thumb-height: min(rail.height, max(
+        root.thumb-min-height,
+        rail.height * root.viewport-height / max(root.viewport-height, root.content-height)
+    ));
+    private property <length> thumb-travel: max(AtlasGrid.zero, rail.height - root.thumb-height);
+    private property <length> thumb-y: root.maximum-y > AtlasGrid.zero
+        ? root.effective-viewport-y / root.maximum-y * root.thumb-travel
+        : AtlasGrid.zero;
+
+    width: AtlasViewportTokens.scrollbar-hit-width;
+    visible: root.maximum-y > AtlasGrid.zero;
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : AtlasControlTokens.disabled-opacity;
+    accessible-role: AccessibleRole.slider;
+    accessible-label: "Scroll position";
+    accessible-enabled: root.enabled;
+    accessible-value: root.effective-viewport-y / AtlasGrid.hairline;
+    accessible-value-minimum: 0;
+    accessible-value-maximum: root.maximum-y / AtlasGrid.hairline;
+    accessible-value-step: root.viewport-height / AtlasGrid.hairline;
+
+    rail := Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: root.effective-inset;
+        width: min(parent.width, max(AtlasGrid.hairline, root.track-width));
+        height: max(AtlasGrid.zero, parent.height - root.effective-inset * 2);
+        border-radius: root.corner-radius;
+        background: root.track-color;
+
+        Rectangle {
+            x: (parent.width - self.width) / 2;
+            y: root.thumb-y;
+            width: min(root.width, max(AtlasGrid.hairline, root.thumb-width));
+            height: root.thumb-height;
+            border-radius: root.corner-radius;
+            background: drag.pressed || root.preview-active ? root.thumb-active-color
+                : drag.has-hover ? root.thumb-hover-color : root.thumb-color;
+            animate background { duration: AtlasMotion.fast; }
+        }
+    }
+
+    drag := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.scroll-to-position(self.mouse-y); }
+        moved => { root.scroll-to-position(self.mouse-y); }
+    }
+
+    function scroll-to-position(position: length) {
+        if (root.thumb-travel <= AtlasGrid.zero) { return; }
+        root.scroll-requested(min(root.maximum-y, max(
+            AtlasGrid.zero,
+            (position - root.effective-inset - root.thumb-height / 2)
+                / root.thumb-travel * root.maximum-y
+        )));
+    }
+}

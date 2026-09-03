@@ -30,13 +30,32 @@ This layer composes tokens, core, and icons into the user-facing API. It
 contains controls, navigation, data presentation, editorial content,
 documentation, and templates. Four facades define the contract:
 
-- `stable.slint`: 57 symbols guaranteed by SemVer;
-- `preview-nonresponsive.slint`: evolving symbols without experimental Slint
-  dependencies;
-- `preview.slint`: 115 evolving symbols, plus compatibility re-exports for
+- `stable.slint`: 58 symbols guaranteed by SemVer in the current `v0.1.0`
+  source;
+- `preview-nonresponsive.slint`: 80 evolving symbols without experimental
+  Slint dependencies;
+- `preview.slint`: 122 evolving symbols, plus compatibility re-exports for
   contracts promoted from preview; it also loads responsive contracts;
 - `components.slint`: stable-plus-preview compatibility aggregate, which also
   loads responsive contracts.
+
+The current component layer uses a two-level overlay pattern. Preview
+`AtlasModalFrame` and `AtlasDrawerFrame` own the controlled visibility,
+semantic boundary, panel, dismissal, traversal, and focus-restoration
+contracts around consumer-owned child content. `AtlasModal` and `AtlasDrawer`
+inherit those frames and add the standard title/body/action composition.
+`AtlasSettingsRow` and `AtlasChartFrame` follow the same lower-boundary model:
+Atlas owns reusable semantics and presentation while the child owns values,
+series, persistence, and domain behavior.
+
+Presentation hooks on scrollbar, progress, switch, metric, settings, chart,
+and overlay components are bounded component inputs. The scrollbar defaults
+extend the existing `AtlasViewportTokens` global because both
+`AtlasScrollbar` and `AtlasScrollViewport` share that anatomy; the other hooks
+do not introduce new global design-token contracts. Dynamic chart series, axes
+and legends, overlay placement and collision, docking, hierarchical tree
+behavior, and numeric formatting remain application or future-foundation
+concerns.
 
 ## 5. Documents — `atlas-ui-documents`
 
@@ -56,8 +75,42 @@ The gallery is executable native documentation. Every scenario has an
 identifier, fixture, viewport, metadata, and baseline. It serves as a catalog,
 stress test, and visual-regression infrastructure.
 
+The source and scenario registry currently contain 77 scenarios. Interaction
+and documentation-viewport specimens exercise `AtlasScrollbar` directly and
+through `AtlasScrollViewport`, including the no-overflow hidden state; campaign
+specimens cover the other new components and configurable progress/switch
+contracts, but affected baseline
+images are not implicitly approved by a source or documentation change; they
+continue through the normal visual-review workflow.
+
 ## Rust/Slint boundary
 
 Slint owns rendering, declarative composition, local focus, and animations.
 Rust owns models, computation, loading, security, and external effects. Atlas
 callbacks are intentions that the host validates and returns as controlled state.
+
+## Showcase dependency direction
+
+The companion [`template-atlas`](https://github.com/0xrariux/template-atlas)
+repository contains native Slint + Atlas consumers for Command, Forge, Fleet,
+and Ledger, together with rendered previews and deterministic capture tooling.
+The dependency direction is one way:
+
+```text
+template-atlas applications -> Atlas public facades
+Atlas                         -X-> template-atlas product code
+```
+
+The four applications provide cross-theme validation evidence; their product
+colors, fixed shell geometry, typography choices, and domain components do not
+become Atlas tokens or APIs. They are maintained as four external consumer
+suites with 97 rendered states. The executable upgrade procedure is documented
+in [External consumer scenarios](EXTERNAL_CONSUMER_SCENARIOS.md).
+
+## Quality gate
+
+`sh scripts/quality-gate.sh` is the canonical repository validation. It checks
+formatting, workspace/all-target compilation, warnings-as-errors Clippy,
+workspace/all-target tests, package contents, public-language and link rules,
+agent-manifest/facade consistency, asset and architecture contracts, and the
+scenario registry.

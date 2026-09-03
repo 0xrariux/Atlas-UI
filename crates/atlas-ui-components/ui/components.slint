@@ -10,7 +10,7 @@ export {
 export {
     FocusRing, Surface, ComponentFrame, ContentFrame, LayoutGridOverlay, LayoutWidth,
     ActionArea, OverlayFocusController, SelectionController, RovingFocusController, SelectionMode,
-    AtlasScrollViewport,
+    AtlasScrollbar, AtlasScrollViewport,
     AtlasEdgeSurface, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
     AtlasColumnGrid, AtlasGridItem,
     AtlasIntrinsicFrame, AtlasSplitView, AtlasSplitPane, AtlasResizeHandle, AtlasStickyRegion,
@@ -22,17 +22,21 @@ export { AtlasIconButton, IconButtonTone } from "icon-button.slint";
 export { AtlasTextField } from "text-field.slint";
 export { AtlasCheckbox } from "checkbox.slint";
 export { AtlasSwitch, SwitchTone } from "switch.slint";
-export { AtlasBadge, BadgeTone } from "badge.slint";
+export { AtlasBadge, AtlasStatusIndicator, BadgeTone } from "badge.slint";
 export { AtlasTab, AtlasTabPanel, AtlasWorkspaceTab, AtlasWorkspaceTabList, TabVariant } from "tabs.slint";
 export { AtlasSpinner } from "activity-indicator.slint";
 export { AtlasTooltip, TooltipTone, TooltipPlacement } from "tooltip.slint";
 export { AtlasMenu, MenuItem } from "menu.slint";
-export { AtlasModal, ModalSize } from "modal.slint";
+export { AtlasModal, AtlasModalFrame, ModalSize } from "modal.slint";
 export { AtlasSkeleton, AtlasEmptyState, AtlasErrorState } from "data-states.slint";
 export { AtlasDataTable, AtlasDataList } from "data-table.slint";
 export { AtlasMetricCard, ValueTone } from "metric-card.slint";
+export { AtlasMetric } from "metric.slint";
+export { AtlasCopyableValue } from "copyable-value.slint";
 export { AtlasPanel, AtlasSelectField, AtlasSegmentedControl, AtlasProgressBar, AtlasRadialProgress, AtlasRangeControl, AtlasPagination, AtlasKeyValueList, SegmentOption, KeyValueItem, ProgressTone } from "migration-wave.slint";
-export { AtlasSparkline, AtlasInlineAlert, AtlasNoticeStack, AtlasWorkflowBanner, AtlasStepper, AtlasDrawer, AtlasErrorPage, SparklineTone, AlertTone, NoticeTone, DrawerSide, NoticeItem, StepItem } from "final-wave.slint";
+export { AtlasSettingsRow } from "settings-row.slint";
+export { AtlasChartFrame } from "chart-frame.slint";
+export { AtlasSparkline, AtlasInlineAlert, AtlasNoticeStack, AtlasWorkflowBanner, AtlasStepper, AtlasDrawer, AtlasDrawerFrame, AtlasErrorPage, SparklineTone, AlertTone, NoticeTone, DrawerSide, NoticeItem, StepItem } from "final-wave.slint";
 export { AtlasHeading, AtlasParagraph, AtlasStyledText, AtlasSelectableText, AtlasInlineCode, AtlasCodeBlock, AtlasBlockQuote, AtlasDivider, HeadingLevel, EditorialTone, EditorialEmphasis } from "editorial.slint";
 export { AtlasAdmonition, AtlasCallout, AtlasLink, AtlasLinkCard, AtlasRichText, AtlasDocumentList, AtlasCaption, AtlasCrossReference, AtlasFootnoteReference, AtlasFootnoteList, AtlasDocumentTable, AtlasFigure, AtlasTerminalBlock, AtlasContentTabs, AdmonitionTone, MediaState, CaptionKind, RichTextFragment, DocumentListItem, FootnoteItem, DocumentTableColumn, DocumentTableRow, ContentTabItem } from "rich-content.slint";
 export { AtlasDocumentationShell, DocumentationNavItem, BreadcrumbItem, TocItem, FooterLink } from "documentation-shell.slint";

@@ -31,7 +31,7 @@ consumer keeps `atlas-ui` and `slint-build` in build dependencies while the
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = "=0.2.1"
+atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
 slint-build = "=1.17.1"
 ```
 

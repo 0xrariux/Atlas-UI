@@ -6,9 +6,30 @@
 
 slint::include_modules!();
 
+use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
+use slint::platform::{Platform, PlatformError, WindowAdapter};
+use std::rc::Rc;
+
+struct CapturePlatform {
+    window: Rc<MinimalSoftwareWindow>,
+}
+
+impl Platform for CapturePlatform {
+    fn create_window_adapter(&self) -> Result<Rc<dyn WindowAdapter>, PlatformError> {
+        Ok(self.window.clone())
+    }
+}
+
 fn main() -> Result<(), slint::PlatformError> {
+    let capture_path = std::env::var_os("ATLAS_UI_GALLERY_CAPTURE");
+    if capture_path.is_some() {
+        slint::platform::set_platform(Box::new(CapturePlatform {
+            window: MinimalSoftwareWindow::new(RepaintBufferType::ReusedBuffer),
+        }))
+        .map_err(PlatformError::SetPlatformError)?;
+    }
     let gallery = Gallery::new()?;
-    if let Some(path) = std::env::var_os("ATLAS_UI_GALLERY_CAPTURE") {
+    if let Some(path) = capture_path {
         gallery.set_preview_page(
             std::env::var("ATLAS_UI_GALLERY_PAGE")
                 .unwrap_or_else(|_| "foundations".into())
@@ -71,20 +92,19 @@ fn main() -> Result<(), slint::PlatformError> {
             .ok()
             .and_then(|value| value.parse().ok())
             .unwrap_or(250);
-        slint::Timer::single_shot(std::time::Duration::from_millis(delay), move || {
-            let gallery = gallery_weak.upgrade().expect("gallery remains alive");
-            let pixels = gallery.window().take_snapshot().expect("gallery snapshot");
-            image::save_buffer(
-                &path,
-                pixels.as_bytes(),
-                pixels.width(),
-                pixels.height(),
-                image::ColorType::Rgba8,
-            )
-            .expect("write gallery snapshot");
-            slint::quit_event_loop().expect("quit capture loop");
-        });
-        slint::run_event_loop()
+        std::thread::sleep(std::time::Duration::from_millis(delay));
+        slint::platform::update_timers_and_animations();
+        let gallery = gallery_weak.upgrade().expect("gallery remains alive");
+        let pixels = gallery.window().take_snapshot().expect("gallery snapshot");
+        image::save_buffer(
+            &path,
+            pixels.as_bytes(),
+            pixels.width(),
+            pixels.height(),
+            image::ColorType::Rgba8,
+        )
+        .expect("write gallery snapshot");
+        Ok(())
     } else {
         gallery.run()
     }

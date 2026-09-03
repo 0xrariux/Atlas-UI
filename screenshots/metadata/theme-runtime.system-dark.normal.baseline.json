@@ -1,32 +1,32 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T16:22:09.949593+00:00",
+    "note": "Reviewed in paired desktop/mobile and dark/light contact sheets for the Atlas UI 0.1.0 release.",
+    "reviewer": "Codex release audit",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "theme-runtime.system-dark.normal",
-    "page": "theme-runtime",
-    "fixture": "theme-runtime-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "full",
+    "fixture": "theme-runtime-v1",
     "grid": false,
-    "viewport": {
-      "width": 1080,
-      "height": 760
-    },
+    "id": "theme-runtime.system-dark.normal",
+    "motion": "full",
+    "page": "theme-runtime",
     "renderer": "software",
     "scale_factor": 1,
+    "schema_version": 1,
+    "system_dark": true,
+    "theme": "dark",
     "theme_mode": "system",
-    "system_dark": true
+    "viewport": {
+      "height": 760,
+      "width": 1080
+    }
   },
   "image": {
-    "width": 1080,
-    "height": 760
+    "height": 760,
+    "width": 1080
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:22.337Z"
-  }
+  "platform": "macos"
 }

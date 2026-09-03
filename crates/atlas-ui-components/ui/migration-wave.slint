@@ -46,14 +46,19 @@ export component AtlasProgressBar inherits Rectangle {
     in property <ProgressTone> tone: ProgressTone.neutral;
     in property <bool> indeterminate: false;
     in property <bool> show-labels: true;
+    in property <length> track-height: AtlasGrid.space-2;
+    in property <length> track-radius: AtlasShape.radius-round;
+    in property <color> track-color: AtlasTheme.surface-hover;
+    in property <color> indicator-color: root.tone == ProgressTone.success ? AtlasTheme.success
+        : root.tone == ProgressTone.warning ? AtlasTheme.warning : AtlasTheme.info;
     in property <string> value-text: root.indeterminate ? "In progress" : round(root.percent * 100) + "%";
     out property <float> percent: root.maximum <= 0 ? 0 : max(0, min(1, root.value / root.maximum));
-    height: root.show-labels ? AtlasGrid.space-12 : AtlasGrid.space-2;
+    height: root.show-labels ? max(AtlasGrid.space-12, AtlasGrid.space-8 + root.track-height) : root.track-height;
     clip: true;
     accessible-role: AccessibleRole.progress-indicator; accessible-label: root.label; accessible-value: root.value-text; accessible-value-minimum: 0; accessible-value-maximum: root.maximum;
     if root.show-labels: Text { width: parent.width; text: root.label; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
     if root.show-labels: Text { width: parent.width; horizontal-alignment: right; text: root.meta; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-caption; }
-    track := Rectangle { y: root.show-labels ? AtlasGrid.space-8 : AtlasGrid.zero; width: parent.width; height: AtlasGrid.space-2; border-radius: AtlasShape.radius-round; background: AtlasTheme.surface-hover; clip: true;
+    track := Rectangle { y: root.show-labels ? AtlasGrid.space-8 : AtlasGrid.zero; width: parent.width; height: root.track-height; border-radius: root.track-radius; background: root.track-color; clip: true;
         indicator := Rectangle {
             private property <length> segment-width: parent.width * 0.28;
             x: !root.indeterminate ? AtlasGrid.zero
@@ -63,8 +68,8 @@ export component AtlasProgressBar inherits Rectangle {
             y: AtlasGrid.zero;
             width: root.indeterminate ? self.segment-width : parent.width * root.percent;
             height: parent.height;
-            border-radius: AtlasShape.radius-round;
-            background: root.tone == ProgressTone.success ? AtlasTheme.success : root.tone == ProgressTone.warning ? AtlasTheme.warning : AtlasTheme.info;
+            border-radius: root.track-radius;
+            background: root.indicator-color;
         }
     }
 }
@@ -77,16 +82,24 @@ export component AtlasRadialProgress inherits Rectangle {
     private property <brush> progress-color: root.tone == ProgressTone.success ? AtlasTheme.success : root.tone == ProgressTone.warning ? AtlasTheme.warning : AtlasTheme.info;
     width: AtlasGrid.space-12 * 2; height: AtlasGrid.space-12 * 2; background: AtlasTheme.transparent;
     accessible-role: AccessibleRole.progress-indicator; accessible-label: root.label; accessible-value: round(root.percent * 100) + "%"; accessible-value-minimum: 0; accessible-value-maximum: root.maximum;
-    Rectangle {
-        x: (root.width - root.diameter) / 2 + AtlasGrid.space-1; y: (root.height - root.diameter) / 2 + AtlasGrid.space-1;
-        width: root.diameter - AtlasGrid.space-2; height: root.diameter - AtlasGrid.space-2;
-        border-width: AtlasGrid.space-2; border-color: AtlasTheme.surface-hover; border-radius: AtlasShape.radius-round; background: AtlasTheme.transparent;
+    Path {
+        x: (root.width - root.diameter) / 2; y: (root.height - root.diameter) / 2;
+        width: root.diameter; height: root.diameter; viewbox-width: 100; viewbox-height: 100;
+        fill: AtlasTheme.transparent;
+        stroke: root.tone == ProgressTone.success ? AtlasTheme.success.with-alpha(0.16)
+            : root.tone == ProgressTone.warning ? AtlasTheme.warning.with-alpha(0.16) : AtlasTheme.info.with-alpha(0.16);
+        stroke-width: max(AtlasGrid.space-2, root.diameter * 0.13); stroke-line-cap: round;
+        private property <float> radius: 40;
+        MoveTo { x: 50; y: 50 - parent.radius; }
+        ArcTo { radius-x: parent.radius; radius-y: parent.radius; x: 50; y: 50 + parent.radius; sweep: true; }
+        ArcTo { radius-x: parent.radius; radius-y: parent.radius; x: 50; y: 50 - parent.radius; sweep: true; }
     }
     if root.percent > 0: Path {
         x: (root.width - root.diameter) / 2; y: (root.height - root.diameter) / 2;
         width: root.diameter; height: root.diameter; viewbox-width: 100; viewbox-height: 100;
-        fill: AtlasTheme.transparent; stroke: root.progress-color; stroke-width: AtlasGrid.space-2; stroke-line-cap: round;
-        private property <float> radius: 42;
+        fill: AtlasTheme.transparent; stroke: root.progress-color;
+        stroke-width: max(AtlasGrid.space-2, root.diameter * 0.13); stroke-line-cap: round;
+        private property <float> radius: 40;
         private property <float> rendered-percent: min(0.9999, root.percent);
         MoveTo { x: 50; y: 50 - parent.radius; }
         ArcTo {
@@ -97,15 +110,16 @@ export component AtlasRadialProgress inherits Rectangle {
         }
     }
     Text {
-        x: (root.width - root.diameter) / 2 + AtlasGrid.space-3; y: (root.height - AtlasTypography.line-body-small - (root.label == "" ? AtlasGrid.zero : AtlasTypography.line-caption)) / 2;
-        width: root.diameter - AtlasGrid.space-6; height: AtlasTypography.line-body-small;
+        x: (root.width - root.diameter) / 2;
+        y: root.label == "" ? (root.height - root.diameter) / 2 : (root.height - AtlasTypography.line-body-small - AtlasTypography.line-caption) / 2;
+        width: root.diameter; height: root.label == "" ? root.diameter : AtlasTypography.line-body-small;
         text: root.meta == "" ? round(root.percent * 100) + "%" : root.meta; color: root.progress-color;
         font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold;
         horizontal-alignment: center; vertical-alignment: center; overflow: elide;
     }
     if root.label != "": Text {
-        x: (root.width - root.diameter) / 2 + AtlasGrid.space-3; y: (root.height + AtlasTypography.line-body-small - AtlasTypography.line-caption) / 2;
-        width: root.diameter - AtlasGrid.space-6; height: AtlasTypography.line-caption;
+        x: (root.width - root.diameter) / 2; y: (root.height + AtlasTypography.line-body-small - AtlasTypography.line-caption) / 2;
+        width: root.diameter; height: AtlasTypography.line-caption;
         text: root.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption;
         horizontal-alignment: center; vertical-alignment: center; overflow: elide;
     }

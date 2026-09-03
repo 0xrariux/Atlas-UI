@@ -61,10 +61,12 @@ export global AtlasOverlayTokens {
 // content measurement and scroll ownership with the host component.
 export global AtlasViewportTokens {
     out property <length> scrollbar-hit-width: AtlasGrid.space-4;
-    out property <length> scrollbar-thumb-width: AtlasGrid.space-1;
-    out property <length> scrollbar-thumb-min-height: AtlasDensity.pointer-target-min;
+    out property <length> scrollbar-thumb-width: 6px;
+    out property <length> scrollbar-thumb-min-height: AtlasGrid.space-12 + AtlasGrid.space-2;
+    out property <length> scrollbar-corner-radius: 2px;
     out property <length> page-overlap: AtlasGrid.space-8;
-    out property <color> scrollbar-track: AtlasTheme.transparent;
-    out property <color> scrollbar-thumb: AtlasTheme.border-strong;
-    out property <color> scrollbar-thumb-active: AtlasTheme.content-accent;
+    out property <color> scrollbar-track: AtlasTheme.border-subtle.with-alpha(0.48);
+    out property <color> scrollbar-thumb: AtlasTheme.content-secondary.with-alpha(0.84);
+    out property <color> scrollbar-thumb-hover: AtlasTheme.content-secondary;
+    out property <color> scrollbar-thumb-active: AtlasTheme.content-primary.with-alpha(0.82);
 }

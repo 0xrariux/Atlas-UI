@@ -6,18 +6,23 @@ named imports rather than paths tied to the Atlas monorepo.
 
 ## Current state
 
-- Seven Atlas library crates are published on crates.io at version `0.2.1`. The
-  gallery and getting-started application remain `publish = false`.
-- Internal path dependencies also declare the exact `0.2.1` version required by
+- Atlas `v0.1.0` is distributed as a tagged GitHub release. The seven library
+  crates remain configured for a later crates.io publication; the gallery and
+  getting-started application remain `publish = false`.
+- Internal path dependencies also declare the exact `0.1.0` version required by
   registry packaging.
 - The facade has a description, README, license, keywords, and category.
 - Repository metadata points to `https://github.com/0xrariux/Atlas-UI`, and every
-  public crate declares its versioned docs.rs URL.
-- The 72 release baselines are approved. Five responsive rich-table scenarios
-  are additionally declared for baseline review.
+  public crate declares its intended versioned docs.rs URL.
+- The release contains 77 deterministic visual scenarios across 32 pages.
 
-The canonical user dependency is `atlas-ui = "=0.2.1"`. Documentation links
-may remain pending while docs.rs builds a newly published crate.
+The canonical user dependency is the `v0.1.0` Git tag:
+
+```toml
+atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+```
+
+Versioned docs.rs links remain pending until the crates are published there.
 
 ## Planned publication order
 

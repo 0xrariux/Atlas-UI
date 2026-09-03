@@ -4,86 +4,125 @@ import { AtlasButton, ButtonTone } from "button.slint";
 
 export enum ModalSize { small, normal, wide }
 
-export component AtlasModal inherits Rectangle {
+// Slotted modal behavior for application-specific dialog content. The
+// higher-level AtlasModal below preserves the standard title/body/actions.
+export component AtlasModalFrame inherits Rectangle {
     in-out property <bool> open: false;
-    in property <string> title;
-    in property <string> meta;
+    in property <string> label;
     in property <string> description;
-    in property <ModalSize> size: ModalSize.normal;
-    in property <bool> danger: false;
     in property <bool> contained: false;
-    in property <string> cancel-text: "Cancel";
-    in property <string> confirm-text: "Confirm";
-    callback cancelled();
-    callback confirmed();
+    in property <length> panel-width: AtlasOverlayTokens.modal-width-normal;
+    in property <length> panel-height: AtlasGrid.space-12 * 6;
+    in property <length> horizontal-inset: AtlasGrid.space-6;
+    in property <color> backdrop-color: AtlasOverlayTokens.backdrop;
+    in property <color> panel-background: AtlasOverlayTokens.background;
+    in property <color> panel-border-color: AtlasOverlayTokens.border;
+    in property <length> panel-border-width: AtlasShape.border-width;
+    in property <length> panel-radius: AtlasShape.radius-surface;
+    in property <bool> panel-clip: false;
+    in property <color> panel-shadow-color: AtlasTheme.transparent;
+    in property <length> panel-shadow-blur: AtlasGrid.zero;
+    in property <length> panel-shadow-offset-y: AtlasGrid.zero;
+    callback dismissed();
+    callback traversal-requested(bool /* backwards */);
     callback focus-restore-requested();
 
     visible: root.open;
-    background: AtlasOverlayTokens.backdrop;
+    background: root.backdrop-color;
     border-radius: root.contained ? AtlasShape.radius-surface : AtlasShape.radius-none;
     clip: root.contained;
     accessible-role: AccessibleRole.groupbox;
-    accessible-label: root.title;
+    accessible-label: root.label;
     accessible-description: root.description;
     accessible-expandable: true;
     accessible-expanded: root.open;
 
     panel := Rectangle {
-        width: min(root.size == ModalSize.small ? AtlasOverlayTokens.modal-width-small
-            : root.size == ModalSize.wide ? AtlasOverlayTokens.modal-width-wide
-            : AtlasOverlayTokens.modal-width-normal, parent.width - AtlasGrid.space-12);
-        height: root.size == ModalSize.small ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 6;
-        x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
-        border-radius: AtlasShape.radius-surface;
-        border-width: AtlasShape.border-width;
-        border-color: root.danger ? AtlasTheme.danger : AtlasOverlayTokens.border;
-        background: AtlasOverlayTokens.background;
-        VerticalLayout {
-            padding: AtlasGrid.space-6; spacing: AtlasGrid.space-3;
-            Text {
-                text: root.title; color: AtlasTheme.content-primary;
-                font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title;
-                font-weight: AtlasTypography.weight-bold; overflow: elide;
-            }
-            Text {
-                visible: root.meta != ""; height: self.visible ? AtlasGrid.space-5 : AtlasGrid.zero;
-                text: root.meta; color: root.danger ? AtlasTheme.danger : AtlasTheme.content-accent;
-                font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-body-small;
-                font-weight: AtlasTypography.weight-semibold; overflow: elide;
-            }
-            Text {
-                text: root.description; color: AtlasTheme.content-secondary;
-                font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body;
-                wrap: word-wrap; vertical-stretch: 1;
-            }
-            HorizontalLayout {
-                height: AtlasGrid.space-10; spacing: AtlasGrid.space-2; alignment: end;
-                cancel-action := AtlasButton {
-                    text: root.cancel-text; tone: ButtonTone.secondary; contained-focus: true;
-                    clicked => { root.cancelled(); }
-                    dismiss-requested => { root.cancelled(); }
-                    traversal-requested(_) => { confirm-action.focus-from-keyboard(); }
-                }
-                confirm-action := AtlasButton {
-                    text: root.confirm-text; tone: root.danger ? ButtonTone.danger : ButtonTone.primary; contained-focus: true;
-                    clicked => { root.confirmed(); }
-                    dismiss-requested => { root.cancelled(); }
-                    traversal-requested(_) => { cancel-action.focus-from-keyboard(); }
-                }
-            }
-        }
+        width: min(root.panel-width, parent.width - root.horizontal-inset * 2);
+        height: root.panel-height;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        border-radius: root.panel-radius;
+        border-width: root.panel-border-width;
+        border-color: root.panel-border-color;
+        background: root.panel-background;
+        clip: root.panel-clip;
+        drop-shadow-color: root.panel-shadow-color;
+        drop-shadow-blur: root.panel-shadow-blur;
+        drop-shadow-offset-y: root.panel-shadow-offset-y;
+        @children
     }
     focus-cycle := OverlayFocusController {
         active: root.open;
-        dismiss-requested => { root.cancelled(); }
-        traverse-requested(backwards) => {
-            if (backwards) { /* host focuses previous modal action */ }
-            else { /* host focuses next modal action */ }
-        }
+        dismiss-requested => { root.dismissed(); }
+        traverse-requested(backwards) => { root.traversal-requested(backwards); }
         restore-focus-requested => { root.focus-restore-requested(); }
     }
     changed open => {
-        if (root.open) { confirm-action.focus-from-keyboard(); }
+        if (root.open) { focus-cycle.activate(); }
         else { focus-cycle.deactivate(); }
+    }
+}
+
+export component AtlasModal inherits AtlasModalFrame {
+    in property <string> title;
+    in property <string> meta;
+    in property <ModalSize> size: ModalSize.normal;
+    in property <bool> danger: false;
+    in property <string> cancel-text: "Cancel";
+    in property <string> confirm-text: "Confirm";
+    callback cancelled();
+    callback confirmed();
+
+    label: root.title;
+    panel-width: root.size == ModalSize.small ? AtlasOverlayTokens.modal-width-small
+        : root.size == ModalSize.wide ? AtlasOverlayTokens.modal-width-wide
+        : AtlasOverlayTokens.modal-width-normal;
+    panel-height: root.size == ModalSize.small ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 6;
+    panel-border-color: root.danger ? AtlasTheme.danger : AtlasOverlayTokens.border;
+    dismissed => { root.cancelled(); }
+    traversal-requested(backwards) => {
+        if (backwards) { cancel-action.focus-from-keyboard(); }
+        else { confirm-action.focus-from-keyboard(); }
+    }
+    VerticalLayout {
+        width: parent.width;
+        height: parent.height;
+        padding: AtlasGrid.space-6;
+        spacing: AtlasGrid.space-3;
+        Text {
+            text: root.title; color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title;
+            font-weight: AtlasTypography.weight-bold; overflow: elide;
+        }
+        Text {
+            visible: root.meta != ""; height: self.visible ? AtlasGrid.space-5 : AtlasGrid.zero;
+            text: root.meta; color: root.danger ? AtlasTheme.danger : AtlasTheme.content-accent;
+            font-family: AtlasTypography.font-mono; font-size: AtlasTypography.size-body-small;
+            font-weight: AtlasTypography.weight-semibold; overflow: elide;
+        }
+        Text {
+            text: root.description; color: AtlasTheme.content-secondary;
+            font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body;
+            wrap: word-wrap; vertical-stretch: 1;
+        }
+        HorizontalLayout {
+            height: AtlasGrid.space-10; spacing: AtlasGrid.space-2; alignment: end;
+            cancel-action := AtlasButton {
+                text: root.cancel-text; tone: ButtonTone.secondary; contained-focus: true;
+                clicked => { root.cancelled(); }
+                dismiss-requested => { root.cancelled(); }
+                traversal-requested(_) => { confirm-action.focus-from-keyboard(); }
+            }
+            confirm-action := AtlasButton {
+                text: root.confirm-text; tone: root.danger ? ButtonTone.danger : ButtonTone.primary; contained-focus: true;
+                clicked => { root.confirmed(); }
+                dismiss-requested => { root.cancelled(); }
+                traversal-requested(_) => { cancel-action.focus-from-keyboard(); }
+            }
+        }
+    }
+    changed open => {
+        if (root.open) { confirm-action.focus-from-keyboard(); }
     }
 }

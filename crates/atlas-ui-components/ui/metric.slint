@@ -1,0 +1,73 @@
+import {
+    AtlasTheme, AtlasGrid, AtlasTypography
+} from "@atlas-ui-tokens/tokens.slint";
+import { ValueTone } from "metric-card.slint";
+
+// Unframed semantic metric anatomy. Cards, strips, icons, dividers and
+// responsive grouping remain consumer composition.
+export component AtlasMetric inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    in property <string> meta;
+    in property <ValueTone> tone: ValueTone.neutral;
+    in property <bool> enabled: true;
+    in property <length> content-inset: AtlasGrid.space-4;
+    in property <length> label-y: AtlasGrid.space-3;
+    in property <length> label-height: AtlasTypography.line-caption;
+    in property <length> value-y: root.label-y + root.label-height + AtlasGrid.space-1;
+    in property <length> value-height: AtlasTypography.line-heading-small;
+    in property <length> meta-y: root.value-y + root.value-height + AtlasGrid.space-1;
+    in property <length> meta-height: AtlasTypography.line-caption;
+    in property <string> label-font-family: AtlasTypography.font-sans;
+    in property <string> value-font-family: AtlasTypography.font-sans;
+    in property <string> meta-font-family: AtlasTypography.font-sans;
+    in property <length> label-font-size: AtlasTypography.size-caption;
+    in property <length> value-font-size: AtlasTypography.size-title;
+    in property <length> meta-font-size: AtlasTypography.size-caption;
+    in property <int> label-font-weight: AtlasTypography.weight-semibold;
+    in property <int> value-font-weight: AtlasTypography.weight-bold;
+    in property <length> label-letter-spacing: AtlasGrid.zero;
+    in property <color> label-color: AtlasTheme.content-secondary;
+    in property <color> value-color: root.tone == ValueTone.positive ? AtlasTheme.success
+        : root.tone == ValueTone.negative ? AtlasTheme.danger
+        : root.tone == ValueTone.info ? AtlasTheme.info
+        : root.tone == ValueTone.accent ? AtlasTheme.content-accent
+        : AtlasTheme.content-primary;
+    in property <color> meta-color: AtlasTheme.content-secondary;
+
+    preferred-height: AtlasGrid.space-12 * 2;
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : 0.55;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: root.label;
+    accessible-value: root.value;
+    accessible-description: root.meta;
+    accessible-enabled: root.enabled;
+
+    Text {
+        x: root.content-inset; y: root.label-y;
+        width: max(AtlasGrid.zero, parent.width - root.content-inset * 2);
+        height: root.label-height;
+        text: root.label; color: root.label-color;
+        font-family: root.label-font-family; font-size: root.label-font-size;
+        font-weight: root.label-font-weight; letter-spacing: root.label-letter-spacing;
+        vertical-alignment: center; overflow: elide;
+    }
+    Text {
+        x: root.content-inset; y: root.value-y;
+        width: max(AtlasGrid.zero, parent.width - root.content-inset * 2);
+        height: root.value-height;
+        text: root.value; color: root.value-color;
+        font-family: root.value-font-family; font-size: root.value-font-size;
+        font-weight: root.value-font-weight;
+        vertical-alignment: center; overflow: elide;
+    }
+    if root.meta != "": Text {
+        x: root.content-inset; y: root.meta-y;
+        width: max(AtlasGrid.zero, parent.width - root.content-inset * 2);
+        height: root.meta-height;
+        text: root.meta; color: root.meta-color;
+        font-family: root.meta-font-family; font-size: root.meta-font-size;
+        vertical-alignment: center; overflow: elide;
+    }
+}

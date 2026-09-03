@@ -2,6 +2,28 @@ import { AtlasGrid, AtlasShape, AtlasTypography, AtlasStatusTokens } from "@atla
 
 export enum BadgeTone { neutral, healthy, warning, danger, info, live }
 
+// Compact semantic signal for dense rows, labels, avatars, and headings.
+// Consumers must provide a meaningful label because color alone is not state.
+export component AtlasStatusIndicator inherits Rectangle {
+    in property <string> label;
+    in property <BadgeTone> tone: BadgeTone.neutral;
+    in property <color> indicator-color: root.tone == BadgeTone.healthy ? AtlasStatusTokens.healthy
+        : root.tone == BadgeTone.warning ? AtlasStatusTokens.warning
+        : root.tone == BadgeTone.danger ? AtlasStatusTokens.danger
+        : root.tone == BadgeTone.info ? AtlasStatusTokens.info
+        : root.tone == BadgeTone.live ? AtlasStatusTokens.live : AtlasStatusTokens.neutral;
+
+    width: AtlasGrid.space-2;
+    height: AtlasGrid.space-2;
+    preferred-width: self.width;
+    preferred-height: self.height;
+    horizontal-stretch: 0;
+    background: root.indicator-color;
+    border-radius: AtlasShape.radius-round;
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.label;
+}
+
 export component AtlasBadge inherits Rectangle {
     in property <string> text;
     in property <BadgeTone> tone: BadgeTone.neutral;

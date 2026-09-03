@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T15:43:33.538369+00:00",
+    "note": "Reviewed the proportional, active, and no-overflow hidden scrollbar states.",
+    "reviewer": "codex",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "interactions.light.compact.reduced",
-    "page": "interactions",
-    "fixture": "interaction-primitives-v1",
-    "theme": "light",
     "density": "compact",
-    "motion": "reduced",
+    "fixture": "interaction-primitives-v1",
     "grid": false,
-    "viewport": {
-      "width": 1080,
-      "height": 700
-    },
+    "id": "interactions.light.compact.reduced",
+    "motion": "reduced",
+    "page": "interactions",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "light",
+    "viewport": {
+      "height": 700,
+      "width": 1080
+    }
   },
   "image": {
-    "width": 1080,
-    "height": 700
+    "height": 700,
+    "width": 1080
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:21.888Z"
-  }
+  "platform": "macos"
 }

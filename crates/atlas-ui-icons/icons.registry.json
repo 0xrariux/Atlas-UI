@@ -14,6 +14,7 @@
     { "id": "back", "asset": "assets/back.svg", "sha256": "e852b1a17ff4ae8ca07d5ccc583ba3ce264d271e90e8e43eb37db564d383e197" },
     { "id": "check", "asset": "assets/check.svg", "sha256": "5d576a8a0af30d3130484ae551485138756af30de2cc1a7e5ecd587f75d3d7f5" },
     { "id": "close", "asset": "assets/close.svg", "sha256": "29b19025ae0e1259ba4d68178dbad097882174476d4ec3fff053031056430d22" },
+    { "id": "copy", "asset": "assets/copy.svg", "sha256": "f51e2d26d1af147f0e3a3a2a909861efcce1f7775445d89e44b7b4add25b25c5" },
     { "id": "info", "asset": "assets/info.svg", "sha256": "31e73bcb927b0c1cbbd866891bdace801cbbfc77eac711d852082241eb2ad1c5" },
     { "id": "lock", "asset": "assets/lock.svg", "sha256": "31bf6be6e47a44b5bd189741b8bbf3fde733c194b7841aa7281da9a9dde3a853" },
     { "id": "logs", "asset": "assets/logs.svg", "sha256": "faaef6954a81fd24194edb93613d2665101d62c116b6a79f402a8e6c190baaf2" },
@@ -32,6 +33,19 @@
     { "id": "memory", "asset": "assets/memory.svg", "sha256": "1afb5ffd14a29cd5e27d2d90129b4299e47054330f8f2db93b135b20c47c373e" },
     { "id": "play", "asset": "assets/play.svg", "sha256": "38acb2c4b5e0b02b8a03ce3c428464bdd6a3bc323787abe401e6b79f161901f3" },
     { "id": "stop", "asset": "assets/stop.svg", "sha256": "69162b7220b08249b2f54abd9154dca2d2587b23c6ce4c95be58ca53d9bf11d3" },
-    { "id": "layers", "asset": "assets/layers.svg", "sha256": "808febab861b378f0f6dbf5207ec8c9ba17362fda637c648a619ef22e7a6b3d2" }
+    { "id": "layers", "asset": "assets/layers.svg", "sha256": "808febab861b378f0f6dbf5207ec8c9ba17362fda637c648a619ef22e7a6b3d2" },
+    { "id": "activity", "asset": "assets/activity.svg", "sha256": "7bee6656c248db484266ae95267ff6f0276755efcbfef3452a8d0b07d9075b02" },
+    { "id": "analytics", "asset": "assets/analytics.svg", "sha256": "aed40ef00bb109df6fb9c547a2d10dd36510e0738696cb6b521d630b8fe71f86" },
+    { "id": "bell", "asset": "assets/bell.svg", "sha256": "f7ba1739dd52709e38c9ae4fb4208ed1ad88f8da74b4fc7517e5d4d810f66845" },
+    { "id": "clock", "asset": "assets/clock.svg", "sha256": "267f6f745fbb5540a4602dd7b003f147990fe175efa22f18d698e3e5b4d8a0ca" },
+    { "id": "cloud", "asset": "assets/cloud.svg", "sha256": "4e851d9cb6335ca5639b074235ce371acd94f651260572d85071d9504e282811" },
+    { "id": "database", "asset": "assets/database.svg", "sha256": "112e9354af53a6d48618f991d30cd73b01b03d3e8aaa698b5bc0649d96b7fef2" },
+    { "id": "download", "asset": "assets/download.svg", "sha256": "ea8b5a11654e3340d4555a34afcaea1b1b695efcc86115666dd17d3e392dbf77" },
+    { "id": "filter", "asset": "assets/filter.svg", "sha256": "dfa36c3db076a1d1b6269bb804930b367bc4058c29145a563974dfda02039a14" },
+    { "id": "globe", "asset": "assets/globe.svg", "sha256": "7c54def496c4a24c3b0cdeced86fd835c4b94138a9a3498398da339bf6d3a453" },
+    { "id": "settings", "asset": "assets/settings.svg", "sha256": "536f8de0076378a095ac2f1f917e4e9ff4cc4676d13826b60ce4e7d8e4467834" },
+    { "id": "trash", "asset": "assets/trash.svg", "sha256": "0a2affc45b69aa9d0d6038b26a0e9f67fd3adb5d721c141c16986dfb334127b8" },
+    { "id": "users", "asset": "assets/users.svg", "sha256": "2ffd1a4f85f0f7643589d06b70a2ac9f5583d4e2e06543862cf3849698ffb6a7" },
+    { "id": "webhook", "asset": "assets/webhook.svg", "sha256": "6d2fcbeeb11e466aa53937a7bfde1b2b7fbcccd6688e5ba2e0fff6375eae0315" }
   ]
 }

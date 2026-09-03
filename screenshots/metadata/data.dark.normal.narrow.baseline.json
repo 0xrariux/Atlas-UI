@@ -1,30 +1,30 @@
 {
+  "approval": {
+    "approved_at": "2026-09-03T14:38:46.954019+00:00",
+    "note": "Reviewed for v0.1.0; the narrow data layout preserves readable tracks, controlled truncation, and distinct empty/error states without overlap.",
+    "reviewer": "Codex",
+    "status": "approved"
+  },
+  "architecture": "aarch64",
   "identity": {
-    "schema_version": 1,
-    "id": "data.dark.normal.narrow",
-    "page": "data",
-    "fixture": "data-system-v1",
-    "theme": "dark",
     "density": "normal",
-    "motion": "reduced",
+    "fixture": "data-system-v1",
     "grid": false,
-    "viewport": {
-      "width": 720,
-      "height": 820
-    },
+    "id": "data.dark.normal.narrow",
+    "motion": "reduced",
+    "page": "data",
     "renderer": "software",
-    "scale_factor": 1
+    "scale_factor": 1,
+    "schema_version": 1,
+    "theme": "dark",
+    "viewport": {
+      "height": 820,
+      "width": 720
+    }
   },
   "image": {
-    "width": 720,
-    "height": 820
+    "height": 820,
+    "width": 720
   },
-  "platform": "darwin",
-  "architecture": "arm64",
-  "approval": {
-    "status": "approved",
-    "reviewer": "Project maintainer",
-    "note": "Reviewed and approved for the Atlas UI 0.2.0 release.",
-    "approved_at": "2026-08-09T15:46:21.212Z"
-  }
+  "platform": "macos"
 }

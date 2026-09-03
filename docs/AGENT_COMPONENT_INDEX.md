@@ -3,6 +3,8 @@
 This document is the entry point for agents building an interface with Atlas UI.
 Use it to find the right component before writing Slint.
 
+It indexes the public API shipped in the tagged `v0.1.0` GitHub release.
+
 ## Selection rules
 
 1. Look for an existing Atlas component in the table below first.
@@ -42,19 +44,26 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 | Single-line input | `AtlasTextField` | stable |
 | Boolean choice | `AtlasCheckbox`, `AtlasSwitch` | stable |
 | Short status | `AtlasBadge` | stable |
+| Standalone semantic status signal | `AtlasStatusIndicator` | stable |
 | Semantic icon | `AtlasIcon` | stable |
 | Content surface or frame | `Surface`, `ComponentFrame`, `ContentFrame` | stable |
 | Loading, empty, or error state | `AtlasSkeleton`, `AtlasEmptyState`, `AtlasErrorState` | stable |
+| Scrollable content with native flicking and keyboard paging | `AtlasScrollViewport` | preview |
+| Scrollbar for an existing controlled scroll surface | `AtlasScrollbar` | preview |
 | Compact indeterminate progress | `AtlasSpinner` | preview |
 | Heading, paragraph, or code | stable editorial family | stable |
 | Closable workspace tabs | `AtlasWorkspaceTab`, `AtlasWorkspaceTabList` | stable |
 | Simple tabs | `AtlasTab`, `AtlasTabPanel` | preview |
 | Page-edge chrome | `AtlasEdgeSurface` | stable |
 | Metric presentation | `AtlasMetricCard` | stable |
+| Unframed metric content | `AtlasMetric` | preview |
+| Copyable identifier or value | `AtlasCopyableValue` | preview |
 | Tooltip | `AtlasTooltip` | preview |
 | Contextual menu | `AtlasMenu` | preview |
 | Blocking dialog | `AtlasModal` | preview |
+| Custom-content blocking dialog | `AtlasModalFrame` | preview |
 | Side panel | `AtlasDrawer` | preview |
+| Custom-content side panel | `AtlasDrawerFrame` | preview |
 | Complex application table | `AtlasDataTable` | preview |
 | Virtualized list | `AtlasDataList` | preview |
 | Select, range, or pagination | application controls | preview |
@@ -63,6 +72,8 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 | Documentation or rendered Markdown | rich-content family | preview |
 | Search or command palette | documentation tools | preview |
 | Dashboard or settings | application templates | preview |
+| One application setting | `AtlasSettingsRow` | preview |
+| Accessible chart grid and plot frame | `AtlasChartFrame` | preview |
 
 ## 1. Foundations and surfaces
 
@@ -82,7 +93,15 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 - `OverlayFocusController` — focus containment and restoration;
 - `RovingFocusController` — navigation within a group;
 - `SelectionController` — controlled selection;
+- `AtlasScrollbar` — controlled vertical scrollbar presentation and input;
 - `AtlasScrollViewport` — controlled documentation viewport.
+
+Choose `AtlasScrollViewport` when Atlas owns the scrollable content region.
+Choose `AtlasScrollbar` when a list, flickable, or host integration already
+owns movement: bind its positive `viewport-y` and apply every
+`scroll-requested(length)` callback to that same state. Do not show both the
+viewport's built-in scrollbar and a standalone one; disable the built-in rail
+when using the standalone component for per-instance presentation overrides.
 
 ### Responsive preview — `preview.slint`
 
@@ -98,11 +117,16 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 - `AtlasIconButton` — accessible icon-only neutral, primary, or danger action;
 - `AtlasTextField` — controlled input, hint, error, and required state;
 - `AtlasCheckbox` — independent Boolean choice;
-- `AtlasSwitch` — immediate Boolean setting;
+- `AtlasSwitch` — immediate Boolean setting. Its default anatomy satisfies the
+  Atlas control target; dense desktop compositions may adapt `track-*`,
+  `thumb-*`, and `show-label` while retaining switch semantics and behavior;
 - `AtlasBadge` — short, non-interactive status. Keep its intrinsic width and
   use `dot: true` when a compact operational signal is useful. Do not recreate
   status pills with `radius-round` or stretch a badge to fill a table cell;
   Atlas deliberately uses a compact soft rectangle for better scanning.
+- `AtlasStatusIndicator` — standalone semantic signal for a dense row,
+  adjacent label, avatar, or heading. Always provide `label`; use `tone` for
+  semantics and override `indicator-color` only for product theming.
 
 ## 3. Icons
 
@@ -110,8 +134,19 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 
 - `AtlasIcon` — decorative or informative SVG icon with semantic size and tone.
 
-Operational names include `grid`, `terminal`, `gamepad`, `cpu`, `memory`,
-`play`, `stop`, `chevron-right`, and `layers`.
+The complete current `IconName` inventory is `none`, `add`, `back`, `check`,
+`close`, `copy`, `info`, `lock`, `logs`, `menu`, `profile`, `refresh`,
+`search`, `shield`, `warning`, `chevron-down`, `chevron-right`, `grid`,
+`terminal`, `gamepad`, `cpu`, `memory`, `play`, `stop`, `layers`, `activity`,
+`analytics`, `bell`, `clock`, `cloud`, `database`, `download`, `filter`,
+`globe`, `settings`, `trash`, `users`, and `webhook`.
+
+The campaign additions are domain-neutral: use `activity` for pulse/history,
+`analytics` for metrics, `bell` for notifications, `clock` for time/history,
+`cloud` for cloud services, `copy` for copy actions, `database` for storage,
+`download` for export, `filter` for filtering, `globe` for global/network
+scope, `settings` for configuration, `trash` for destructive deletion,
+`users` for teams/identities, and `webhook` for integrations.
 
 Use only a registered `IconName`. Do not use a font glyph, emoji, or local SVG
 to replace an existing Atlas icon.
@@ -154,7 +189,18 @@ to replace an existing Atlas icon.
 - `AtlasTooltip` — hover/focus help and truncated values;
 - `AtlasMenu` — model-driven contextual menu;
 - `AtlasModal` — controlled modal dialog;
+- `AtlasModalFrame` — slotted dialog frame for custom product content, retaining
+  Atlas panel, accessibility, dismissal, traversal, and focus restoration;
 - `AtlasDrawer` — side panel with a focus boundary.
+- `AtlasDrawerFrame` — slotted side-panel frame for consumer-owned content;
+  preserves controlled side, backdrop, dismissal, traversal, and focus
+  restoration behavior.
+
+Read the exact effective signatures in the
+[agent manifest](atlas-ui-agent-manifest.json). The authoritative frame
+declarations are [AtlasModalFrame](../crates/atlas-ui-components/ui/modal.slint)
+and
+[AtlasDrawerFrame](../crates/atlas-ui-components/ui/final-wave.slint).
 
 ## 7. Data and lists
 
@@ -179,6 +225,18 @@ divider, otherwise it visually doubles the surface border.
 ### Non-responsive preview — `preview-nonresponsive.slint`
 
 - `AtlasPanel` — composition panel;
+- `AtlasMetric` — unframed label/value/metadata anatomy with semantic value
+  tone; consumers own cards, grouping, dividers, and responsive layout;
+- `AtlasCopyableValue` — compact value plus copy intention and controlled
+  copied feedback; clipboard I/O and feedback timing stay in Rust;
+- `AtlasSettingsRow` — semantic setting label and description with a trailing
+  child slot for a switch, field, select, or action. The consumer owns the
+  child value and must propagate disabled state, validation, saving, and
+  persistence explicitly;
+- `AtlasChartFrame` — accessible plot surface and configurable horizontal and
+  vertical grid. Multiple lines include both frame endpoints; a single line is
+  placed at the origin. Keep series rendering, axes, legends, sampling,
+  interpolation, and domain formatting in product-owned child content;
 - `AtlasSelectField` — bounded selection;
 - `AtlasSegmentedControl` — compact exclusive choice;
 - `AtlasSpinner` — compact indeterminate progress with an explicit accessible
@@ -186,7 +244,9 @@ divider, otherwise it visually doubles the surface border.
 - `AtlasProgressBar` — determinate progress, or an indeterminate activity rail
   when `indeterminate` is true. Set `show-labels` to false only when visible
   context supplies the label; the required accessible `label` and exposed
-  `value-text` remain available;
+  `value-text` remain available. Embedded rails may configure `track-height`,
+  `track-radius`, `track-color`, and `indicator-color` without changing the
+  progress contract;
 - `AtlasRadialProgress` — compact determinate progress displayed as a ring;
 - `AtlasRangeControl` — value within a range;
 - `AtlasPagination` — page navigation;

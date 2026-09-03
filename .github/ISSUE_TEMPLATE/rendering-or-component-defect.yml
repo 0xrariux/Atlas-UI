@@ -39,7 +39,7 @@ body:
     id: versions
     attributes:
       label: Atlas and Slint versions
-      placeholder: Atlas 0.2.0, Slint 1.17.1
+      placeholder: Atlas 0.1.0, Slint 1.17.1
     validations:
       required: true
 
