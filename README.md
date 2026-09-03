@@ -196,17 +196,17 @@ The following table describes Atlas by technical category.
 
 ## Installation and local development
 
-Atlas `0.1.0` is available from the tagged GitHub release. Add the facade as
-both a runtime and build dependency so its helper can expose portable named
-Slint imports:
+Atlas `0.1.0` is published on crates.io, with the matching `v0.1.0` GitHub tag
+as its source snapshot. Add the facade as both a runtime and build dependency
+so its helper can expose portable named Slint imports:
 
 ```toml
 [dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint-build = "=1.17.1"
 ```
 

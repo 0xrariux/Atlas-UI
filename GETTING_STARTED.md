@@ -7,16 +7,16 @@ every quality-gate run. Check it directly with:
 cargo check -p atlas-ui-getting-started
 ```
 
-Add the tagged Atlas facade as a normal and build dependency. This guide
-targets the `v0.1.0` GitHub release.
+Add the published Atlas facade as a normal and build dependency. This guide
+targets the crates.io `0.1.0` packages and their matching `v0.1.0` source tag.
 
 ```toml
 [dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint-build = "=1.17.1"
 ```
 

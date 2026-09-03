@@ -33,15 +33,15 @@ does not guarantee pixel-identical rendering on every deployment profile.
 
 ## 2. Add dependencies
 
-Use the `v0.1.0` GitHub release as both a runtime and build dependency.
+Use the crates.io `0.1.0` release as both a runtime and build dependency.
 
 ```toml
 [dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint = "=1.17.1"
 
 [build-dependencies]
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 slint-build = "=1.17.1"
 ```
 
@@ -71,7 +71,7 @@ fn main() {
 ```
 
 This configuration makes the following imports portable across workspace, Git,
-and future registry dependency layouts:
+and registry dependency layouts:
 
 - `@atlas-ui/stable.slint`;
 - `@atlas-ui/preview-nonresponsive.slint`;

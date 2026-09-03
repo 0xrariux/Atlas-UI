@@ -65,6 +65,8 @@
 - Adds dark and light themes, density modes, and reduced motion.
 - Adds foundational components, overlays, navigation, and data presentation.
 - Provides 77 deterministic visual scenarios across 32 gallery pages.
+- Publishes seven `0.1.0` library packages on crates.io, with `atlas-ui` as the
+  canonical facade and the GitHub tag as the matching source snapshot.
 - Adds an external consumer gate for the four `template-atlas` applications,
   covering 97 rendered states during Atlas upgrades, and records the
   no-overflow scrollbar state found through the Talos adoption audit.

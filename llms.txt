@@ -8,7 +8,7 @@ Atlas 0.1.0 effectively requires Rust 1.92 and pins Slint 1.17.1. Stable
 imports need no experimental configuration. Consumers of responsive preview
 contracts must set SLINT_ENABLE_EXPERIMENTAL_FEATURES=1. The proven platform
 profile is macOS arm64 with Slint's software renderer at scale factor 1. Atlas
-0.1.0 is distributed through the v0.1.0 GitHub release tag.
+0.1.0 is distributed through crates.io and the matching v0.1.0 GitHub source tag.
 
 ## Start here
 

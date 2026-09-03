@@ -21,9 +21,8 @@ proven profile is macOS arm64 with Slint's software renderer at scale factor 1.
 - [Visual workflow for coding agents](https://github.com/0xrariux/Atlas-UI/blob/main/docs/AGENT_VISUAL_WORKFLOW.md)
 - [Companion template showcase](https://github.com/0xrariux/template-atlas)
 
-This crate README describes the tagged `v0.1.0` GitHub release. The crates are
-prepared for, but not yet distributed through, crates.io as part of this
-release.
+This crate README describes the crates.io `0.1.0` release and its matching
+tagged `v0.1.0` GitHub source snapshot.
 
 Use `atlas_ui::slint_library_paths()` from `build.rs`, then import stable Slint
 contracts from `@atlas-ui/stable.slint`. Prefer

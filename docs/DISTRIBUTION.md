@@ -1,4 +1,4 @@
-# Distribution and registry preparation
+# Distribution and registry releases
 
 Atlas has a local facade crate named `atlas-ui`. It exposes Rust packages and a
 registry-safe `slint_library_paths()` helper, allowing consumer markup to use
@@ -6,8 +6,8 @@ named imports rather than paths tied to the Atlas monorepo.
 
 ## Current state
 
-- Atlas `v0.1.0` is distributed as a tagged GitHub release. The seven library
-  crates remain configured for a later crates.io publication; the gallery and
+- Atlas `0.1.0` is distributed through seven crates.io library packages and a
+  matching tagged GitHub source release. The gallery, tooling, and
   getting-started application remain `publish = false`.
 - Internal path dependencies also declare the exact `0.1.0` version required by
   registry packaging.
@@ -16,17 +16,19 @@ named imports rather than paths tied to the Atlas monorepo.
   public crate declares its intended versioned docs.rs URL.
 - The release contains 77 deterministic visual scenarios across 32 pages.
 
-The canonical user dependency is the `v0.1.0` Git tag:
+The canonical user dependency is the exact crates.io release:
 
 ```toml
-atlas-ui = { git = "https://github.com/0xrariux/Atlas-UI", tag = "v0.1.0" }
+atlas-ui = "=0.1.0"
 ```
 
-Versioned docs.rs links remain pending until the crates are published there.
+Cargo downloads the packaged Slint facades and assets automatically; consumers
+do not need a manual Atlas checkout. The `v0.1.0` Git tag remains the
+corresponding auditable source snapshot.
 
-## Planned publication order
+## Publication order
 
-Publish in dependency order:
+Publish every release in dependency order:
 
 1. `atlas-ui-tokens`;
 2. `atlas-ui-core`;
