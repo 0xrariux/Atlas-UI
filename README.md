@@ -36,7 +36,8 @@ contracts, and reusable catalog built on top of it.
 The companion [`template-atlas`](https://github.com/0xrariux/template-atlas)
 repository contains four cloneable, native Rust + Slint applications built on
 Atlas. Its README includes rendered previews and commands for running each
-template locally.
+template locally. Each template pins the published `atlas-ui` `0.1.1` crate,
+so consumers can clone that repository without a sibling Atlas source checkout.
 
 | Template | Demonstrated application surface |
 |---|---|
