@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/branding/atlas-logo-readme.png" width="240" alt="Atlas holding a globe above the Atlas wordmark">
-</p>
-
 <h1 align="center">Atlas UI</h1>
 
 <p align="center">
@@ -12,15 +8,7 @@
   <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.1.1"><img src="https://img.shields.io/badge/release-v0.1.1-2379F4.svg" alt="Atlas UI v0.1.1 release"></a>
 </p>
 
-> [!WARNING]
-> **Atlas UI is experimental, work in progress, and provided as is.** The project
-> is actively maintained, but APIs, component behavior, platform support, and
-> rendered output may still change or contain defects. Validate Atlas against
-> your target platform and requirements before using it in production.
-
 <p align="center"><strong>Powered by <a href="https://github.com/slint-ui/slint">Slint</a></strong></p>
-
-<p align="center"><sub><strong>AI-agent friendly</strong> · Structured manifests, documented contracts, and deterministic validation for human–AI collaboration. <a href="docs/AI_INTEGRATION_GUIDE.md">Agent guide</a></sub></p>
 
 Atlas UI is a native component library and visual foundation for **Rust and
 Slint**. It gives Slint an industrialized layer comparable to mature web design
