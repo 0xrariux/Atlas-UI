@@ -64,6 +64,6 @@ realistic application composition; they do not replace local scenarios or
 inflate the local scenario count.
 
 Consumer findings can justify an Atlas primitive only when they generalize
-beyond one product. The [Talos consumer gap audit](TALOS_CONSUMER_GAP_AUDIT.md)
-records that process. Its no-overflow scrollbar finding is represented in the
-local interaction specimen by the `FITS · HIDDEN` state.
+beyond one product. The no-overflow scrollbar finding from external-consumer
+testing is represented in the local interaction specimen by the
+`FITS · HIDDEN` state.

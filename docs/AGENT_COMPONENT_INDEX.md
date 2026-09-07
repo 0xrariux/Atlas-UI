@@ -346,5 +346,4 @@ model and actions from the application without modifying the template.
 - [Architecture and layers](ARCHITECTURE.md)
 - [Slint integration](SLINT_INTEGRATION.md)
 - [Engineering and quality](ENGINEERING.md)
-- [Talos consumer gap audit](TALOS_CONSUMER_GAP_AUDIT.md)
 - [Getting started](../GETTING_STARTED.md)

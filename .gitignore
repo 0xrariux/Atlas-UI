@@ -119,3 +119,5 @@ dist/
 *.zip
 /artifacts/
 /release-artifacts/
+/talos.json
+/docs/TALOS_CONSUMER_GAP_AUDIT.md
