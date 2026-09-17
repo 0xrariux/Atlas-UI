@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T15:43:33.538369+00:00",
-    "note": "Reviewed the proportional, active, and no-overflow hidden scrollbar states.",
-    "reviewer": "codex",
+    "approved_at": "2026-09-17T14:58:19.358082+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

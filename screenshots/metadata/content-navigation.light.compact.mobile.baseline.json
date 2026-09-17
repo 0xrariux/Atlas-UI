@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T16:13:06.377933+00:00",
-    "note": "Reviewed stacked link cards and callouts at mobile width.",
-    "reviewer": "codex",
+    "approved_at": "2026-09-17T14:58:19.493231+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

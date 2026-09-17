@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-08-20T10:05:03.266181+00:00",
-    "note": "Tokenized AtlasLink directional-icon spacing",
-    "reviewer": "Codex",
+    "approved_at": "2026-09-17T14:58:19.461517+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

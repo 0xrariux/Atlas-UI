@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 — release candidate
+## 0.2.0 — 2026-09-17
 
 - Pins Slint and `slint-build` to 1.18.0 and resolves `const-field-offset`
   0.2.1. The published Atlas 0.1.1 package remains on Slint 1.17.1.
@@ -17,8 +17,8 @@
   under Slint 1.18 measurement; adjusts the gallery list-grid layout for
   larger typography.
 - Regenerates the agent API manifest and records the full 1.18 changelog
-  impact audit. All 77 macOS visual scenarios have new comparison captures;
-  their 1.17.1 reference baselines remain pending human review before update.
+  impact audit. All 77 macOS software-renderer references were reviewed and
+  updated for Slint 1.18.0.
 - Adds a rendered Slint geometry fixture for responsive pane transitions,
   nested grid columns, and repeated document rows under text/model mutations.
 - Adds runtime keyboard and pointer conformance checks for `ActionArea` and

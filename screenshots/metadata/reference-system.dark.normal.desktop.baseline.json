@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T16:22:09.809230+00:00",
-    "note": "Reviewed in paired desktop/mobile and dark/light contact sheets for the Atlas UI 0.1.0 release.",
-    "reviewer": "Codex release audit",
+    "approved_at": "2026-09-17T14:58:19.517959+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

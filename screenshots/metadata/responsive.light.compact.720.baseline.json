@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T15:17:54.988782+00:00",
-    "note": "Reviewed medium responsive layout: intrinsic child sizing, stacked edge navigation, switcher actions, and two-column grid behavior are intentional and unclipped.",
-    "reviewer": "Codex",
+    "approved_at": "2026-09-17T14:58:19.451691+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

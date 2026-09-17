@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T15:47:44.137980+00:00",
-    "note": "Reviewed responsive stack, sidebar, switcher, and auto-grid behavior at 1440 px.",
-    "reviewer": "codex",
+    "approved_at": "2026-09-17T14:58:19.458334+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

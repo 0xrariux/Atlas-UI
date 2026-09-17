@@ -1,7 +1,7 @@
 # Atlas P0 foundations in the Slint 1.18 source checkout
 
-This page describes the Atlas-owned P0 work prepared for a release review. It
-does not change the published `v0.1.1` package. The exact Slint and
+This page describes the Atlas-owned P0 work in the v0.2.0 source. It
+does not change the published crates.io `v0.1.1` package. The exact Slint and
 `slint-build` pins in this checkout are 1.18.0.
 
 ## P0.1: measurement and tracks

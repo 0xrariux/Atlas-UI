@@ -6,7 +6,8 @@
   "platform": "macos-arm64",
   "scale_factor": 1,
   "threshold": 0.002,
-  "review_status": "pending-human",
+  "review_status": "approved-as-new-baselines",
+  "approved_baseline_slint_version": "1.18.0",
   "scenarios": [
     {
       "id": "foundations.dark.normal.desktop",

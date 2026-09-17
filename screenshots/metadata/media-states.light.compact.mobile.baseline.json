@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T15:49:31.409255+00:00",
-    "note": "Reviewed stacked ready, loading, empty, and error media states at mobile width.",
-    "reviewer": "codex",
+    "approved_at": "2026-09-17T14:58:19.486232+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

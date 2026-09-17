@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T14:45:59.615722+00:00",
-    "note": "Reviewed for v0.1.0; metrics, copyable values, chart grid, standard/custom drawers, and error state form a clear non-overlapping desktop composition.",
-    "reviewer": "Codex",
+    "approved_at": "2026-09-17T14:58:19.425707+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

@@ -7,7 +7,7 @@ dependency so `build.rs` can configure the named Slint imports.
 ## Current source checkout: Slint 1.18.0
 
 Place your application beside an Atlas checkout. Adjust the path if your
-directories differ. The 0.2.0 release candidate has not been published to crates.io yet.
+directories differ. The v0.2.0 source has not been published to crates.io yet.
 
 ```toml
 [dependencies]

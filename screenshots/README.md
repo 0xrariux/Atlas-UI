@@ -27,8 +27,8 @@ assumed shared defect requires consensus across at least two batch captures.
 - `results/`: generated captures, ignored by Git;
 - `diffs/`: generated red-channel diffs, ignored by Git.
 
-The PNGs in `baselines/` are the last approved Slint 1.17.1 references. They
-do not represent the current 1.18.0 rendering. `results/` contains the most
+The PNGs in `baselines/` are approved Slint 1.18.0 references for macOS arm64
+with the software renderer at scale factor 1. `results/` contains the most
 recent working capture, `diffs/` visualizes its difference from the baseline,
 and `reviews/` stores local Codex assessments. A recaptured baseline remains
 `pending-human` until explicitly approved.

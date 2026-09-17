@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T14:33:55.587895+00:00",
-    "note": "Reviewed for v0.1.0; the compact light-theme switch and settings-row specimens are aligned, readable, and intentionally extend the scrollable page.",
-    "reviewer": "Codex",
+    "approved_at": "2026-09-17T14:58:19.369113+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",

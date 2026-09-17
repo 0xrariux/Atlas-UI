@@ -9,7 +9,7 @@ named imports rather than paths tied to the Atlas monorepo.
 - Atlas `0.1.1` is distributed through seven crates.io library packages and a
   matching tagged GitHub source release. The gallery, tooling, and
   getting-started application remain `publish = false`.
-- The `0.2.0` release candidate declares exact `0.2.0` versions in its
+- The `v0.2.0` source declares exact `0.2.0` versions in its
   internal path dependencies for registry packaging.
 - The facade has a description, README, license, keywords, and category.
 - Repository metadata points to `https://github.com/0xrariux/Atlas-UI`, and every

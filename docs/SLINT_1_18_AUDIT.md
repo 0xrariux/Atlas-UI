@@ -1,10 +1,10 @@
 # Slint 1.18.0 impact audit
 
-Reviewed on 2026-09-16 against the [Slint 1.18.0 release](https://github.com/slint-ui/slint/releases/tag/v1.18.0) and its [1.18.0 changelog](https://github.com/slint-ui/slint/blob/master/CHANGELOG.md#1180---2026-09-16). The source checkout now pins `slint = "=1.18.0"` and `slint-build = "=1.18.0"`. This audit does not claim that its visual baselines or cross-platform configurations have been approved with 1.18.0.
+Reviewed on 2026-09-16 against the [Slint 1.18.0 release](https://github.com/slint-ui/slint/releases/tag/v1.18.0) and its [1.18.0 changelog](https://github.com/slint-ui/slint/blob/master/CHANGELOG.md#1180---2026-09-16). The source checkout pins `slint = "=1.18.0"` and `slint-build = "=1.18.0"`. The 2026-09-17 release review approved the macOS arm64 software-renderer baselines and completed Rust 1.92 CI on Linux, Windows, and macOS. Native assistive-technology, IME, and touch behavior remain outside that evidence.
 
 ## Decision summary
 
-Slint 1.18.0 has been integrated into the Atlas source checkout. `FlexboxLayout` compiles without the experimental gate, layout measurement is corrected, and text gains a line-height control. The local quality gate passes. Visual baselines from 1.17.1 and the Linux/Windows/Rust-1.92 CI profiles still require validation before claiming full release compatibility.
+Slint 1.18.0 is integrated into Atlas 0.2.0. `FlexboxLayout` compiles without the experimental gate, layout measurement is corrected, and text gains a line-height control. The local quality and release gates pass. All 77 visual references were reviewed and updated for the macOS arm64 software profile, and the Rust 1.92 CI matrix passes.
 
 The upstream changelog contains 201 entries: 66 general, 58 language, 15 widgets, 23 Rust, 13 C++, 6 JavaScript, 8 Python, and 12 tooling. The inventory below covers each release section by subject and separates Atlas contact points from work that only affects other bindings or targets.
 
@@ -73,7 +73,7 @@ Atlas's current Rust/Slint workspace does not directly consume the C++, JavaScri
 4. Compare responsive layouts, wrapped text, scroll offsets, pointer handling, focus, input selection and slider boundary callbacks using targeted scenarios. Capture representative software-renderer frames before deciding whether full baseline regeneration is justified.
 5. Run the full visual review and performance budgets if representative frames or timing change. Update version-bearing manifests, screenshot metadata, compatibility docs, gallery copy, watchlist and consumer instructions only after the candidate passes.
 
-## Migration status on 2026-09-16
+## Initial migration status on 2026-09-16
 
 - Exact Slint 1.18.0 runtime/build pins and registry lockfile are in place. `const-field-offset` and its macro resolve to 0.2.1; a stale 0.2.0 resolution caused generated-code compile errors until updated.
 - Removed the experimental compiler flag. Replaced former flex item properties with preferred sizes and stretch/constraint properties, including dual-axis sizing for panes that stack at a breakpoint. Migrated actual `Flickable`, `ScrollView`, and `ListView` properties to `content-*` while preserving Atlas's own public `viewport-*` contract.
@@ -180,28 +180,28 @@ does not itself establish a functional defect.
 
 | Surface | Finding | Action/status |
 |---|---|---|
-| `AtlasRichText` fragment flow | With 1.18.0, measured `Text.preferred-width` no longer reserved the trailing spaces used by the gallery's styled fragments. The rendered words joined, although the accessibility string remained correct. | Added scale-aware spacing for fragments ending in a space. Recaptured `markdown-presentation.light.compact.mobile`: visible word separation is restored. Its final 6.74% difference also includes the adaptive list-row geometry below; the reference remains unapproved. |
+| `AtlasRichText` fragment flow | With 1.18.0, measured `Text.preferred-width` no longer reserved the trailing spaces used by the gallery's styled fragments. The rendered words joined, although the accessibility string remained correct. | Added scale-aware spacing for fragments ending in a space. Recaptured `markdown-presentation.light.compact.mobile`: visible word separation is restored. Its final 6.74% difference also includes the adaptive list-row geometry below; the 1.18 reference is approved. |
 | `AtlasDocumentList` at large text scale | Fixed-height repeated rows overlapped when long list items wrapped to two lines. A 360 px, large-type Markdown capture exposed the defect. | Rows now take at least the measured text height, the list reports its layout's preferred height, and the gallery allocates more room when typography is enlarged. The large-type capture shows separated rows. |
 | Native `Flickable` properties | A fresh Rust 1.92 build exposed remaining deprecated `viewport-*` bindings in `AtlasScrollViewport`. | Migrated its native properties to `content-*` and added a source contract check. Atlas's public `viewport-*` names remain intact. |
 | Editorial text controls | `AtlasHeading` and `AtlasParagraph` already inherit the new Slint `Text` line-height and maximum-line properties; wrapped text controls did not forward them. | `AtlasStyledText` now forwards `line-height-factor` and `max-lines`; `AtlasSelectableText` forwards `line-height-factor`. Defaults preserve existing font normalization and visuals. |
 | `AtlasTextField` input method | Slint 1.18.0 adds platform input-method hints to `TextInput`; the Atlas wrapper previously hid them. | The field now forwards an optional `input-method-hints` property. Actual soft-keyboard behavior still depends on the selected platform and is not established by the macOS software capture. |
-| Rich-content figure and terminal in a stacked `AtlasSwitcher` | The new flex sizing divides the fixed height differently from the 1.17.1 reference; the figure is shorter and its SVG appears smaller. Gallery copy and terminal output also changed for the release. | Inspect as an intentional layout decision before approving the `rich-content.light.compact.narrow` baseline (current difference: 11.70%). |
-| Media-state gallery capture | The 1.18.0 capture shows a visible scroll indicator near the right edge where the old reference does not. Figure and loading-state content otherwise remain positioned consistently in the inspected viewport. | Check scroll behavior and intended indicator policy in a live gallery before approving this reference. |
+| Rich-content figure and terminal in a stacked `AtlasSwitcher` | The new flex sizing divides the fixed height differently from the 1.17.1 reference; the figure is shorter and its SVG appears smaller. Gallery copy and terminal output also changed for the release. | The `rich-content.light.compact.narrow` reference was approved with the 1.18 set; its historical difference was 11.70%. |
+| Media-state gallery capture | The 1.18.0 capture shows a visible scroll indicator near the right edge where the old reference does not. Figure and loading-state content otherwise remain positioned consistently in the inspected viewport. | The visible indicator was accepted in the approved 1.18 reference. Live scroll interaction remains outside the software capture. |
 | `AtlasRangeControl`, `AtlasTextField`, selectable text, focus boundaries and overlays | Source bindings compile. Software-window fixtures cover shared action activation, modal/menu/drawer/popover/combobox/autocomplete/radio keyboard paths, menu outside dismissal, focus return, and a three-layer stack. Combobox and autocomplete fixtures also cover menu-model shortening, anchor invalidation, and host menu coordinates. The range-control fixture confirms that keyboard attempts to move past either bound do not emit another `value-changed` callback. IME composition, selectable text, touch, arbitrary stack depth, and platform accessibility remain outside these fixtures. | Run the remaining control and native assistive-technology matrices before claiming full interaction coverage. |
 
 The quality gate tests source and Rust contracts, while the visual runner
 captures rendered states. Neither supplies a complete interaction or
 cross-platform accessibility audit. A clean-target macOS build and workspace
-test run passed with Rust 1.92.0 installed in a temporary toolchain. Linux and Windows CI results are still
-pending. Keep the 1.17.1 baselines intact until each changed scene is reviewed
-and a 1.18.0 reference set is explicitly approved.
+test run passed with Rust 1.92.0 installed in a temporary toolchain. The
+historical 1.17.1 baselines were retained until the 1.18.0 set received
+explicit release review approval.
 
 The complete macOS quality gate also passed with Rust 1.92.0, including
 formatting, Clippy with warnings denied, tests, and repository contracts. A
 Rust 1.92.0 cross-target workspace check passed for `x86_64-pc-windows-gnu`.
 The equivalent Linux cross-target check stopped in the upstream fontconfig
 build script because this macOS host has no Linux `pkg-config` sysroot. Native
-Linux and Windows CI runs remain the platform evidence required for release.
+Linux and Windows CI subsequently passed on hosted Rust 1.92 runners.
 All four local software-renderer budgets passed again after the final source
 changes, with medians of approximately 395, 381, 294, and 525 ms against their
 2,000 ms limits.
@@ -213,10 +213,10 @@ changes, with medians of approximately 395, 381, 294, and 525 ms against their
 | Workspace format, build, Clippy, tests, package contents and repository contracts | Passed with the locally installed Rust 1.97.1 toolchain. The 10,000-document search budget now passes in the full test suite after ranking before excerpt construction. |
 | Slint source migration | Exact runtime/build pin `1.18.0`; no experimental compiler flag or deprecated native `Flickable.viewport-*` binding remains. Runtime fixtures cover flex layout order, responsive sizing, scroll offsets, keyboard focus, overlays, text controls and slider boundary callbacks. |
 | External consumers | Nexus `cargo check --offline --locked --all-targets` passed. Command, Forge, Fleet and Ledger compiled against this Atlas checkout and captured 97 states in total. |
-| Atlas visual comparison | **Blocked:** 77/77 current captures exceed the 0.2% threshold against approved 1.17.1 references. The current pixel-delta range is 0.90%–20.31%; the references remain unchanged and the 1.18.0 result set is pending human review. |
-| Native interaction and platform CI | Pending: Linux and Windows native CI, macOS/Linux/Windows assistive-technology reviews, IME, touch and live mouse-drag panning. A synthetic software-window mouse-drag probe did not establish viewport movement, so that path is not counted as verified. |
-| Release identity | Pending: the workspace and inter-crate dependencies now say `0.2.0`; release validation and tagging remain pending. |
-| Git state | Pending: the migration is still in the working tree. Commit the reviewed candidate before tagging so the tag points to the tested source. |
+| Atlas visual comparison | Passed after review: the 77 macOS arm64 software-renderer references were approved for Slint 1.18.0. The historical 1.17.1-to-1.18.0 pixel-delta range was 0.90%–20.31%; all fresh comparisons with the approved 1.18.0 set pass. |
+| Platform CI | Passed: [Atlas Rust 1.92 CI](https://github.com/0xrariux/Atlas-UI/actions/runs/35233008308) and [template CI](https://github.com/0xrariux/template-atlas/actions/runs/35234393099) completed on Linux, Windows, and macOS. |
+| Native interaction limits | macOS/Linux/Windows assistive-technology reviews, IME, touch and live mouse-drag panning remain unverified. A synthetic software-window mouse-drag probe did not establish viewport movement, so that path is not counted as verified. |
+| Release identity | Workspace and inter-crate dependencies say `0.2.0`; the source tag is separate from the still-published crates.io `0.1.1` packages. |
 
 ### Human visual review corrections
 
@@ -228,10 +228,9 @@ between button rows; the content viewport has top inset and a gap before its
 navigation row. The stacked layout pane gives its final button a bottom inset,
 and data-table status badges are vertically centered in their rows. The
 affected scenarios were inspected after recapture, then all 77 scenarios were
-recaptured again. These corrections still require reviewer approval as part
-of the 1.18.0 baseline set.
+recaptured again. The 1.18.0 baseline set was approved during the release
+review.
 
-The source and consumer compilation gates are green. A release tag is not yet
-supported by the visual and platform evidence above. Review the 77 current
-images, approve a 1.18.0 reference set, run native CI, commit the `0.2.0`
-candidate, and rerun `cargo run -p atlas-ui-tooling -- release-gate` before tagging.
+The source and consumer compilation gates, visual comparison, and platform CI
+are green. The `0.2.0` source tag is supported by this evidence; registry
+publication and broader native interaction claims remain separate decisions.

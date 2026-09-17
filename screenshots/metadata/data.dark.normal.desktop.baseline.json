@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approved_at": "2026-09-03T14:37:13.962682+00:00",
-    "note": "Reviewed for v0.1.0; the deterministic column allocation, ellipsis behavior, and horizontal empty/error states are coherent at the declared desktop viewport.",
-    "reviewer": "Codex",
+    "approved_at": "2026-09-17T14:58:19.381470+00:00",
+    "note": "Approved for Atlas v0.2.0 and Slint 1.18.0 in the release review conversation.",
+    "reviewer": "repository owner",
     "status": "approved"
   },
   "architecture": "aarch64",
