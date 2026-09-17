@@ -8,7 +8,7 @@ Atlas does not replace Slint. Slint provides the declarative language, runtime,
 and rendering foundation; Atlas provides reusable visual and interaction
 contracts on top of it.
 
-Atlas `0.2.0` requires Rust `1.92` and pins Slint `1.18.0`. All facades compile
+Atlas `0.2.2` requires Rust `1.92` and pins Slint `1.18.0`. All facades compile
 without experimental Slint configuration. The locally validated visual profile
 is macOS arm64 with Slint's software renderer at scale factor 1. The 77 Slint
 1.18 references are approved, and Rust 1.92 CI passes on Linux and Windows.
@@ -20,9 +20,8 @@ is macOS arm64 with Slint's software renderer at scale factor 1. The 77 Slint
 - [Visual workflow for coding agents](https://github.com/0xrariux/Atlas-UI/blob/main/docs/AGENT_VISUAL_WORKFLOW.md)
 - [Companion template showcase](https://github.com/0xrariux/template-atlas)
 
-The `v0.2.0` tagged source uses Slint `1.18.0`. The published crates.io `0.1.1`
-package and tagged `v0.1.1` source remain on Slint `1.17.1`. Use a path
-dependency until the matching registry packages are published.
+The `v0.2.2` tagged source and crates.io package use Slint `1.18.0`.
+The earlier `0.1.1` package and tag remain on Slint `1.17.1`.
 
 Use `atlas_ui::slint_library_paths()` from `build.rs`, then import stable Slint
 contracts from `@atlas-ui/stable.slint`. Prefer

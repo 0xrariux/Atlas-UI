@@ -1,8 +1,8 @@
 # Atlas UI documentation
 
 Start with the [repository README](../README.md) for the project and its
-current release status. The published v0.1.1 crate uses Slint 1.17.1; the
-v0.2.0 tagged source uses Slint 1.18.0.
+current release status. The published v0.2.2 crate and tagged source use Slint
+1.18.0.
 
 ## Build an application
 

@@ -28,16 +28,14 @@ consumer keeps `atlas-ui` and `slint-build` in build dependencies while the
 
 ```toml
 [dependencies]
-slint = "=1.17.1"
+slint = "=1.18.0"
 
 [build-dependencies]
-atlas-ui = "=0.1.1"
-slint-build = "=1.17.1"
+atlas-ui = "=0.2.2"
+slint-build = "=1.18.0"
 ```
 
-The dependency snippet above targets published Atlas 0.1.1. The current
-source checkout uses Slint 1.18.0 and should be consumed through a path
-dependency until a matching package is published.
+The dependency snippet above targets published Atlas 0.2.2.
 
 Consumers import explicit symbols from the stable or preview facade:
 

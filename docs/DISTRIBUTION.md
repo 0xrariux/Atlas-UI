@@ -6,11 +6,13 @@ named imports rather than paths tied to the Atlas monorepo.
 
 ## Current state
 
-- Atlas `0.1.1` is distributed through seven crates.io library packages and a
+- Atlas `0.2.2` is distributed through seven crates.io library packages and a
   matching tagged GitHub source release. The gallery, tooling, and
   getting-started application remain `publish = false`.
-- The `v0.2.0` source declares exact `0.2.0` versions in its
-  internal path dependencies for registry packaging.
+- The `v0.2.2` source declares exact `0.2.2` versions in its
+  internal path dependencies for registry packaging. The previously published
+  `0.2.0` and `0.2.1` packages were yanked; crates.io does not permit their
+  version numbers to be reused.
 - The facade has a description, README, license, keywords, and category.
 - Repository metadata points to `https://github.com/0xrariux/Atlas-UI`, and every
   public crate declares its intended versioned docs.rs URL.
@@ -19,11 +21,11 @@ named imports rather than paths tied to the Atlas monorepo.
 The canonical user dependency is the exact crates.io release:
 
 ```toml
-atlas-ui = "=0.1.1"
+atlas-ui = "=0.2.2"
 ```
 
 Cargo downloads the packaged Slint facades and assets automatically; consumers
-do not need a manual Atlas checkout. The `v0.1.1` Git tag remains the
+do not need a manual Atlas checkout. The `v0.2.2` Git tag is the
 corresponding auditable source snapshot.
 
 ## Publication order
@@ -33,9 +35,9 @@ Publish every release in dependency order:
 1. `atlas-ui-tokens`;
 2. `atlas-ui-core`;
 3. `atlas-ui-icons`;
-4. `atlas-ui-testing`;
-5. `atlas-ui-documents`;
-6. `atlas-ui-components`;
+4. `atlas-ui-components`;
+5. `atlas-ui-testing`;
+6. `atlas-ui-documents`;
 7. `atlas-ui`.
 
 Applications and examples should remain unpublished.

@@ -92,7 +92,7 @@ migration. The
 [upstream delta in the watchlist](TECHNOLOGY_WATCHLIST.md#upstream-delta-reviewed-on-2026-09-09)
 records merged work separately from this baseline. The
 [Slint master changelog](https://github.com/slint-ui/slint/blob/master/CHANGELOG.md)
-records the 1.18.0 release. Atlas v0.2.0 pins 1.18.0; its macOS arm64 software
+records the 1.18.0 release. Atlas v0.2.2 pins 1.18.0; its macOS arm64 software
 baselines and Rust 1.92 CI matrix are approved. Other renderers and native
 interaction paths need target-specific evidence.
 

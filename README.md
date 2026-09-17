@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
-  <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.2.0"><img src="https://img.shields.io/badge/source-v0.2.0-2379F4.svg" alt="Atlas UI source release"></a>
+  <a href="https://github.com/0xrariux/Atlas-UI/releases/tag/v0.2.2"><img src="https://img.shields.io/badge/source-v0.2.2-2379F4.svg" alt="Atlas UI source release"></a>
 </p>
 
 Atlas UI is a component library and design system for native **Rust + Slint**
@@ -34,8 +34,7 @@ Browse the [component catalog](docs/COMPONENTS.md) or the
 
 | | Atlas | Slint | How to consume |
 |---|---|---|---|
-| Published crate | `v0.1.1` | `1.17.1` | crates.io |
-| Tagged source | `v0.2.0` | `1.18.0` | local path dependency |
+| Published crate and tagged source | `v0.2.2` | `1.18.0` | crates.io or local path dependency |
 
 The current source exposes **103 public components**: 26 stable and 77 preview.
 Stable imports follow SemVer; preview contracts can change in a minor release.

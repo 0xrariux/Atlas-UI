@@ -12948,7 +12948,7 @@
       "tag": "v0.1.1",
       "version": "0.1.1"
     },
-    "workspace_version": "0.2.0"
+    "workspace_version": "0.2.2"
   },
   "schema_version": 2,
   "slint_version": "1.18.0",
@@ -13016,7 +13016,7 @@
     "TypographyScale",
     "ValueTone"
   ],
-  "version": "0.2.0",
+  "version": "0.2.2",
   "visual_validation": {
     "scenario_count": 77
   }

@@ -19,17 +19,16 @@ captured and inspected its rendered output.
 
 ## 1. Verify compatibility
 
-- Atlas version: `0.1.1`.
+- Atlas version: `0.2.2`.
 - Effective Rust MSRV: `1.92`.
-- Slint version: exactly `1.17.1`.
+- Slint version: exactly `1.18.0`.
 - CI-verified systems: Linux, Windows, and macOS with Rust `1.92`.
 - Visually verified profile: macOS arm64, software renderer, scale factor 1.
 - Stable API: SemVer-governed.
 - Preview API: may change in a minor Atlas release.
 
-These values describe the published Atlas 0.1.1 release. The current source
-checkout pins Slint 1.18.0 and compiles responsive preview without an
-experimental compiler flag. Use path dependencies when consuming this checkout.
+These values describe the published Atlas 0.2.2 release and its tagged source.
+Responsive preview compiles without an experimental compiler flag.
 
 Read `docs/COMPATIBILITY.md` before selecting a renderer or making a production
 platform-support claim. Cross-platform CI validates the code and contracts; it
@@ -37,30 +36,21 @@ does not guarantee pixel-identical rendering on every deployment profile.
 
 ## 2. Add dependencies
 
-Use the crates.io `0.1.1` release as both a runtime and build dependency.
+Use the crates.io `0.2.2` release as both a runtime and build dependency.
 
 ```toml
 [dependencies]
-atlas-ui = "=0.1.1"
-slint = "=1.17.1"
+atlas-ui = "=0.2.2"
+slint = "=1.18.0"
 
 [build-dependencies]
-atlas-ui = "=0.1.1"
-slint-build = "=1.17.1"
+atlas-ui = "=0.2.2"
+slint-build = "=1.18.0"
 ```
 
 Do not substitute an unverified Atlas or Slint version.
 
-Stable and non-responsive preview imports require no experimental Slint
-configuration. The compatibility `preview.slint` and `components.slint`
-facades eagerly load the responsive module, so either one requires upstream
-`FlexboxLayout` support even when the selected symbol is non-responsive:
-
-```toml
-# .cargo/config.toml
-[env]
-SLINT_ENABLE_EXPERIMENTAL_FEATURES = "1"
-```
+All facades compile without experimental Slint configuration under Slint 1.18.
 
 ## 3. Configure Slint libraries
 
@@ -83,8 +73,7 @@ and registry dependency layouts:
 - `@atlas-ui/components.slint`.
 
 Use `preview-nonresponsive.slint` for evolving controls such as `AtlasTab`,
-`AtlasSpinner`, and `AtlasProgressBar` without enabling experimental Slint
-features. Use `preview.slint` only when the responsive preview contracts are
+`AtlasSpinner`, and `AtlasProgressBar`. Use `preview.slint` when responsive preview contracts are
 also required; `components.slint` remains an experimental compatibility
 aggregate.
 

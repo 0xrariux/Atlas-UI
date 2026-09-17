@@ -4,11 +4,9 @@
 > tokens, accessible components, responsive compositions, application
 > templates, and deterministic visual validation without replacing Slint.
 
-The current source checkout requires Rust 1.92 and pins Slint 1.18.0. All
-facades compile without experimental Slint configuration. The approved visual
-baselines still describe the earlier 1.17.1 software-renderer profile and are
-being revalidated. Atlas 0.1.1 on crates.io and its v0.1.1 source tag still
-use Slint 1.17.1.
+Atlas v0.2.2 requires Rust 1.92 and pins Slint 1.18.0. All facades compile
+without experimental Slint configuration. The 77 approved visual baselines
+cover the macOS arm64 software renderer with Slint 1.18.0.
 
 ## Start here
 
@@ -31,7 +29,7 @@ use Slint 1.17.1.
 
 `AtlasScrollbar` is the controlled scrollbar for an existing scroll surface;
 `AtlasScrollViewport` owns the scrollable region, native flicking, and keyboard
-paging. Both are part of `v0.1.1`. Consult the component index and generated
+paging. Both are part of `v0.2.2`. Consult the component index and generated
 manifest before importing them.
 
 Prefer stable exports, never infer properties from component names, keep

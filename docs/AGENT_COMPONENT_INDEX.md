@@ -3,8 +3,8 @@
 This document is the entry point for agents building an interface with Atlas UI.
 Use it to find the right component before writing Slint.
 
-It indexes the tagged `v0.1.1` API and preview additions in this source
-checkout; the source additions are not part of the tagged package.
+It indexes the tagged `v0.2.2` API, including the preview additions in this
+release.
 
 ## Selection rules
 

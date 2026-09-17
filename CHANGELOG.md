@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.2 — 2026-09-17
+
+- Publishes the Slint 1.18 migration recorded under the `v0.2.0` source tag.
+  The previously published `0.2.0` and `0.2.1` crate versions were yanked and
+  cannot be reused on crates.io.
+- Removes the `atlas-ui-testing` build dependency on the facade to keep all
+  seven registry packages publishable in dependency order. Runtime layout
+  fixtures still compile against the same public Slint library paths.
+
 ## 0.2.0 — 2026-09-17
 
 - Pins Slint and `slint-build` to 1.18.0 and resolves `const-field-offset`

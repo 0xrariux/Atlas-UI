@@ -13,7 +13,7 @@ test sends `WindowEvent` input through Slint. It measures exercised native Slint
 input paths, including keyboard and pointer routing. It does not measure native
 operating-system window or accessibility behavior.
 
-| Evidence metric | Published v0.1.1 | Current Slint 1.18 source checkout |
+| Evidence metric | Published v0.1.1 baseline | Atlas v0.2.2 · Slint 1.18 |
 |---|---:|---:|
 | Previously published components with direct runtime fixtures | 0/97 | 13/97 |
 | Previously published components in event-dispatch fixtures | 0/97 | 9/97 |

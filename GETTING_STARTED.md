@@ -1,50 +1,36 @@
 # Getting started with Atlas UI
 
-Choose the dependency pair that matches the Atlas version you want to use.
-Both require Rust 1.92 or newer. Add `atlas-ui` as both a runtime and build
+Atlas `0.2.2` requires Rust 1.92 or newer and Slint 1.18.0. Add `atlas-ui` as both a runtime and build
 dependency so `build.rs` can configure the named Slint imports.
 
-## Current source checkout: Slint 1.18.0
-
-Place your application beside an Atlas checkout. Adjust the path if your
-directories differ. The v0.2.0 source has not been published to crates.io yet.
+## Published crate
 
 ```toml
 [dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.2"
 slint = "=1.18.0"
 
 [build-dependencies]
-atlas-ui = { path = "../Atlas/crates/atlas-ui" }
+atlas-ui = "=0.2.2"
 slint-build = "=1.18.0"
 ```
 
-## Published v0.1.1: Slint 1.17.1
+## Local source checkout
 
-For an application that does not use the local checkout, install the published
-crate and its matching Slint version:
+Place your application beside an Atlas `v0.2.2` checkout and adjust the path
+if your directories differ:
 
 ```toml
 [dependencies]
-atlas-ui = "=0.1.1"
-slint = "=1.17.1"
+atlas-ui = { path = "../Atlas/crates/atlas-ui", version = "=0.2.2" }
+slint = "=1.18.0"
 
 [build-dependencies]
-atlas-ui = "=0.1.1"
-slint-build = "=1.17.1"
+atlas-ui = { path = "../Atlas/crates/atlas-ui", version = "=0.2.2" }
+slint-build = "=1.18.0"
 ```
 
-Only with this published version, imports from `preview.slint` or
-`components.slint` require the Slint experimental flexbox flag. Stable and
-`preview-nonresponsive.slint` imports do not. Add the flag to the consuming
-repository's `.cargo/config.toml` when needed:
-
-```toml
-[env]
-SLINT_ENABLE_EXPERIMENTAL_FEATURES = "1"
-```
-
-The current Slint 1.18.0 source checkout needs no experimental flag.
+Neither form needs an experimental Slint flag.
 
 ## Compile a first view
 
