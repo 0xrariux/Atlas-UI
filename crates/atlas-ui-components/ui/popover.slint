@@ -1,0 +1,60 @@
+import { AtlasGrid, AtlasShape, AtlasOverlayTokens } from "@atlas-ui-tokens/tokens.slint";
+import { OverlayFocusController } from "@atlas-ui-core/stable.slint";
+
+// A viewport-sized, slotted overlay. The host computes panel coordinates and
+// owns the controlled open state and focus destination after dismissal.
+export component AtlasPopover inherits Rectangle {
+    in property <bool> open: false;
+    in property <bool> anchor-eligible: true;
+    in property <bool> focus-on-open: true;
+    in property <bool> dismiss-on-outside: true;
+    in property <string> label;
+    in property <string> description;
+    in property <length> panel-x: AtlasGrid.zero;
+    in property <length> panel-y: AtlasGrid.zero;
+    in property <length> panel-width: AtlasOverlayTokens.menu-width;
+    in property <length> panel-height: AtlasGrid.space-12 * 4;
+    callback dismissed();
+    callback traversal-requested(bool /* backwards */);
+    callback focus-restore-requested();
+
+    visible: root.open && root.anchor-eligible;
+    background: transparent;
+    accessible-role: AccessibleRole.groupbox;
+    accessible-label: root.label;
+    accessible-description: root.description;
+    accessible-expandable: true;
+    accessible-expanded: root.visible;
+
+    outside := TouchArea {
+        enabled: root.dismiss-on-outside;
+        clicked => { root.dismissed(); }
+    }
+    panel := Rectangle {
+        x: root.panel-x;
+        y: root.panel-y;
+        width: root.panel-width;
+        height: root.panel-height;
+        border-width: AtlasShape.border-width;
+        border-color: AtlasOverlayTokens.border;
+        border-radius: AtlasShape.radius-control;
+        background: AtlasOverlayTokens.background;
+        panel-blocker := TouchArea { }
+        @children
+    }
+    focus-cycle := OverlayFocusController {
+        active: root.open && root.anchor-eligible;
+        dismiss-requested => { root.dismissed(); }
+        traverse-requested(backwards) => { root.traversal-requested(backwards); }
+        restore-focus-requested => { root.focus-restore-requested(); }
+    }
+    changed open => {
+        if (root.open) {
+            if (!root.anchor-eligible) { root.dismissed(); }
+            else if (root.focus-on-open) { focus-cycle.activate(); }
+        } else { focus-cycle.deactivate(); }
+    }
+    changed anchor-eligible => {
+        if (root.open && !root.anchor-eligible) { root.dismissed(); }
+    }
+}

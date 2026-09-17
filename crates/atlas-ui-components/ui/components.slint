@@ -1,6 +1,6 @@
 // Compatibility aggregate for stable and all preview contracts. Importing this
-// facade loads experimental responsive contracts even when a selected symbol
-// is non-responsive. Prefer stable.slint or preview-nonresponsive.slint.
+// facade loads responsive preview contracts even when a selected symbol is
+// non-responsive. Prefer stable.slint or preview-nonresponsive.slint.
 export {
     AtlasPalette, AtlasTheme, AtlasCategoryTokens, AtlasGrid, AtlasShape, AtlasElevation,
     AtlasZOrder, AtlasDensity, AtlasTypography, AtlasMotion,
@@ -8,7 +8,8 @@ export {
     AtlasSettings, ThemeMode, Density, MotionPreference, TypographyScale
 } from "@atlas-ui-tokens/tokens.slint";
 export {
-    FocusRing, Surface, ComponentFrame, ContentFrame, LayoutGridOverlay, LayoutWidth,
+    FocusRing, Surface, ComponentFrame, ContentFrame, AtlasContainer, ContainerSize,
+    LayoutGridOverlay, LayoutWidth,
     ActionArea, OverlayFocusController, SelectionController, RovingFocusController, SelectionMode,
     AtlasScrollbar, AtlasScrollViewport,
     AtlasEdgeSurface, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher, AtlasAutoGrid,
@@ -27,9 +28,14 @@ export { AtlasTab, AtlasTabPanel, AtlasWorkspaceTab, AtlasWorkspaceTabList, TabV
 export { AtlasSpinner } from "activity-indicator.slint";
 export { AtlasTooltip, TooltipTone, TooltipPlacement } from "tooltip.slint";
 export { AtlasMenu, MenuItem } from "menu.slint";
+export { AtlasPopover } from "popover.slint";
+export { AtlasCombobox } from "combobox.slint";
+export { AtlasAutocomplete } from "autocomplete.slint";
+export { AtlasRadioGroup, RadioChoice } from "radio-group.slint";
 export { AtlasModal, AtlasModalFrame, ModalSize } from "modal.slint";
 export { AtlasSkeleton, AtlasEmptyState, AtlasErrorState } from "data-states.slint";
 export { AtlasDataTable, AtlasDataList } from "data-table.slint";
+export { AtlasTreeView, TreeViewRow } from "tree-view.slint";
 export { AtlasMetricCard, ValueTone } from "metric-card.slint";
 export { AtlasMetric } from "metric.slint";
 export { AtlasCopyableValue } from "copyable-value.slint";

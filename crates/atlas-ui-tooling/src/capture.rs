@@ -66,6 +66,7 @@ pub fn run(root: &Path, args: &[String]) -> Result {
     } else {
         scenarios.iter().collect()
     };
+    let selected_count = selected.len();
     for dir in ["baselines", "results", "diffs", "metadata"] {
         fs::create_dir_all(screenshots.join(dir))?;
     }
@@ -92,6 +93,11 @@ pub fn run(root: &Path, args: &[String]) -> Result {
         .join("target/debug")
         .join(format!("visual_compare{extension}"));
     let update = args.iter().any(|a| a == "--update-baselines");
+    let continue_on_diff = args.iter().any(|a| a == "--continue-on-diff");
+    if update && continue_on_diff {
+        return Err("--continue-on-diff cannot update baselines".into());
+    }
+    let mut regressions = Vec::new();
     for scenario in selected {
         let id = scenario["id"].as_str().unwrap();
         let ident = identity(&manifest["schema_version"], scenario);
@@ -197,9 +203,21 @@ pub fn run(root: &Path, args: &[String]) -> Result {
                 ])
                 .status()?;
             if !status.success() {
-                return Err(format!("visual regression: {id}").into());
+                if !continue_on_diff {
+                    return Err(format!("visual regression: {id}").into());
+                }
+                regressions.push(id);
             }
         }
+    }
+    if !regressions.is_empty() {
+        return Err(format!(
+            "visual regressions: {}/{} scenarios (first: {})",
+            regressions.len(),
+            selected_count,
+            regressions[0]
+        )
+        .into());
     }
     Ok(())
 }

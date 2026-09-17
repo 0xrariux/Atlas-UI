@@ -43,35 +43,22 @@ done
 }
 
 git -C "$template_root" rev-parse --verify HEAD >/dev/null 2>&1 || {
-  echo "template-atlas must contain a committed revision: $template_root" >&2
+  echo "template-atlas must be a Git checkout: $template_root" >&2
   exit 1
 }
 
-mkdir -p "$atlas_root/target"
-template_work="$(mktemp -d "$atlas_root/target/template-consumer-work.XXXXXX")"
-cleanup() {
-  case "$template_work" in
-    "$atlas_root"/target/template-consumer-work.*)
-      rm -rf -- "$template_work"
-      ;;
-    *)
-      echo "Refusing to remove unexpected temporary path: $template_work" >&2
-      ;;
-  esac
+template_root="$(CDPATH= cd -- "$template_root" && pwd)"
+template_atlas_root="$(CDPATH= cd -- "$template_root/../Atlas" && pwd)" || {
+  echo "The templates require a sibling Atlas checkout" >&2
+  exit 1
 }
-trap cleanup EXIT
-
-git -C "$template_root" archive --format=tar HEAD | tar -xf - -C "$template_work"
-mkdir -p "$template_work/.cargo"
-{
-  printf '%s\n' '[patch.crates-io]'
-  printf 'atlas-ui = { path = "%s" }\n' "$atlas_root/crates/atlas-ui"
-} > "$template_work/.cargo/config.toml"
-
-template_root="$template_work"
+[ "$template_atlas_root" = "$atlas_root" ] || {
+  echo "Template Atlas path does not resolve to this checkout: $template_atlas_root" >&2
+  exit 1
+}
 
 products="command forge fleet ledger"
-check_target="$atlas_root/target/template-consumer-gate"
+check_target="${CARGO_TARGET_DIR:-$atlas_root/target/template-consumer-gate}"
 capture_root="$atlas_root/target/template-consumer-captures"
 
 for product in $products; do
@@ -83,7 +70,7 @@ for product in $products; do
   (
     cd "$template_root"
     CARGO_TARGET_DIR="$check_target" cargo check \
-      --manifest-path "$manifest" --all-targets
+      --manifest-path "$manifest" --all-targets --locked
   )
 done
 
@@ -100,7 +87,7 @@ if [ "$capture" -eq 1 ]; then
     }
     (
       cd "$template_root"
-      "$capture_script" "$capture_root/$product"
+      CARGO_TARGET_DIR="$check_target" "$capture_script" "$capture_root/$product"
     )
     case "$product" in
       command) expected=16 ;;

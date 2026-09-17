@@ -22,7 +22,7 @@ import {
     , AtlasAdmonition, AtlasCallout, AtlasLink, AtlasLinkCard, AtlasRichText, AtlasDocumentList,
     AtlasCaption, AtlasCrossReference, CaptionKind,
     AtlasFootnoteReference, AtlasFootnoteList,
-    AtlasDocumentTable, AtlasFigure, MediaState,
+    AtlasDocumentTable, DocumentTableColumn, AtlasFigure, MediaState,
     AtlasTerminalBlock, AtlasContentTabs, AdmonitionTone,
     DocumentTableColumn, DocumentTableRow, ContentTabItem
     , AtlasDocumentationShell, DocumentationNavItem, BreadcrumbItem, TocItem, FooterLink
@@ -322,6 +322,22 @@ component RecipeCard inherits Rectangle {
 export component Gallery inherits Window {
     in property <bool> show-grid: false;
     in property <string> preview-page: "foundations";
+    pure callback allocate-table-widths(length, length, length, [DataColumn]) -> [length];
+    pure callback allocate-document-widths(length, length, length, [DocumentTableColumn]) -> [length];
+    pure callback allocate-pair-widths(length, length, length) -> [length];
+    callback resize-table-column(bool /* rich table */, string /* column ID */, length /* requested width */);
+    in-out property <[DataColumn]> environments-columns: [
+        { id: "name", label: "ENVIRONMENT", width: AtlasGrid.column-min-width * 3, min-width: AtlasGrid.column-min-width * 2, max-width: AtlasGrid.column-min-width * 5, grow: 2, resizable: true, sortable: true, filterable: true, editable: true, editor: CellEditorKind.text, pin: ColumnPin.start },
+        { id: "region", label: "REGION", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.choice, pin: ColumnPin.none },
+        { id: "status", label: "STATUS", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: false, sortable: true, filterable: true, editable: true, editor: CellEditorKind.choice, pin: ColumnPin.end }
+    ];
+    in-out property <[DataColumn]> access-columns: [
+        { id: "role", label: "ROLE", width: 190px, min-width: 160px, max-width: 1000px, grow: 19, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.start },
+        { id: "scope", label: "SCOPE", width: 160px, min-width: 140px, max-width: 1000px, grow: 16, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+        { id: "rights", label: "EFFECTIVE RIGHTS", width: 240px, min-width: 220px, max-width: 1200px, grow: 24, resizable: true, sortable: false, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+        { id: "custody", label: "RECOMMENDED CUSTODY", width: 290px, min-width: 240px, max-width: 1400px, grow: 29, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
+        { id: "status", label: "STATUS", width: 120px, min-width: 110px, max-width: 700px, grow: 12, resizable: false, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.end }
+    ];
 
     title: "Atlas UI · Foundation system";
     preferred-width: 1080px;
@@ -331,7 +347,7 @@ export component Gallery inherits Window {
     frame := ContentFrame { reference-width: root.width; }
 
     ScrollView {
-        viewport-width: root.width;
+        content-width: root.width;
         VerticalLayout {
             x: frame.content-x;
             width: frame.content-width;
@@ -793,16 +809,15 @@ export component Gallery inherits Window {
             GridLayout {
                 vertical-stretch: 1;
                 spacing: AtlasGrid.space-5;
-                AtlasDataTable {
+                environments-table := AtlasDataTable {
                     row: 0; col: 0;
                     horizontal-stretch: 3; vertical-stretch: 1;
                     label: "Deployment environments"; focused-row: 1;
                     compact: root.width < AtlasGrid.breakpoint-compact;
-                    columns: [
-                        { id: "name", label: "ENVIRONMENT", width: AtlasGrid.column-min-width * 3, min-width: AtlasGrid.column-min-width * 2, max-width: AtlasGrid.column-min-width * 5, grow: 2, resizable: true, sortable: true, filterable: true, editable: true, editor: CellEditorKind.text, pin: ColumnPin.start },
-                        { id: "region", label: "REGION", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.choice, pin: ColumnPin.none },
-                        { id: "status", label: "STATUS", width: AtlasGrid.column-min-width * 2, min-width: AtlasGrid.column-min-width, max-width: AtlasGrid.column-min-width * 3, grow: 1, resizable: false, sortable: true, filterable: true, editable: true, editor: CellEditorKind.choice, pin: ColumnPin.end }
-                    ];
+                    columns: root.environments-columns;
+                    column-resize-requested(id, width) => { root.resize-table-column(false, id, width); }
+                    allocated-column-widths: root.allocate-table-widths(
+                        self.width - self.border-width * 2, self.cell-padding-x, self.column-gap, self.columns);
                     rows: [
                         { id: "production", selected: true, expanded: false, disabled: false, detail: "", cells: [{ column-id: "name", text: "Production", accessible-text: "Production environment", tooltip: "", editable: true }, { column-id: "region", text: "eu-west-3", accessible-text: "Europe West 3", tooltip: "", editable: false }, { column-id: "status", text: "Healthy", accessible-text: "Healthy", tooltip: "", editable: true }] },
                         { id: "staging", selected: false, expanded: true, disabled: false, detail: "Last deployment 8 minutes ago · revision a4f92c1", cells: [{ column-id: "name", text: "Staging", accessible-text: "Staging environment", tooltip: "", editable: true }, { column-id: "region", text: "us-east-1", accessible-text: "US East 1", tooltip: "", editable: false }, { column-id: "status", text: "Deploying", accessible-text: "Deployment in progress", tooltip: "", editable: true }] },
@@ -846,13 +861,10 @@ export component Gallery inherits Window {
                 focused-row: 1;
                 rich-rows: true;
                 compact: root.width < AtlasGrid.breakpoint-compact;
-                columns: [
-                    { id: "role", label: "ROLE", width: 190px, min-width: 160px, max-width: 1000px, grow: 19, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.start },
-                    { id: "scope", label: "SCOPE", width: 160px, min-width: 140px, max-width: 1000px, grow: 16, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
-                    { id: "rights", label: "EFFECTIVE RIGHTS", width: 240px, min-width: 220px, max-width: 1200px, grow: 24, resizable: true, sortable: false, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
-                    { id: "custody", label: "RECOMMENDED CUSTODY", width: 290px, min-width: 240px, max-width: 1400px, grow: 29, resizable: true, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.none },
-                    { id: "status", label: "STATUS", width: 120px, min-width: 110px, max-width: 700px, grow: 12, resizable: false, sortable: true, filterable: true, editable: false, editor: CellEditorKind.none, pin: ColumnPin.end }
-                ];
+                columns: root.access-columns;
+                column-resize-requested(id, width) => { root.resize-table-column(true, id, width); }
+                allocated-column-widths: root.allocate-table-widths(
+                    self.width - self.border-width * 2, self.cell-padding-x, self.column-gap, self.columns);
                 rows: [
                     {
                         id: "contract-admin", selected: true, expanded: false, disabled: false, detail: "",
@@ -935,7 +947,7 @@ export component Gallery inherits Window {
             }
             AtlasRangeControl { label: "Traffic allocation"; value: 65; unit: "%"; }
             AtlasPagination { page: 4; page-count: 12; }
-            AtlasKeyValueList { title: "Runtime facts"; items: [{ label: "Region", value: "eu-west-3", tone: ValueTone.neutral, mono: true }, { label: "Health", value: "Operational", tone: ValueTone.positive, mono: false }, { label: "Error budget", value: "18 min", tone: ValueTone.negative, mono: true }]; }
+            AtlasKeyValueList { title: "Runtime facts"; allocated-column-widths: root.allocate-pair-widths(self.width - self.border-width * 2, AtlasGrid.space-3, AtlasGrid.space-3); items: [{ label: "Region", value: "eu-west-3", tone: ValueTone.neutral, mono: true }, { label: "Health", value: "Operational", tone: ValueTone.positive, mono: false }, { label: "Error budget", value: "18 min", tone: ValueTone.negative, mono: true }]; }
         }
     }
     if root.preview-page == "final": Rectangle {
@@ -996,7 +1008,7 @@ export component Gallery inherits Window {
             EditorialScalePreview { horizontal-stretch: 1; }
         }
         if root.width < AtlasGrid.breakpoint-wide: ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-8;
@@ -1010,7 +1022,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
         background: AtlasTheme.transparent;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasTypography.block-gap-normal;
@@ -1129,7 +1141,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
         background: AtlasTheme.transparent;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout { width: parent.width - AtlasGrid.space-2; spacing: AtlasGrid.space-6;
                 AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Tokenized gaps · intrinsic children · controlled breakpoints · no application-specific geometry"; muted: true; }
                 AtlasHeading { height: AtlasTypography.line-heading-small; text: "Stack and cluster"; level: HeadingLevel.h4; }
@@ -1144,24 +1156,30 @@ export component Gallery inherits Window {
                 }
                 AtlasHeading { height: AtlasTypography.line-heading-small; text: "Sidebar and switcher"; level: HeadingLevel.h4; }
                 AtlasSidebar { height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 4 + AtlasGrid.space-2 : AtlasGrid.space-12 * 2; reference-width: root.width; gap: LayoutGap.compact;
-                    AtlasEdgeSurface { flex-basis: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 2 : AtlasGrid.column-min-width * 3; flex-grow: 0; divider-edge: root.width < AtlasGrid.breakpoint-wide ? DividerEdge.bottom : DividerEdge.right; background: AtlasTheme.transparent;
+                    AtlasEdgeSurface {
+                        preferred-width: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.zero : AtlasGrid.column-min-width * 3;
+                        preferred-height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 2 : AtlasGrid.zero;
+                        horizontal-stretch: 0;
+                        vertical-stretch: 0;
+                        divider-edge: root.width < AtlasGrid.breakpoint-wide ? DividerEdge.bottom : DividerEdge.right;
+                        background: AtlasTheme.transparent;
                         Text { x: AtlasGrid.space-3; width: parent.width - AtlasGrid.space-6; text: "Navigation · divider only"; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; vertical-alignment: center; }
                     }
-                    RecipeCard { flex-grow: 1; label: root.width < AtlasGrid.breakpoint-wide ? "Main content · stacked" : "Main content · adjacent"; }
+                    RecipeCard { horizontal-stretch: 1; vertical-stretch: 1; label: root.width < AtlasGrid.breakpoint-wide ? "Main content · stacked" : "Main content · adjacent"; }
                 }
                 AtlasSwitcher { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 3 : AtlasGrid.space-12; reference-width: root.width; gap: LayoutGap.compact;
-                    AtlasButton { flex-grow: 1; text: "Previous"; }
-                    AtlasButton { flex-grow: 1; text: "Save draft"; }
-                    AtlasButton { flex-grow: 1; text: "Publish"; tone: ButtonTone.primary; }
+                    AtlasButton { horizontal-stretch: 1; vertical-stretch: 1; text: "Previous"; }
+                    AtlasButton { horizontal-stretch: 1; vertical-stretch: 1; text: "Save draft"; }
+                    AtlasButton { horizontal-stretch: 1; vertical-stretch: 1; text: "Publish"; tone: ButtonTone.primary; }
                 }
                 AtlasHeading { height: AtlasTypography.line-heading-small; text: "Auto grid"; level: HeadingLevel.h4; }
                 grid := AtlasAutoGrid { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 13 : root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 7 : AtlasGrid.space-12 * 4 + AtlasGrid.space-6; reference-width: root.width; gap: LayoutGap.compact;
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 1"; }
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 2"; }
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 3"; }
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 4"; }
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 5"; }
-                    RecipeCard { flex-basis: grid.item-basis; flex-grow: 1; label: "Card 6"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 1"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 2"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 3"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 4"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 5"; }
+                    RecipeCard { preferred-width: grid.item-basis; horizontal-stretch: 1; label: "Card 6"; }
                 }
                 AtlasHeading { height: AtlasTypography.line-heading-small; text: "12-column grid"; level: HeadingLevel.h4; }
                 columns := AtlasColumnGrid {
@@ -1193,18 +1211,19 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - self.y - AtlasGrid.space-6;
         background: AtlasTheme.transparent;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout { width: parent.width - AtlasGrid.space-2; spacing: AtlasGrid.space-5;
                 AtlasParagraph { height: AtlasTypography.line-body * 2; text: "Semantic documentation blocks · controlled actions · responsive composition · no Markdown parsing in the visual layer"; muted: true; }
-                AtlasCluster { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 2 + AtlasGrid.space-4; gap: LayoutGap.normal;
-                    AtlasAdmonition { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5; compact: true; title: "Compatibility note"; body: "Atlas wraps preview Slint capabilities so applications keep a stable public contract."; }
-                    AtlasAdmonition { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5; compact: true; title: "Migration required"; body: "Re-run keyboard, platform and visual matrices before approving a new baseline."; tone: AdmonitionTone.warning; }
+                AtlasCluster { height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 5 : AtlasGrid.space-12 * 2 + AtlasGrid.space-4; gap: LayoutGap.normal; alignment: stretch;
+                    AtlasAdmonition { horizontal-stretch: 1; preferred-width: AtlasGrid.column-min-width * 5; compact: true; title: "Compatibility note"; body: "Slint flexbox is stable; Atlas responsive recipes remain in preview until their contracts are validated."; }
+                    AtlasAdmonition { horizontal-stretch: 1; preferred-width: AtlasGrid.column-min-width * 5; compact: true; title: "Migration required"; body: "Re-run keyboard, platform and visual matrices before approving a new baseline."; tone: AdmonitionTone.warning; }
                 }
                 AtlasCluster { height: AtlasDensity.pointer-target-min; gap: LayoutGap.compact;
                     AtlasLink { width: AtlasGrid.column-min-width * 4; text: "Read the compatibility guide"; destination: "/compatibility"; }
                     AtlasLink { width: AtlasGrid.column-min-width * 3; text: "Open Slint release"; destination: "https://github.com/slint-ui/slint/releases"; external: true; }
                 }
                 AtlasDocumentTable {
+                    allocated-column-widths: root.allocate-document-widths(self.width - self.border-width * 2, AtlasGrid.space-4, AtlasGrid.column-min-width, self.columns);
                     height: AtlasGrid.space-10 * 4;
                     accessible-name: "Slint capability status";
                     columns: [
@@ -1214,13 +1233,15 @@ export component Gallery inherits Window {
                     ];
                     rows: [
                         { cells: ["Grid layouts", "Stable", "Use behind tokens"] },
-                        { cells: ["Flexbox layout", "Preview", "Wrap and monitor"] },
+                        { cells: ["Flexbox layout", "Stable", "Atlas preview recipe"] },
                         { cells: ["Rich documents", "Limited", "Compose in Atlas"] }
                     ];
                 }
                 AtlasSwitcher { height: root.width < AtlasGrid.breakpoint-wide ? AtlasGrid.space-12 * 11 : AtlasGrid.space-12 * 5; reference-width: root.width; switch-below: AtlasGrid.breakpoint-wide; gap: LayoutGap.normal;
                     AtlasFigure {
-                        flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5;
+                        horizontal-stretch: 1; vertical-stretch: 1;
+                        preferred-width: AtlasGrid.column-min-width * 5;
+                        preferred-height: AtlasGrid.column-min-width * 5;
                         source: @image-url("../../../crates/atlas-ui-icons/assets/shield.svg");
                         colorize-media: true;
                         alternative-text: "Atlas shield symbol";
@@ -1228,10 +1249,12 @@ export component Gallery inherits Window {
                         credit: "Atlas original asset · CC0-1.0";
                     }
                     AtlasTerminalBlock {
-                        flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 5;
+                        horizontal-stretch: 1; vertical-stretch: 1;
+                        preferred-width: AtlasGrid.column-min-width * 5;
+                        preferred-height: AtlasGrid.column-min-width * 5;
                         title: "Release audit";
                         command: "cargo run -p atlas-ui-tooling -- validate local";
-                        output: "github_latest: 1.17.1\nupdate_available: false";
+                        output: "github_latest: 1.18.0\nupdate_available: false";
                     }
                 }
                 AtlasContentTabs {
@@ -1257,7 +1280,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-5;
@@ -1281,7 +1304,7 @@ export component Gallery inherits Window {
                         : root.width;
                     gap: LayoutGap.normal;
                     AtlasFigure {
-                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        horizontal-stretch: 1; preferred-width: media-grid.item-basis;
                         state: MediaState.ready;
                         media-id: "architecture-ready";
                         source: @image-url("../../../crates/atlas-ui-icons/assets/shield.svg");
@@ -1291,7 +1314,7 @@ export component Gallery inherits Window {
                         credit: "Atlas original asset · CC0-1.0";
                     }
                     AtlasFigure {
-                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        horizontal-stretch: 1; preferred-width: media-grid.item-basis;
                         state: MediaState.loading;
                         media-id: "architecture-loading";
                         alternative-text: "Architecture diagram loading";
@@ -1299,7 +1322,7 @@ export component Gallery inherits Window {
                         credit: "Source resolution owned by the host";
                     }
                     AtlasFigure {
-                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        horizontal-stretch: 1; preferred-width: media-grid.item-basis;
                         state: MediaState.empty;
                         media-id: "architecture-empty";
                         alternative-text: "Architecture diagram not provided";
@@ -1309,7 +1332,7 @@ export component Gallery inherits Window {
                         credit: "Optional media";
                     }
                     AtlasFigure {
-                        flex-grow: 1; flex-basis: media-grid.item-basis;
+                        horizontal-stretch: 1; preferred-width: media-grid.item-basis;
                         state: MediaState.error;
                         media-id: "architecture-error";
                         alternative-text: "Architecture diagram unavailable";
@@ -1328,7 +1351,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 height: (AtlasTypography.line-display + AtlasGrid.space-2
@@ -1378,7 +1401,7 @@ export component Gallery inherits Window {
                         reference-width: root.width;
                         gap: LayoutGap.normal;
                         AtlasLinkCard {
-                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            preferred-width: link-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             eyebrow: "FOUNDATIONS"; title: "Design tokens";
                             description: "Semantic colors, spacing, density and typography contracts.";
@@ -1387,21 +1410,21 @@ export component Gallery inherits Window {
                             selected: root.width >= AtlasGrid.breakpoint-wide;
                         }
                         AtlasLinkCard {
-                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            preferred-width: link-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             eyebrow: "GUIDE"; title: "Responsive recipes";
                             description: "Compose predictable native layouts across standard viewports.";
                             destination: "/guides/responsive"; icon-name: IconName.menu;
                         }
                         AtlasLinkCard {
-                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            preferred-width: link-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             eyebrow: "UPSTREAM"; title: "Slint compatibility";
                             description: "Review the pinned engine capabilities before upgrading.";
                             destination: "slint-release"; external: true; icon-name: IconName.info;
                         }
                         AtlasLinkCard {
-                            flex-basis: link-grid.item-basis; flex-grow: 1;
+                            preferred-width: link-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             eyebrow: "PLANNED"; title: "Future renderer";
                             description: "Disabled destinations remain readable and non-interactive.";
@@ -1429,7 +1452,7 @@ export component Gallery inherits Window {
                             : root.width;
                         gap: LayoutGap.normal;
                         AtlasCallout {
-                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            preferred-width: callout-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             tone: AdmonitionTone.tip;
                             title: "Recommended foundation";
@@ -1438,7 +1461,7 @@ export component Gallery inherits Window {
                             AtlasBadge { text: "COMPOSABLE"; tone: BadgeTone.healthy; }
                         }
                         AtlasCallout {
-                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            preferred-width: callout-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             tone: AdmonitionTone.caution;
                             title: "External boundary";
@@ -1447,7 +1470,7 @@ export component Gallery inherits Window {
                             AtlasBadge { text: "CONTROLLED"; tone: BadgeTone.warning; }
                         }
                         AtlasCallout {
-                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            preferred-width: callout-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             tone: AdmonitionTone.note;
                             title: "Slot content";
@@ -1455,7 +1478,7 @@ export component Gallery inherits Window {
                             AtlasBadge { text: "NO ACTION"; tone: BadgeTone.neutral; }
                         }
                         AtlasCallout {
-                            flex-basis: callout-grid.item-basis; flex-grow: 1;
+                            preferred-width: callout-grid.item-basis; horizontal-stretch: 1;
                             compact: root.width < AtlasGrid.breakpoint-compact;
                             tone: AdmonitionTone.danger;
                             title: "Unavailable action";
@@ -1473,7 +1496,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-5;
@@ -1504,7 +1527,7 @@ export component Gallery inherits Window {
                         : root.width;
                     gap: LayoutGap.normal;
                     AtlasCallout {
-                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        preferred-width: policy-grid.item-basis; horizontal-stretch: 1;
                         compact: true;
                         tone: AdmonitionTone.note;
                         title: "Internal route";
@@ -1512,7 +1535,7 @@ export component Gallery inherits Window {
                         action-id: "navigate-internal"; action-label: "Navigate";
                     }
                     AtlasCallout {
-                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        preferred-width: policy-grid.item-basis; horizontal-stretch: 1;
                         compact: true;
                         tone: AdmonitionTone.tip;
                         title: "Trusted web host";
@@ -1520,7 +1543,7 @@ export component Gallery inherits Window {
                         action-id: "allow-trusted"; action-label: "Allow";
                     }
                     AtlasCallout {
-                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        preferred-width: policy-grid.item-basis; horizontal-stretch: 1;
                         compact: true;
                         tone: AdmonitionTone.caution;
                         title: "External by default";
@@ -1528,7 +1551,7 @@ export component Gallery inherits Window {
                         action-id: "confirm-external"; action-label: "Review destination";
                     }
                     AtlasCallout {
-                        flex-basis: policy-grid.item-basis; flex-grow: 1;
+                        preferred-width: policy-grid.item-basis; horizontal-stretch: 1;
                         compact: true;
                         tone: AdmonitionTone.danger;
                         title: "Unsafe scheme";
@@ -1544,7 +1567,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-5;
@@ -1661,7 +1684,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-5;
@@ -1701,12 +1724,13 @@ export component Gallery inherits Window {
                 }
                 list-grid := AtlasAutoGrid {
                     height: root.width < AtlasGrid.breakpoint-compact
-                        ? AtlasGrid.space-12 * 10 : AtlasGrid.space-12 * 5;
+                        ? AtlasGrid.space-12 * 10 * AtlasTypography.scale-factor
+                        : AtlasGrid.space-12 * 5 * AtlasTypography.scale-factor;
                     reference-width: root.width >= AtlasGrid.breakpoint-wide
                         ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1 : root.width;
                     gap: LayoutGap.normal;
                     AtlasPanel {
-                        flex-basis: list-grid.item-basis; flex-grow: 1;
+                        preferred-width: list-grid.item-basis; horizontal-stretch: 1;
                         title: "Ordered workflow";
                         meta: "stable numeric markers";
                         AtlasDocumentList {
@@ -1722,7 +1746,7 @@ export component Gallery inherits Window {
                         }
                     }
                     AtlasPanel {
-                        flex-basis: list-grid.item-basis; flex-grow: 1;
+                        preferred-width: list-grid.item-basis; horizontal-stretch: 1;
                         title: "Unordered guarantees";
                         meta: "explicit bullet markers";
                         AtlasDocumentList {
@@ -1755,7 +1779,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width;
                 spacing: AtlasGrid.space-5;
@@ -1808,6 +1832,7 @@ export component Gallery inherits Window {
                             ? (reference-grid.height - AtlasGrid.space-4) / 2 : reference-grid.height;
                         background: AtlasTheme.transparent;
                         AtlasDocumentTable {
+                            allocated-column-widths: root.allocate-document-widths(self.width - self.border-width * 2, AtlasGrid.space-4, AtlasGrid.column-min-width, self.columns);
                             width: parent.width; height: parent.height - AtlasGrid.space-12 * 2;
                             compact: false;
                             accessible-name: "Reference kind numbering";
@@ -1840,14 +1865,14 @@ export component Gallery inherits Window {
                         width: parent.width; height: parent.height;
                         gap: LayoutGap.compact;
                         AtlasCrossReference {
-                            flex-basis: AtlasGrid.column-min-width * 3;
+                            preferred-width: AtlasGrid.column-min-width * 3;
                             kind: CaptionKind.figure; number: 1;
                             reference-id: "figure-layer-architecture";
                             text: "Open Figure 1";
                             preview-focus-visible: root.width >= AtlasGrid.breakpoint-wide;
                         }
                         AtlasCrossReference {
-                            flex-basis: AtlasGrid.column-min-width * 3;
+                            preferred-width: AtlasGrid.column-min-width * 3;
                             kind: CaptionKind.table; number: 1;
                             reference-id: "table-reference-sequences";
                             text: "Open Table 1";
@@ -1862,7 +1887,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width; spacing: AtlasGrid.space-5;
                 AtlasHeading {
@@ -1946,7 +1971,7 @@ export component Gallery inherits Window {
         width: frame.content-width; height: parent.height - AtlasGrid.space-12;
         background: AtlasTheme.canvas;
         ScrollView {
-            viewport-width: parent.width;
+            content-width: parent.width;
             VerticalLayout {
                 width: parent.width; spacing: AtlasGrid.space-5;
                 AtlasHeading {
@@ -1968,7 +1993,7 @@ export component Gallery inherits Window {
                         ? AtlasGrid.breakpoint-wide - AtlasGrid.space-1 : root.width;
                     gap: LayoutGap.normal;
                     AtlasSelectableText {
-                        flex-basis: selection-grid.item-basis; flex-grow: 1;
+                        preferred-width: selection-grid.item-basis; horizontal-stretch: 1;
                         text: "Atlas selects 🙂 Unicode text safely, including واجهة and 品質, without slicing UTF-8 bytes.";
                         selected-text: "Unicode text safely";
                         selection-start: 16; selection-end: 35;
@@ -1976,7 +2001,7 @@ export component Gallery inherits Window {
                         selection-supported: true;
                     }
                     AtlasSelectableText {
-                        flex-basis: selection-grid.item-basis; flex-grow: 1;
+                        preferred-width: selection-grid.item-basis; horizontal-stretch: 1;
                         text: "When native rich selection is unavailable, Atlas preserves the source and offers only the explicit Copy all action.";
                         selected-text: "";
                         selection-supported: false;
@@ -2021,7 +2046,7 @@ export component Gallery inherits Window {
                     orientation: SplitOrientation.horizontal;
                     preferred-extent: AtlasGrid.column-min-width * 4;
                     min-extent: split.stacked
-                        ? AtlasGrid.space-12 * 4 + AtlasGrid.space-4
+                        ? AtlasGrid.space-12 * 4 + AtlasGrid.space-8
                         : AtlasGrid.column-min-width * 2;
                     max-extent: AtlasGrid.content-narrow;
                     flexible: split.stacked;
@@ -2040,7 +2065,7 @@ export component Gallery inherits Window {
                     }
                 }
                 AtlasResizeHandle {
-                    flex-basis: AtlasGrid.space-3; flex-grow: 0; flex-shrink: 0;
+                    preferred-width: AtlasGrid.space-3; horizontal-stretch: 0;
                     visible: !split.stacked;
                     orientation: SplitOrientation.horizontal;
                     current-extent: AtlasGrid.column-min-width * 4;
@@ -2254,6 +2279,7 @@ export component Gallery inherits Window {
                 }
                 AtlasHeading { height: AtlasTypography.line-heading; text: "Layout recipes"; level: HeadingLevel.h2; anchor-id: "recipes"; }
                 AtlasDocumentTable {
+                    allocated-column-widths: root.allocate-document-widths(self.width - self.border-width * 2, AtlasGrid.space-4, AtlasGrid.column-min-width, self.columns);
                     height: AtlasGrid.space-10 * 4;
                     columns: [
                         { title: "Recipe", width: AtlasGrid.column-min-width * 3 },
@@ -2340,13 +2366,13 @@ export component Gallery inherits Window {
             status-rows: [
                 { label: "Design system", owner: "UI platform", status: "Healthy", detail: "Semantic tokens and shared recipes", tone: RoadmapStatusTone.positive },
                 { label: "Accessibility", owner: "Quality", status: "In progress", detail: "Desktop screen-reader matrix pending", tone: RoadmapStatusTone.warning },
-                { label: "Compatibility", owner: "Runtime", status: "Monitored", detail: "Slint 1.17.1 exact pin", tone: RoadmapStatusTone.neutral },
+                { label: "Compatibility", owner: "Runtime", status: "Monitored", detail: "Slint 1.18.0 exact pin", tone: RoadmapStatusTone.neutral },
                 { label: "Visual proof", owner: "Release", status: "Review", detail: "Human baseline approval required", tone: RoadmapStatusTone.warning }
             ];
             status-table-rows: [
                 { cells: ["Design system", "UI platform", "Healthy", "Semantic tokens and shared recipes"] },
                 { cells: ["Accessibility", "Quality", "In progress", "Desktop screen-reader matrix pending"] },
-                { cells: ["Compatibility", "Runtime", "Monitored", "Slint 1.17.1 exact pin"] },
+                { cells: ["Compatibility", "Runtime", "Monitored", "Slint 1.18.0 exact pin"] },
                 { cells: ["Visual proof", "Release", "Review", "Human baseline approval required"] }
             ];
             phases: [
@@ -2369,7 +2395,7 @@ export component Gallery inherits Window {
             background: AtlasTheme.transparent;
             clip: true;
             ScrollView {
-                viewport-width: parent.width;
+                content-width: parent.width;
                 VerticalLayout {
                     width: parent.width; spacing: AtlasGrid.space-5;
                     AtlasHeading {
@@ -2402,6 +2428,7 @@ export component Gallery inherits Window {
                         code: "atlas_component_identifier_without_break_opportunities_0123456789_abcdefghijklmnopqrstuvwxyz";
                     }
                     AtlasDocumentTable {
+                        allocated-column-widths: root.allocate-document-widths(self.width - self.border-width * 2, AtlasGrid.space-4, AtlasGrid.column-min-width, self.columns);
                         height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 11 : AtlasGrid.space-10 * 4;
                         compact: root.width < AtlasGrid.breakpoint-compact;
                         accessible-name: "Localized status table";
@@ -2420,9 +2447,9 @@ export component Gallery inherits Window {
                     AtlasSwitcher {
                         height: root.width < AtlasGrid.breakpoint-compact ? AtlasGrid.space-12 * 9 : AtlasGrid.space-12 * 3;
                         reference-width: root.width; gap: LayoutGap.compact;
-                        AtlasSkeleton { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; lines: 3; }
-                        AtlasEmptyState { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; title: "No content"; message: "The requested translation does not contain any sections yet."; }
-                        AtlasErrorState { flex-grow: 1; flex-basis: AtlasGrid.column-min-width * 3; title: "Content unavailable"; message: "The localized document could not be prepared."; retry-label: "Try again"; }
+                        AtlasSkeleton { horizontal-stretch: 1; preferred-width: AtlasGrid.column-min-width * 3; lines: 3; }
+                        AtlasEmptyState { horizontal-stretch: 1; preferred-width: AtlasGrid.column-min-width * 3; title: "No content"; message: "The requested translation does not contain any sections yet."; }
+                        AtlasErrorState { horizontal-stretch: 1; preferred-width: AtlasGrid.column-min-width * 3; title: "Content unavailable"; message: "The localized document could not be prepared."; retry-label: "Try again"; }
                     }
                     Rectangle { height: AtlasGrid.space-12; background: AtlasTheme.transparent; }
                 }

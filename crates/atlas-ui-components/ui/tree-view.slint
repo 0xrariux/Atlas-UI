@@ -1,0 +1,150 @@
+import { ListView } from "std-widgets.slint";
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { FocusRing } from "@atlas-ui-core/stable.slint";
+import { AtlasIcon, IconName } from "@atlas-ui-icons/icons.slint";
+
+// The host projects its tree into visible rows with stable IDs. Expansion,
+// selection, and focus settlement after model mutations remain host-owned.
+export struct TreeViewRow {
+    id: string,
+    label: string,
+    depth: int,
+    has-children: bool,
+    expanded: bool,
+    selected: bool,
+    disabled: bool,
+}
+
+export component AtlasTreeView inherits Rectangle {
+    in property <[TreeViewRow]> rows;
+    in-out property <int> focused-index: -1;
+    in property <length> row-height: AtlasDensity.row-height;
+    in property <length> indent-step: AtlasGrid.space-4;
+    in property <string> label: "Tree view";
+    callback selection-requested(string /* row ID */);
+    callback expansion-requested(string /* row ID */, bool /* expanded */);
+    callback focus-requested(string /* row ID */);
+
+    background: AtlasTheme.surface;
+    border-width: AtlasShape.border-width;
+    border-color: AtlasTheme.border-subtle;
+    border-radius: AtlasShape.radius-surface;
+    clip: true;
+    accessible-role: AccessibleRole.list;
+    accessible-label: root.label;
+    accessible-item-count: root.rows.length;
+    forward-focus: keyboard;
+
+    public function focus-index(index: int) {
+        if (root.rows.length == 0) { root.focused-index = -1; return; }
+        root.focused-index = max(0, min(root.rows.length - 1, index));
+        root.focus-requested(root.rows[root.focused-index].id);
+        root.reveal-focused();
+    }
+    public function focus-from-keyboard() { keyboard.focus(); }
+
+    function reveal-focused() {
+        if (root.focused-index < 0 || root.row-height <= AtlasGrid.zero) { return; }
+        let top = root.focused-index * root.row-height;
+        let bottom = top + root.row-height;
+        if (top < -list.content-y) { list.content-y = -top; }
+        else if (bottom > -list.content-y + list.visible-height) {
+            list.content-y = -(bottom - list.visible-height);
+        }
+    }
+
+    list := ListView {
+        width: parent.width;
+        height: parent.height;
+        for row[index] in root.rows: Rectangle {
+            width: list.visible-width;
+            height: root.row-height;
+            background: row.selected || index == root.focused-index
+                ? AtlasTheme.surface-selected : touch.has-hover ? AtlasTheme.surface-hover : AtlasTheme.transparent;
+            opacity: row.disabled ? 0.55 : 1;
+            accessible-role: AccessibleRole.list-item;
+            accessible-label: row.label;
+            accessible-description: "Depth " + row.depth;
+            accessible-item-index: index;
+            accessible-item-selected: row.selected;
+            accessible-expandable: row.has-children;
+            accessible-expanded: row.has-children && row.expanded;
+            accessible-enabled: !row.disabled;
+            accessible-action-default => {
+                if (!row.disabled) { root.selection-requested(row.id); }
+            }
+
+            if row.has-children: AtlasIcon {
+                x: AtlasGrid.space-2 + max(0, row.depth) * root.indent-step;
+                size: AtlasGrid.space-4;
+                name: row.expanded ? IconName.chevron-down : IconName.chevron-right;
+                icon-color: AtlasTheme.content-secondary;
+            }
+            Text {
+                x: AtlasGrid.space-8 + max(0, row.depth) * root.indent-step;
+                width: max(AtlasGrid.zero, parent.width - self.x - AtlasGrid.space-3);
+                text: row.label;
+                color: row.selected ? AtlasTheme.content-accent : AtlasTheme.content-primary;
+                font-family: AtlasTypography.font-sans;
+                font-size: AtlasTypography.size-body-small;
+                vertical-alignment: center;
+                overflow: elide;
+                accessible-role: AccessibleRole.none;
+            }
+            touch := TouchArea {
+                x: AtlasGrid.space-6 + AtlasGrid.space-1 + max(0, row.depth) * root.indent-step;
+                width: max(AtlasGrid.zero, parent.width - self.x);
+                enabled: !row.disabled;
+                clicked => {
+                    root.focused-index = index;
+                    root.focus-requested(row.id);
+                    root.selection-requested(row.id);
+                    keyboard.focus();
+                }
+            }
+            if row.has-children: TouchArea {
+                x: AtlasGrid.space-1 + max(0, row.depth) * root.indent-step;
+                width: AtlasGrid.space-6;
+                enabled: !row.disabled;
+                clicked => {
+                    root.focused-index = index;
+                    root.focus-requested(row.id);
+                    root.expansion-requested(row.id, !row.expanded);
+                    keyboard.focus();
+                }
+            }
+        }
+    }
+
+    keyboard := FocusScope {
+        focus-on-tab-navigation: root.rows.length > 0;
+        key-pressed(event) => {
+            if (root.rows.length == 0) { return reject; }
+            if (event.text == Key.UpArrow) { root.focus-index(max(0, root.focused-index - 1)); return accept; }
+            if (event.text == Key.DownArrow) { root.focus-index(min(root.rows.length - 1, root.focused-index + 1)); return accept; }
+            if (event.text == Key.Home) { root.focus-index(0); return accept; }
+            if (event.text == Key.End) { root.focus-index(root.rows.length - 1); return accept; }
+            if (root.focused-index < 0 || root.focused-index >= root.rows.length) { return reject; }
+            if (root.rows[root.focused-index].disabled) { return reject; }
+            if (event.text == Key.RightArrow && root.rows[root.focused-index].has-children
+                    && !root.rows[root.focused-index].expanded) {
+                root.expansion-requested(root.rows[root.focused-index].id, true); return accept;
+            }
+            if (event.text == Key.LeftArrow && root.rows[root.focused-index].has-children
+                    && root.rows[root.focused-index].expanded) {
+                root.expansion-requested(root.rows[root.focused-index].id, false); return accept;
+            }
+            if (event.text == Key.Return || event.text == Key.Space) {
+                root.selection-requested(root.rows[root.focused-index].id); return accept;
+            }
+            return reject;
+        }
+    }
+    FocusRing { active: keyboard.has-focus; radius: AtlasShape.radius-surface; }
+    changed rows => {
+        root.focused-index = root.rows.length == 0 ? -1
+            : min(root.rows.length - 1, root.focused-index);
+        root.reveal-focused();
+    }
+    changed focused-index => { root.reveal-focused(); }
+}

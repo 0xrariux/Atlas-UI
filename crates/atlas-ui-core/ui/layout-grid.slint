@@ -1,6 +1,68 @@
-import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasTheme, AtlasGrid, AtlasSettings, Density, ThemeMode, MotionPreference } from "@atlas-ui-tokens/tokens.slint";
 
 export enum LayoutWidth { fluid, narrow, standard, wide }
+export enum ContainerSize { compact, standard, wide }
+export enum InputModality { pointer, keyboard, touch }
+export enum LogicalDirection { left-to-right, right-to-left }
+
+// Explicit environment data can be passed through nested containers without
+// changing application-wide settings or introducing hidden domain state.
+export struct AtlasEnvironment {
+    viewport-width: length,
+    viewport-height: length,
+    density: Density,
+    theme-mode: ThemeMode,
+    motion: MotionPreference,
+    input-modality: InputModality,
+    logical-direction: LogicalDirection,
+    locale: string,
+}
+
+// A non-painting child boundary with local size metrics. Descendants opt into
+// this context by binding their reference-width to content-width.
+export component AtlasContainer inherits Rectangle {
+    in property <length> inset: AtlasGrid.zero;
+    in property <bool> clip-content: false;
+    in property <AtlasEnvironment> environment: {
+        viewport-width: root.width,
+        viewport-height: root.height,
+        density: AtlasSettings.density,
+        theme-mode: AtlasSettings.resolved-theme-mode,
+        motion: AtlasSettings.motion,
+        input-modality: InputModality.pointer,
+        logical-direction: LogicalDirection.left-to-right,
+        locale: "",
+    };
+    out property <length> content-width: max(AtlasGrid.zero, root.width - root.inset * 2);
+    out property <length> content-height: max(AtlasGrid.zero, root.height - root.inset * 2);
+    out property <ContainerSize> size-class: root.content-width < AtlasGrid.breakpoint-compact
+        ? ContainerSize.compact
+        : root.content-width < AtlasGrid.breakpoint-wide
+            ? ContainerSize.standard : ContainerSize.wide;
+    out property <AtlasEnvironment> content-environment: {
+        viewport-width: root.content-width,
+        viewport-height: root.content-height,
+        density: root.environment.density,
+        theme-mode: root.environment.theme-mode,
+        motion: root.environment.motion,
+        input-modality: root.environment.input-modality,
+        logical-direction: root.environment.logical-direction,
+        locale: root.environment.locale,
+    };
+
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.none;
+
+    content := Rectangle {
+        x: root.inset;
+        y: root.inset;
+        width: root.content-width;
+        height: root.content-height;
+        background: AtlasTheme.transparent;
+        clip: root.clip-content;
+        @children
+    }
+}
 
 // Centers a composition on a standard content width and applies responsive
 // page margins. Place this behind or around screen-level compositions.

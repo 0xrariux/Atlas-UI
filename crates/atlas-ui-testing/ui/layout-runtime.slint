@@ -1,0 +1,710 @@
+import {
+    AtlasSwitcher, AtlasAutoGrid, AtlasDocumentList, DocumentListItem, LayoutGap
+} from "@atlas-ui/preview.slint";
+import { ActionArea, AtlasScrollViewport } from "@atlas-ui-core/stable.slint";
+import { LogicalDirection } from "@atlas-ui-core/layout-grid.slint";
+import { AtlasContainer, ContainerSize, AtlasModal, AtlasModalFrame, AtlasMenu, MenuItem, AtlasPopover, AtlasCombobox, AtlasAutocomplete, AtlasRadioGroup, AtlasTreeView, TreeViewRow, AtlasTooltip, AtlasDrawer, AtlasRangeControl } from "@atlas-ui/preview.slint";
+
+export component RangeControlRuntimeFixture inherits Window {
+    out property <float> current-value: range.value;
+    out property <int> change-count: changes;
+    private property <int> changes: 0;
+
+    preferred-width: 320px;
+    preferred-height: 120px;
+    range := AtlasRangeControl {
+        x: 20px; y: 20px; width: 240px;
+        label: "Zoom";
+        value: 50;
+        value-changed(value) => { root.changes += 1; }
+    }
+}
+
+export component TreeViewRuntimeFixture inherits Window {
+    in property <[TreeViewRow]> rows;
+    out property <int> focused-index: tree.focused-index;
+    out property <string> selected-id: chosen;
+    out property <string> expanded-id: toggled;
+    out property <bool> expansion-state: target-expanded;
+    private property <string> chosen;
+    private property <string> toggled;
+    private property <bool> target-expanded: false;
+
+    preferred-width: 360px;
+    preferred-height: 300px;
+    tree := AtlasTreeView {
+        x: 20px; y: 20px; width: 240px; height: 160px;
+        rows: root.rows;
+        selection-requested(id) => { root.chosen = id; }
+        expansion-requested(id, expanded) => {
+            root.toggled = id;
+            root.target-expanded = expanded;
+        }
+    }
+    public function focus-first() { tree.focus-index(0); tree.focus-from-keyboard(); }
+}
+
+export component ScrollViewportRuntimeFixture inherits Window {
+    in property <length> host-content-width: 400px;
+    in property <length> host-content-height: 300px;
+    in property <bool> right-to-left: false;
+    out property <length> offset-x: viewport.viewport-x;
+    out property <length> offset-y: viewport.viewport-y;
+    out property <length> maximum-x: viewport.maximum-x;
+    out property <length> maximum-y: viewport.maximum-y;
+
+    preferred-width: 320px;
+    preferred-height: 240px;
+    viewport := AtlasScrollViewport {
+        x: 20px; y: 20px; width: 200px; height: 120px;
+        horizontal-scroll-enabled: true;
+        vertical-scroll-enabled: true;
+        logical-direction: root.right-to-left ? LogicalDirection.right-to-left : LogicalDirection.left-to-right;
+        content-width: root.host-content-width;
+        content-height: root.host-content-height;
+        Rectangle { width: root.host-content-width; height: root.host-content-height; background: #e0e0e0; }
+    }
+    public function scroll(x: length, y: length) {
+        viewport.scroll-to-x(x);
+        viewport.scroll-to(y);
+    }
+    public function reveal(left: length, top: length, width: length, height: length) {
+        viewport.reveal-rect(left, top, width, height);
+    }
+    public function focus-viewport() { viewport.focus-from-keyboard(); }
+}
+
+export component LongMenuRuntimeFixture inherits Window {
+    in property <[MenuItem]> items;
+    out property <length> menu-height: menu.height;
+    out property <length> menu-offset: menu.scroll-offset;
+    in-out property <int> active-index: 0;
+
+    preferred-width: 360px;
+    preferred-height: 360px;
+    menu := AtlasMenu {
+        x: 20px; y: 20px;
+        items: root.items;
+        active-index <=> root.active-index;
+        maximum-menu-height: 160px;
+    }
+    public function navigate(direction: int) { menu.navigate(direction); }
+}
+import { AtlasWorkspaceTab, AtlasWorkspaceTabList } from "@atlas-ui/stable.slint";
+import { AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+
+// A live Slint layout fixture. Rust observes geometry after each render pass;
+// the values below come from the actual child items and repeated list layout.
+export component LayoutRuntimeFixture inherits Window {
+    in-out property <[DocumentListItem]> items;
+    out property <bool> stacked: switcher.stacked;
+    out property <int> grid-columns: nested-grid.column-count;
+    out property <float> first-x: first.x / 1px;
+    out property <float> first-y: first.y / 1px;
+    out property <float> first-width: first.width / 1px;
+    out property <float> first-height: first.height / 1px;
+    out property <float> second-x: second.x / 1px;
+    out property <float> second-y: second.y / 1px;
+    out property <float> second-width: second.width / 1px;
+    out property <float> second-height: second.height / 1px;
+    out property <float> list-height: document-list.min-height / 1px;
+
+    preferred-width: 1000px;
+    preferred-height: 760px;
+    background: #ffffff;
+
+    switcher := AtlasSwitcher {
+        x: 20px;
+        y: 20px;
+        width: parent.width - 40px;
+        height: 240px;
+        reference-width: self.width;
+        switch-below: 600px;
+        gap: LayoutGap.compact;
+
+        first := Rectangle {
+            min-width: 180px;
+            preferred-width: 320px;
+            max-width: 620px;
+            min-height: 100px;
+            preferred-height: 100px;
+            horizontal-stretch: 1;
+            vertical-stretch: 1;
+            background: #dceaf6;
+        }
+        second := Rectangle {
+            min-width: 180px;
+            preferred-width: 320px;
+            max-width: 620px;
+            min-height: 100px;
+            preferred-height: 100px;
+            horizontal-stretch: 1;
+            vertical-stretch: 1;
+            background: #f6eadc;
+
+            nested-grid := AtlasAutoGrid {
+                width: parent.width;
+                height: parent.height;
+                reference-width: switcher.stacked ? switcher.width
+                    : (switcher.width - 2 * AtlasGrid.space-2) / 2;
+                basis-width: switcher.stacked ? switcher.width
+                    : (switcher.width - 2 * AtlasGrid.space-2) / 2;
+                gap: LayoutGap.compact;
+                Rectangle {
+                    min-width: 80px;
+                    preferred-width: nested-grid.item-basis;
+                    preferred-height: 40px;
+                    background: #b9d8bd;
+                }
+                Rectangle {
+                    min-width: 80px;
+                    preferred-width: nested-grid.item-basis;
+                    preferred-height: 40px;
+                    background: #b9d8bd;
+                }
+            }
+        }
+    }
+
+    document-list := AtlasDocumentList {
+        x: 20px;
+        y: 290px;
+        width: min(parent.width - 40px, 320px);
+        height: self.min-height;
+        items: root.items;
+    }
+}
+
+// Dispatch real window events to these controls from the Rust fixture.
+export component InteractionRuntimeFixture inherits Window {
+    in-out property <bool> modal-open: false;
+    in-out property <bool> menu-open: false;
+    in-out property <bool> drawer-open: false;
+    in-out property <bool> first-enabled: true;
+    out property <bool> first-focused: first.focused;
+    out property <bool> first-focus-visible: first.focus-visible;
+    out property <bool> first-pressed: first.pressed;
+    out property <bool> second-focused: second.focused;
+    out property <int> first-activations: first-count;
+    out property <int> second-activations: second-count;
+    out property <int> modal-confirms: confirm-count;
+    out property <int> modal-cancels: cancel-count;
+    out property <int> focus-restores: restore-count;
+    out property <int> menu-active-index: menu.active-index;
+    out property <string> menu-selected-id: selected-id;
+    out property <int> menu-dismissals: menu-dismiss-count;
+    out property <int> menu-traversals: menu-traverse-count;
+    out property <bool> menu-traversed-backward: menu-traverse-backward;
+    out property <int> drawer-closes: drawer-close-count;
+    private property <int> first-count: 0;
+    private property <int> second-count: 0;
+    private property <int> confirm-count: 0;
+    private property <int> cancel-count: 0;
+    private property <int> restore-count: 0;
+    private property <string> selected-id: "";
+    private property <int> menu-dismiss-count: 0;
+    private property <int> menu-traverse-count: 0;
+    private property <bool> menu-traverse-backward: false;
+    private property <int> drawer-close-count: 0;
+
+    preferred-width: 400px;
+    preferred-height: 300px;
+
+    first := ActionArea {
+        x: 20px; y: 20px; width: 120px; height: 40px;
+        enabled: root.first-enabled;
+        activated => { root.first-count += 1; }
+    }
+    second := ActionArea {
+        x: 20px; y: 80px; width: 120px; height: 40px;
+        activated => { root.second-count += 1; }
+    }
+    modal := AtlasModal {
+        width: parent.width; height: parent.height;
+        open <=> root.modal-open;
+        title: "Confirm";
+        description: "Keyboard focus test";
+        confirmed => { root.confirm-count += 1; root.modal-open = false; }
+        cancelled => { root.cancel-count += 1; root.modal-open = false; }
+        focus-restore-requested => { root.restore-count += 1; first.focus-from-keyboard(); }
+    }
+    menu := AtlasMenu {
+        x: 160px; y: 20px;
+        open: root.menu-open;
+        items: [
+            { id: "first", label: "First", shortcut: "", enabled: true, danger: false },
+            { id: "disabled", label: "Disabled", shortcut: "", enabled: false, danger: false },
+            { id: "last", label: "Last", shortcut: "", enabled: true, danger: false }
+        ];
+        item-requested(id) => { root.selected-id = id; root.menu-open = false; }
+        dismissed => { root.menu-dismiss-count += 1; root.menu-open = false; }
+        traversal-requested(backwards) => {
+            root.menu-traverse-count += 1;
+            root.menu-traverse-backward = backwards;
+            if (backwards) { first.focus-from-keyboard(); }
+            else { second.focus-from-keyboard(); }
+        }
+        focus-restore-requested => { root.restore-count += 1; first.focus-from-keyboard(); }
+    }
+    drawer := AtlasDrawer {
+        width: parent.width; height: parent.height;
+        open <=> root.drawer-open;
+        title: "Details";
+        body-text: "Drawer keyboard focus test";
+        close => { root.drawer-close-count += 1; root.drawer-open = false; }
+        focus-restore-requested => { root.restore-count += 1; first.focus-from-keyboard(); }
+    }
+    public function focus-first() { first.focus-from-keyboard(); }
+    public function focus-second() { second.focus-from-keyboard(); }
+}
+
+// The host intentionally owns selection, close acceptance, and model changes.
+export component TabsRuntimeFixture inherits Window {
+    in-out property <int> tab-count: 3;
+    in-out property <bool> second-enabled: true;
+    out property <int> active-index: tabs.active-index;
+    out property <int> focused-index: last-focus-index;
+    out property <int> focus-requests: focus-count;
+    out property <int> activated-index: last-activated-index;
+    out property <int> closed-index: last-closed-index;
+    private property <int> last-focus-index: -1;
+    private property <int> focus-count: 0;
+    private property <int> last-activated-index: -1;
+    private property <int> last-closed-index: -1;
+
+    preferred-width: 520px;
+    preferred-height: 160px;
+
+    tabs := AtlasWorkspaceTabList {
+        x: 20px; y: 20px; width: parent.width - 40px;
+        tab-count: root.tab-count;
+        selected-index: 0;
+        focus-requested(index) => {
+            root.last-focus-index = index;
+            root.focus-count += 1;
+            if (index == 0) { first.focus-from-group(); }
+            else if (index == 1) { second.focus-from-group(); }
+            else if (index == 2) { third.focus-from-group(); }
+        }
+        activated(index) => { root.last-activated-index = index; }
+        close-requested(index) => {
+            root.last-closed-index = index;
+            if (index == 2) {
+                root.tab-count = 2;
+                tabs.settle-after-close(2, 2, -1);
+            }
+        }
+
+        first := AtlasWorkspaceTab {
+            width: 140px; tab-id: "first"; text: "First";
+            index: 0; count: root.tab-count; closable: true;
+            active-in-roving-group: tabs.active-index == 0;
+            activated => { tabs.request-activation(0); }
+            close-requested => { tabs.request-close(0); }
+            navigation-requested(direction) => { tabs.navigate(direction); }
+        }
+        second := AtlasWorkspaceTab {
+            width: 140px; tab-id: "second"; text: "Second";
+            index: 1; count: root.tab-count; closable: true;
+            enabled: root.second-enabled;
+            active-in-roving-group: tabs.active-index == 1;
+            activated => { tabs.request-activation(1); }
+            close-requested => { tabs.request-close(1); }
+            navigation-requested(direction) => { tabs.navigate(direction); }
+        }
+        third := AtlasWorkspaceTab {
+            width: 140px; tab-id: "third"; text: "Third";
+            index: 2; count: root.tab-count; closable: true;
+            visible: root.tab-count == 3;
+            active-in-roving-group: tabs.active-index == 2;
+            activated => { tabs.request-activation(2); }
+            close-requested => { tabs.request-close(2); }
+            navigation-requested(direction) => { tabs.navigate(direction); }
+        }
+    }
+    public function focus-index(index: int) { tabs.focus-index(index); }
+}
+
+// Two controlled overlays share one window and restore focus in stack order.
+export component NestedOverlayRuntimeFixture inherits Window {
+    in-out property <bool> modal-open: false;
+    in-out property <bool> menu-open: false;
+    in-out property <bool> anchor-eligible: true;
+    out property <bool> outside-focused: outside.focused;
+    out property <bool> inside-focused: inside.focused;
+    out property <int> menu-dismissals: menu-dismiss-count;
+    out property <int> modal-dismissals: modal-dismiss-count;
+    out property <int> inside-activations: inside-count;
+    private property <int> menu-dismiss-count: 0;
+    private property <int> modal-dismiss-count: 0;
+    private property <int> inside-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    outside := ActionArea {
+        x: 20px; y: 20px; width: 100px; height: 40px;
+    }
+    modal := AtlasModalFrame {
+        width: parent.width; height: parent.height;
+        open <=> root.modal-open;
+        focus-on-open: !root.menu-open;
+        label: "Nested dialog";
+        description: "Focus returns through nested overlays";
+        dismissed => { root.modal-dismiss-count += 1; root.modal-open = false; }
+        focus-restore-requested => { outside.focus-from-keyboard(); }
+        inside := ActionArea {
+            width: 120px; height: 40px;
+            contained-focus: true;
+            activated => { root.inside-count += 1; }
+            dismiss-requested => { root.modal-dismiss-count += 1; root.modal-open = false; }
+        }
+    }
+    menu := AtlasMenu {
+        x: 220px; y: 60px;
+        open: root.menu-open;
+        anchor-eligible: root.anchor-eligible;
+        items: [{ id: "one", label: "One", shortcut: "", enabled: true, danger: false }];
+        dismissed => { root.menu-dismiss-count += 1; root.menu-open = false; }
+        focus-restore-requested => { inside.focus-from-keyboard(); }
+    }
+    public function focus-outside() { outside.focus-from-keyboard(); }
+    public function focus-inside() { inside.focus-from-keyboard(); }
+}
+
+export component PopoverRuntimeFixture inherits Window {
+    in-out property <bool> popover-open: false;
+    in-out property <bool> anchor-eligible: true;
+    in-out property <bool> outside-dismiss-enabled: true;
+    out property <int> dismissals: dismiss-count;
+    out property <int> restorations: restore-count;
+    out property <int> traversals: traversal-count;
+    out property <bool> invoker-focused: invoker.focused;
+    private property <int> dismiss-count: 0;
+    private property <int> restore-count: 0;
+    private property <int> traversal-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    invoker := ActionArea {
+        x: 20px; y: 20px; width: 100px; height: 40px;
+    }
+    popover := AtlasPopover {
+        width: parent.width; height: parent.height;
+        open: root.popover-open;
+        anchor-eligible: root.anchor-eligible;
+        dismiss-on-outside: root.outside-dismiss-enabled;
+        label: "Details";
+        panel-x: 140px; panel-y: 50px;
+        panel-width: 180px; panel-height: 120px;
+        dismissed => { root.dismiss-count += 1; root.popover-open = false; }
+        focus-restore-requested => {
+            root.restore-count += 1;
+            invoker.focus-from-keyboard();
+        }
+        traversal-requested(_) => { root.traversal-count += 1; }
+        ActionArea { x: 20px; y: 20px; width: 100px; height: 40px; contained-focus: true; }
+    }
+    public function focus-invoker() { invoker.focus-from-keyboard(); }
+}
+
+export component DeepOverlayRuntimeFixture inherits Window {
+    in-out property <bool> modal-open: false;
+    in-out property <bool> popover-open: false;
+    in-out property <bool> menu-open: false;
+    out property <bool> outside-focused: outside.focused;
+    out property <bool> modal-focused: modal-action.focused;
+    out property <bool> popover-focused: popover-action.focused;
+    out property <int> menu-dismissals: menu-dismiss-count;
+    out property <int> popover-dismissals: popover-dismiss-count;
+    out property <int> modal-dismissals: modal-dismiss-count;
+    private property <int> menu-dismiss-count: 0;
+    private property <int> popover-dismiss-count: 0;
+    private property <int> modal-dismiss-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    outside := ActionArea { x: 20px; y: 20px; width: 80px; height: 40px; }
+    modal := AtlasModalFrame {
+        width: parent.width; height: parent.height;
+        open <=> root.modal-open;
+        focus-on-open: !root.popover-open && !root.menu-open;
+        label: "Outer dialog";
+        dismissed => { root.modal-dismiss-count += 1; root.modal-open = false; }
+        focus-restore-requested => { outside.focus-from-keyboard(); }
+        modal-action := ActionArea {
+            width: 100px; height: 40px; contained-focus: true;
+            dismiss-requested => { root.modal-dismiss-count += 1; root.modal-open = false; }
+        }
+    }
+    popover := AtlasPopover {
+        width: parent.width; height: parent.height;
+        open: root.popover-open;
+        focus-on-open: !root.menu-open;
+        label: "Nested details";
+        panel-x: 130px; panel-y: 60px;
+        dismissed => { root.popover-dismiss-count += 1; root.popover-open = false; }
+        focus-restore-requested => { modal-action.focus-from-keyboard(); }
+        popover-action := ActionArea {
+            width: 100px; height: 40px; contained-focus: true;
+            dismiss-requested => { root.popover-dismiss-count += 1; root.popover-open = false; }
+        }
+    }
+    menu := AtlasMenu {
+        x: 220px; y: 70px;
+        open: root.menu-open;
+        items: [{ id: "one", label: "One", shortcut: "", enabled: true, danger: false }];
+        dismissed => { root.menu-dismiss-count += 1; root.menu-open = false; }
+        focus-restore-requested => { popover-action.focus-from-keyboard(); }
+    }
+    public function focus-outside() { outside.focus-from-keyboard(); }
+}
+
+export component ComboboxRuntimeFixture inherits Window {
+    in-out property <bool> enabled: true;
+    in-out property <bool> anchor-eligible: true;
+    in-out property <bool> single-option: false;
+    in-out property <bool> empty-options: false;
+    in-out property <int> active-index: 0;
+    in-out property <length> menu-x: 0px;
+    in-out property <length> menu-y: 0px;
+    out property <bool> open: combo.open;
+    out property <string> selected-id: selected;
+    out property <int> selections: selection-count;
+    out property <int> traversals: traversal-count;
+    private property <string> selected: "one";
+    private property <int> selection-count: 0;
+    private property <int> traversal-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    combo := AtlasCombobox {
+        x: 20px; y: 20px; width: 220px;
+        label: "Choice";
+        value: root.selected == "one" ? "One" : "Two";
+        enabled: root.enabled;
+        anchor-eligible: root.anchor-eligible;
+        active-index <=> root.active-index;
+        menu-x: root.menu-x;
+        menu-y: root.menu-y == 0px ? self.height - AtlasGrid.space-3 : root.menu-y;
+        options: root.empty-options ? [] : root.single-option ? [
+            { id: "one", label: "One", shortcut: "", enabled: true, danger: false }
+        ] : [
+            { id: "one", label: "One", shortcut: "", enabled: true, danger: false },
+            { id: "two", label: "Two", shortcut: "", enabled: true, danger: false }
+        ];
+        selection-requested(id) => { root.selected = id; root.selection-count += 1; }
+        traversal-requested(_) => { root.traversal-count += 1; }
+    }
+    public function focus-combobox() { combo.focus-from-keyboard(); }
+}
+
+export component TooltipRuntimeFixture inherits Window {
+    in-out property <bool> anchor-eligible: true;
+    in-out property <bool> force-open: true;
+    out property <bool> open: tooltip.open;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    tooltip := AtlasTooltip {
+        x: 80px; y: 100px;
+        text: "Contextual help";
+        force-open: root.force-open;
+        anchor-eligible: root.anchor-eligible;
+    }
+}
+
+export component RadioGroupRuntimeFixture inherits Window {
+    in-out property <string> selected-id: "one";
+    out property <int> active-index: radios.active-index;
+    out property <int> focused-index: radios.focused-index;
+    out property <int> selections: selection-count;
+    out property <int> navigations: navigation-count;
+    private property <int> selection-count: 0;
+    private property <int> navigation-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    radios := AtlasRadioGroup {
+        x: 20px; y: 20px; width: 220px;
+        label: "Mode";
+        selected-id: root.selected-id;
+        choices: [
+            { id: "one", label: "One", enabled: true },
+            { id: "two", label: "Unavailable", enabled: false },
+            { id: "three", label: "Three", enabled: true }
+        ];
+        selection-requested(id) => { root.selected-id = id; root.selection-count += 1; }
+        navigation-requested(direction) => {
+            root.navigation-count += 1;
+            if (direction < 0) { radios.focus-index(0); }
+            else { radios.focus-index(2); }
+        }
+    }
+    public function focus-first() { radios.focus-index(0); }
+    public function focus-disabled() { radios.focus-index(1); }
+}
+
+export component MenuLayerRuntimeFixture inherits Window {
+    in-out property <bool> open: false;
+    out property <bool> invoker-focused: invoker.focused;
+    out property <int> dismissals: dismiss-count;
+    out property <int> restorations: restore-count;
+    private property <int> dismiss-count: 0;
+    private property <int> restore-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    invoker := ActionArea { x: 20px; y: 20px; width: 80px; height: 40px; }
+    layer := AtlasPopover {
+        width: parent.width; height: parent.height;
+        open: root.open;
+        focus-on-open: false;
+        label: "Menu layer";
+        panel-x: 140px; panel-y: 60px;
+        panel-width: 180px; panel-height: 44px;
+        dismissed => { root.dismiss-count += 1; root.open = false; }
+        menu := AtlasMenu {
+            width: parent.width;
+            open: root.open;
+            items: [{ id: "one", label: "One", shortcut: "", enabled: true, danger: false }];
+            dismissed => { root.dismiss-count += 1; root.open = false; }
+            focus-restore-requested => {
+                root.restore-count += 1;
+                invoker.focus-from-keyboard();
+            }
+        }
+    }
+    public function focus-invoker() { invoker.focus-from-keyboard(); }
+}
+
+export component AutocompleteRuntimeFixture inherits Window {
+    in-out property <string> query: "";
+    in-out property <bool> suggestions-open: false;
+    in-out property <bool> anchor-eligible: true;
+    in-out property <bool> single-suggestion: false;
+    in-out property <int> active-index: 0;
+    out property <bool> input-focused: autocomplete.input-focused;
+    out property <string> selected-id: selection;
+    out property <int> edits: edit-count;
+    out property <int> traversals: traversal-count;
+    private property <string> selection: "";
+    private property <int> edit-count: 0;
+    private property <int> traversal-count: 0;
+
+    preferred-width: 480px;
+    preferred-height: 320px;
+
+    autocomplete := AtlasAutocomplete {
+        x: 20px; y: 20px; width: 220px;
+        label: "Search";
+        query <=> root.query;
+        open <=> root.suggestions-open;
+        anchor-eligible: root.anchor-eligible;
+        active-index <=> root.active-index;
+        suggestions: root.single-suggestion ? [
+            { id: "alpha", label: "Alpha", shortcut: "", enabled: true, danger: false }
+        ] : [
+            { id: "alpha", label: "Alpha", shortcut: "", enabled: true, danger: false },
+            { id: "beta", label: "Beta", shortcut: "", enabled: true, danger: false }
+        ];
+        query-changed(_) => { root.edit-count += 1; root.suggestions-open = true; }
+        suggestion-requested(id) => {
+            root.selection = id;
+            root.query = id == "alpha" ? "Alpha" : "Beta";
+        }
+        traversal-requested(_) => { root.traversal-count += 1; }
+    }
+    public function focus-input() { autocomplete.focus-from-keyboard(); }
+}
+
+export component ContainerRuntimeFixture inherits Window {
+    out property <length> outer-content-width: outer.content-width;
+    out property <length> inner-content-width: inner.content-width;
+    out property <length> inner-received-viewport: inner.environment.viewport-width;
+    out property <length> inner-content-viewport: inner.content-environment.viewport-width;
+    out property <bool> outer-compact: outer.size-class == ContainerSize.compact;
+    out property <bool> outer-wide: outer.size-class == ContainerSize.wide;
+    out property <bool> inner-compact: inner.size-class == ContainerSize.compact;
+
+    preferred-width: 1200px;
+    preferred-height: 260px;
+
+    outer := AtlasContainer {
+        x: 20px; y: 20px;
+        width: parent.width - 40px;
+        height: 200px;
+        inset: AtlasGrid.space-4;
+        inner := AtlasContainer {
+            width: outer.content-width / 2;
+            height: outer.content-height;
+            inset: AtlasGrid.space-2;
+            environment: outer.content-environment;
+        }
+    }
+}
+
+export component LayoutOrderRuntimeFixture inherits Window {
+    out property <length> first-x: first.x;
+    out property <length> second-x: second.x;
+    out property <length> third-x: third.x;
+    out property <int> last-focused: focused-id;
+    private property <int> focused-id: 0;
+
+    preferred-width: 360px;
+    preferred-height: 100px;
+
+    FlexboxLayout {
+        x: 10px; y: 10px;
+        width: 340px; height: 80px;
+        spacing: 10px;
+        flex-direction: row;
+        flex-wrap: no-wrap;
+        first := ActionArea {
+            width: 80px; height: 50px;
+            layout-order: 2;
+            focus-entered(_) => { root.focused-id = 1; }
+        }
+        second := ActionArea {
+            width: 80px; height: 50px;
+            layout-order: 0;
+            focus-entered(_) => { root.focused-id = 2; }
+        }
+        third := ActionArea {
+            width: 80px; height: 50px;
+            layout-order: 1;
+            focus-entered(_) => { root.focused-id = 3; }
+        }
+    }
+
+    public function focus-first() { first.focus-from-keyboard(); }
+}
+
+export component RepeatedGridRuntimeFixture inherits Window {
+    in-out property <[string]> rows;
+    in-out property <bool> show-summary: false;
+    out property <length> grid-height: grid.height;
+
+    preferred-width: 280px;
+    preferred-height: 400px;
+
+    grid := GridLayout {
+        x: 20px; y: 20px;
+        width: 220px;
+        height: self.preferred-height;
+        spacing: 4px;
+        for row in root.rows: Row {
+            Text { text: row; wrap: word-wrap; }
+            Text { text: "1"; }
+        }
+        if root.show-summary: Row {
+            Text { text: "Summary"; colspan: 2; }
+        }
+    }
+}

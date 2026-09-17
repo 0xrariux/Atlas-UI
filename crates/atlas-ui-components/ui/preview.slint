@@ -1,8 +1,8 @@
 // Atlas UI 0.1 compatibility preview surface. These exports may change between
-// minor releases. This aggregate loads experimental responsive contracts; use
-// preview-nonresponsive.slint when FlexboxLayout is not required.
+// minor releases. This aggregate loads responsive preview contracts; use
+// preview-nonresponsive.slint when those contracts are not required.
 export {
-    LayoutGridOverlay, LayoutWidth, ActionArea, OverlayFocusController,
+    AtlasContainer, AtlasEnvironment, InputModality, LogicalDirection, ContainerSize, LayoutGridOverlay, LayoutWidth, ActionArea, OverlayFocusController,
     SelectionController, RovingFocusController, SelectionMode,
     AtlasScrollbar, AtlasScrollViewport, AtlasEdgeSurface, AtlasStack, AtlasCluster, AtlasSidebar, AtlasSwitcher,
     AtlasAutoGrid, AtlasColumnGrid, AtlasGridItem,
@@ -13,8 +13,13 @@ export { AtlasTab, AtlasTabPanel, TabVariant } from "tabs.slint";
 export { AtlasSpinner } from "activity-indicator.slint";
 export { AtlasTooltip, TooltipTone, TooltipPlacement } from "tooltip.slint";
 export { AtlasMenu, MenuItem } from "menu.slint";
+export { AtlasPopover } from "popover.slint";
+export { AtlasCombobox } from "combobox.slint";
+export { AtlasAutocomplete } from "autocomplete.slint";
+export { AtlasRadioGroup, RadioChoice } from "radio-group.slint";
 export { AtlasModal, AtlasModalFrame, ModalSize } from "modal.slint";
 export { AtlasDataTable, AtlasDataList } from "data-table.slint";
+export { AtlasTreeView, TreeViewRow } from "tree-view.slint";
 export { AtlasMetric } from "metric.slint";
 export { AtlasCopyableValue } from "copyable-value.slint";
 // Compatibility re-export for the stable AtlasMetricCard and ValueTone.

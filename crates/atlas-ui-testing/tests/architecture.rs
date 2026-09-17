@@ -77,7 +77,7 @@ fn collect_slint_imports(root: &Path, path: &Path, visited: &mut BTreeSet<PathBu
         !source.contains("FlexboxLayout")
             && !source.contains("responsive-layout.slint")
             && !source.contains("@atlas-ui-core/core.slint"),
-        "{} loads an experimental responsive contract",
+        "{} loads the responsive preview contract",
         path.strip_prefix(root).unwrap_or(path).display()
     );
 
@@ -103,7 +103,7 @@ fn collect_slint_imports(root: &Path, path: &Path, visited: &mut BTreeSet<PathBu
 }
 
 #[test]
-fn nonresponsive_preview_facade_has_no_experimental_transitive_dependency() {
+fn nonresponsive_preview_facade_has_no_responsive_transitive_dependency() {
     let root = workspace_root();
     let facade = root.join("crates/atlas-ui-components/ui/preview-nonresponsive.slint");
     let source = fs::read_to_string(&facade).expect("non-responsive preview facade");
@@ -371,9 +371,13 @@ fn responsive_recipes_share_tokens_and_expose_observable_breakpoints() {
         source.contains("FlexboxLayout"),
         "wrapping must use the shared flex engine"
     );
-    let cargo_config = fs::read_to_string(root.join(".cargo/config.toml"))
-        .expect("explicit Slint preview configuration");
-    assert!(cargo_config.contains("SLINT_ENABLE_EXPERIMENTAL_FEATURES"));
+    assert!(
+        !root.join(".cargo/config.toml").exists(),
+        "Slint 1.18 flexbox must compile without an experimental flag"
+    );
+    assert!(!source.contains("flex-basis:"));
+    assert!(!source.contains("flex-grow:"));
+    assert!(!source.contains("flex-shrink:"));
 
     let edge = fs::read_to_string(root.join("crates/atlas-ui-core/ui/edge-surface.slint"))
         .expect("stable edge surface");
@@ -390,7 +394,7 @@ fn responsive_recipes_share_tokens_and_expose_observable_breakpoints() {
 }
 
 #[test]
-fn stable_facade_does_not_load_experimental_responsive_layouts() {
+fn stable_facade_does_not_load_responsive_preview_layouts() {
     let root = workspace_root();
     let core_stable = fs::read_to_string(root.join("crates/atlas-ui-core/ui/stable.slint"))
         .expect("stable Core facade");
@@ -411,7 +415,7 @@ fn stable_facade_does_not_load_experimental_responsive_layouts() {
             fs::read_to_string(component_root.join(file)).expect("stable component source");
         assert!(
             !source.contains("@atlas-ui-core/core.slint"),
-            "{file} must import the non-experimental Core facade"
+            "{file} must import the stable Core facade"
         );
     }
 }
@@ -882,6 +886,26 @@ fn document_viewport_is_tokenized_scrollable_and_route_aware() {
             "missing viewport contract: {contract}"
         );
     }
+    for native_property in [
+        "content-width:",
+        "content-height:",
+        "content-y:",
+        "self.content-y",
+    ] {
+        assert!(
+            viewport.contains(native_property),
+            "Flickable must use its Slint 1.18 property: {native_property}"
+        );
+    }
+    let native_flickable = viewport
+        .split("flickable := Flickable {")
+        .nth(1)
+        .expect("native Flickable")
+        .split("@children")
+        .next()
+        .expect("Flickable child slot");
+    assert!(!native_flickable.contains("viewport-width:"));
+    assert!(!native_flickable.contains("self.viewport-y"));
 
     let shell =
         fs::read_to_string(root.join("crates/atlas-ui-components/ui/documentation-shell.slint"))
@@ -1282,7 +1306,7 @@ fn data_components_expose_scalable_intentions_and_states() {
     }
     assert_eq!(
         table
-            .matches("for column in root.columns: DataColumnTrack")
+            .matches("for column[column-index] in root.columns: DataColumnTrack")
             .count(),
         1,
         "the header must declare one canonical column-track sequence"

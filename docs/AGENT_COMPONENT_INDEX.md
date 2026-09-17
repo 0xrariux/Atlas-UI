@@ -3,7 +3,8 @@
 This document is the entry point for agents building an interface with Atlas UI.
 Use it to find the right component before writing Slint.
 
-It indexes the public API shipped in the tagged `v0.1.1` GitHub release.
+It indexes the tagged `v0.1.1` API and preview additions in this source
+checkout; the source additions are not part of the tagged package.
 
 ## Selection rules
 
@@ -27,11 +28,11 @@ import { AtlasButton, AtlasTextField, AtlasTheme } from "@atlas-ui/stable.slint"
 // Non-responsive contracts that may change between minor versions
 import { AtlasDataTable, AtlasModal } from "@atlas-ui/preview-nonresponsive.slint";
 
-// Responsive preview contracts; requires experimental Slint features
+// Responsive preview contracts in the current Slint 1.18.0 checkout
 import { AtlasAutoGrid } from "@atlas-ui/preview.slint";
 ```
 
-`preview.slint` and `components.slint` both load the experimental responsive
+`preview.slint` and `components.slint` both load the responsive preview
 module as compatibility aggregates. New code should prefer `stable.slint` or
 `preview-nonresponsive.slint` unless it actually uses responsive preview APIs.
 
@@ -47,6 +48,7 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 | Standalone semantic status signal | `AtlasStatusIndicator` | stable |
 | Semantic icon | `AtlasIcon` | stable |
 | Content surface or frame | `Surface`, `ComponentFrame`, `ContentFrame` | stable |
+| Local content metrics, size class, and explicit environment | `AtlasContainer`, `AtlasEnvironment` | preview |
 | Loading, empty, or error state | `AtlasSkeleton`, `AtlasEmptyState`, `AtlasErrorState` | stable |
 | Scrollable content with native flicking and keyboard paging | `AtlasScrollViewport` | preview |
 | Scrollbar for an existing controlled scroll surface | `AtlasScrollbar` | preview |
@@ -60,12 +62,17 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 | Copyable identifier or value | `AtlasCopyableValue` | preview |
 | Tooltip | `AtlasTooltip` | preview |
 | Contextual menu | `AtlasMenu` | preview |
+| Controlled choice list | `AtlasCombobox` | preview |
+| Search suggestions while typing | `AtlasAutocomplete` | preview |
+| Controlled radio choices | `AtlasRadioGroup` | preview |
+| Anchored custom content | `AtlasPopover` | preview |
 | Blocking dialog | `AtlasModal` | preview |
 | Custom-content blocking dialog | `AtlasModalFrame` | preview |
 | Side panel | `AtlasDrawer` | preview |
 | Custom-content side panel | `AtlasDrawerFrame` | preview |
 | Complex application table | `AtlasDataTable` | preview |
 | Virtualized list | `AtlasDataList` | preview |
+| Host-projected tree | `AtlasTreeView` | preview |
 | Select, range, or pagination | application controls | preview |
 | Message or workflow | feedback family | preview |
 | Responsive layout | composition family | preview |
@@ -88,6 +95,8 @@ module as compatibility aggregates. New code should prefer `stable.slint` or
 
 ### Non-responsive preview — `preview-nonresponsive.slint`
 
+- `AtlasContainer` — transparent child boundary with explicit local width,
+  height, and `ContainerSize` metrics; bind nested widths explicitly;
 - `ActionArea` — headless activation and focus;
 - `LayoutGridOverlay` — grid visualization;
 - `OverlayFocusController` — focus containment and restoration;
@@ -174,8 +183,8 @@ to replace an existing Atlas icon.
 ### Stable — `stable.slint`
 
 - `AtlasWorkspaceTab`, `AtlasWorkspaceTabList` — closable workspace tabs with
-  controlled selection, roving focus, Delete-to-close, bounded labels, and
-  overflow intention.
+  controlled selection, roving focus, host-directed `focus-index`,
+  Delete-to-close, bounded labels, and overflow intention.
 
 ### Non-responsive preview — `preview-nonresponsive.slint`
 
@@ -188,6 +197,10 @@ to replace an existing Atlas icon.
 - `AtlasTab`, `AtlasTabPanel` — tabs with roving focus;
 - `AtlasTooltip` — hover/focus help and truncated values;
 - `AtlasMenu` — model-driven contextual menu;
+- `AtlasCombobox` — controlled choice field backed by `AtlasMenu`;
+- `AtlasAutocomplete` — controlled text query with host-provided menu suggestions;
+- `AtlasRadioGroup` — controlled radio choices with host-selected roving focus;
+- `AtlasPopover` — slotted anchored content with controlled dismissal and focus;
 - `AtlasModal` — controlled modal dialog;
 - `AtlasModalFrame` — slotted dialog frame for custom product content, retaining
   Atlas panel, accessibility, dismissal, traversal, and focus restoration;
@@ -207,7 +220,8 @@ and
 ### Non-responsive preview — `preview-nonresponsive.slint`
 
 - `AtlasDataTable` — virtualized responsive table with shared min/max/grow
-  tracks, rich cells, sorting, filters, multi-selection, resizable columns,
+  tracks and optional host-allocated widths, rich cells, sorting, filters,
+  multi-selection, resizable columns,
   inline editing, contextual menus, expansion, and compact semantic cards;
 - `AtlasDataList` — virtualized list and controlled selection;
 - `AtlasKeyValueList` — key/value property presentation.
@@ -283,10 +297,10 @@ Bind every item's `reference-width` to its containing grid. If `columns` or
 `gap` differs from the defaults, bind those values to the item as well so both
 components use the same geometry.
 
-These recipes currently depend on experimental Slint layout capabilities and
-must not be presented as stable.
+These recipes use stable Slint 1.18 layout capabilities, but their Atlas APIs
+remain preview pending layout, accessibility, visual, and consumer evidence.
 
-The stable `AtlasEdgeSurface` is independent of these experimental recipes.
+The stable `AtlasEdgeSurface` is independent of these preview recipes.
 Use `DividerEdge.bottom` for top bars and navigation bars,
 `DividerEdge.right` for left sidebars, and `DividerEdge.left` for right
 sidebars. Page chrome must not use a full rectangular border.

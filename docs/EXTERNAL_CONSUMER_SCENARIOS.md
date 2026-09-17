@@ -20,23 +20,18 @@ commands are owned by `template-atlas/scripts/capture-*-native.sh`.
 
 ## Validate a local Atlas upgrade
 
-Place the repositories next to each other, then run from the Atlas root:
-
-```text
-workspace/
-├── Atlas/
-└── template-atlas/
-```
+Place `Atlas/` and `template-atlas/` beside each other, then run from the Atlas
+root:
 
 ```bash
 sh scripts/template-consumer-gate.sh
 ```
 
 The command compiles every template and all of its Rust targets against the
-current Atlas checkout. The templates normally pin the published Atlas crate;
-the gate copies their committed revision into a temporary directory and injects
-a Cargo patch to the current checkout without editing the companion repository
-or its lockfiles. Use an explicit path when the repositories are not siblings:
+current Atlas checkout. The templates use a sibling path dependency, so the
+gate checks the current template worktree, including uncommitted migration
+changes, with locked dependencies. Use an explicit path to the template
+checkout when needed; it must still resolve to this Atlas checkout:
 
 ```bash
 sh scripts/template-consumer-gate.sh --template-root ../template-atlas

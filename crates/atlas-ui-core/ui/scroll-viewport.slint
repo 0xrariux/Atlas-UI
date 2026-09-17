@@ -1,18 +1,29 @@
 import { AtlasTheme, AtlasGrid, AtlasViewportTokens } from "@atlas-ui-tokens/tokens.slint";
-import { AtlasScrollbar } from "scrollbar.slint";
+import { AtlasScrollbar, AtlasHorizontalScrollbar } from "scrollbar.slint";
+import { LogicalDirection } from "layout-grid.slint";
 
-// Tokenized vertical viewport used by long documents and application panels.
-// viewport-y is an external positive offset; Flickable keeps its native
-// negative coordinate private so Rust contracts never depend on that detail.
+// Tokenized controlled viewport used by long documents and application panels.
+// Public offsets are positive; Flickable's negative coordinates remain private.
 export component AtlasScrollViewport inherits Rectangle {
+    in property <length> content-width: root.width;
     in property <length> content-height: root.height;
+    in-out property <length> viewport-x: AtlasGrid.zero;
     in-out property <length> viewport-y: AtlasGrid.zero;
+    in property <bool> horizontal-scroll-enabled: false;
+    in property <bool> vertical-scroll-enabled: true;
+    in property <LogicalDirection> logical-direction: LogicalDirection.left-to-right;
     in property <bool> enabled: true;
     in property <bool> show-scrollbar: true;
+    in property <bool> show-horizontal-scrollbar: true;
     in property <bool> preview-scrollbar-active: false;
+    out property <length> viewport-width: flickable.width;
     out property <length> viewport-height: root.height;
-    out property <length> maximum-y: max(AtlasGrid.zero, root.content-height - root.height);
-    out property <bool> scrollable: root.maximum-y > AtlasGrid.zero;
+    out property <length> maximum-x: root.horizontal-scroll-enabled
+        ? max(AtlasGrid.zero, root.content-width - root.viewport-width) : AtlasGrid.zero;
+    out property <length> maximum-y: root.vertical-scroll-enabled
+        ? max(AtlasGrid.zero, root.content-height - root.height) : AtlasGrid.zero;
+    out property <bool> scrollable: root.maximum-x > AtlasGrid.zero || root.maximum-y > AtlasGrid.zero;
+    callback scrolled-x(length);
     callback scrolled(length);
 
     background: AtlasTheme.transparent;
@@ -22,22 +33,25 @@ export component AtlasScrollViewport inherits Rectangle {
     forward-focus: keyboard;
 
     flickable := Flickable {
-        width: parent.width - (root.show-scrollbar && root.scrollable
+        width: max(AtlasGrid.zero, parent.width - (root.show-scrollbar && root.maximum-y > AtlasGrid.zero
             ? AtlasViewportTokens.scrollbar-hit-width
-            : AtlasGrid.zero);
+            : AtlasGrid.zero));
         height: parent.height;
-        viewport-width: self.width;
-        viewport-height: max(self.height, root.content-height);
-        viewport-y: -min(root.maximum-y, max(AtlasGrid.zero, root.viewport-y));
+        content-width: root.horizontal-scroll-enabled ? max(self.width, root.content-width) : self.width;
+        content-height: root.vertical-scroll-enabled ? max(self.height, root.content-height) : self.height;
+        content-x: -min(root.maximum-x, max(AtlasGrid.zero, root.viewport-x));
+        content-y: -min(root.maximum-y, max(AtlasGrid.zero, root.viewport-y));
         interactive: root.enabled;
         flicked => {
-            root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, -self.viewport-y));
+            root.viewport-x = min(root.maximum-x, max(AtlasGrid.zero, -self.content-x));
+            root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, -self.content-y));
+            root.scrolled-x(root.viewport-x);
             root.scrolled(root.viewport-y);
         }
         @children
     }
 
-    if root.show-scrollbar && root.scrollable: AtlasScrollbar {
+    if root.show-scrollbar && root.maximum-y > AtlasGrid.zero: AtlasScrollbar {
         x: parent.width - AtlasViewportTokens.scrollbar-hit-width;
         height: parent.height;
         accessible-label: "Document scroll position";
@@ -50,20 +64,51 @@ export component AtlasScrollViewport inherits Rectangle {
         scroll-requested(offset) => { root.scroll-to(offset); }
     }
 
+    if root.show-horizontal-scrollbar && root.maximum-x > AtlasGrid.zero: AtlasHorizontalScrollbar {
+        y: parent.height - AtlasViewportTokens.scrollbar-hit-width;
+        width: flickable.width;
+        viewport-x: root.viewport-x;
+        maximum-x: root.maximum-x;
+        viewport-width: root.viewport-width;
+        content-width: root.content-width;
+        enabled: root.enabled;
+        scroll-requested(offset) => { root.scroll-to-x(offset); }
+    }
+
     keyboard := FocusScope {
         focus-on-tab-navigation: false;
         key-pressed(event) => {
             if (!root.enabled || !root.scrollable) { return reject; }
-            if (event.text == Key.PageDown) {
+            if (event.text == Key.PageDown && root.maximum-y > AtlasGrid.zero) {
                 root.scroll-to(root.viewport-y + root.height - AtlasViewportTokens.page-overlap);
                 return accept;
             }
-            if (event.text == Key.PageUp) {
+            if (event.text == Key.PageUp && root.maximum-y > AtlasGrid.zero) {
                 root.scroll-to(root.viewport-y - root.height + AtlasViewportTokens.page-overlap);
                 return accept;
             }
-            if (event.text == Key.Home) { root.scroll-to(AtlasGrid.zero); return accept; }
-            if (event.text == Key.End) { root.scroll-to(root.maximum-y); return accept; }
+            if (event.text == Key.LeftArrow && root.maximum-x > AtlasGrid.zero) {
+                root.scroll-to-x(root.viewport-x + (root.logical-direction == LogicalDirection.right-to-left
+                    ? root.viewport-width - AtlasViewportTokens.page-overlap
+                    : -root.viewport-width + AtlasViewportTokens.page-overlap));
+                return accept;
+            }
+            if (event.text == Key.RightArrow && root.maximum-x > AtlasGrid.zero) {
+                root.scroll-to-x(root.viewport-x + (root.logical-direction == LogicalDirection.right-to-left
+                    ? -root.viewport-width + AtlasViewportTokens.page-overlap
+                    : root.viewport-width - AtlasViewportTokens.page-overlap));
+                return accept;
+            }
+            if (event.text == Key.Home) {
+                if (root.maximum-y > AtlasGrid.zero) { root.scroll-to(AtlasGrid.zero); }
+                else { root.scroll-to-x(AtlasGrid.zero); }
+                return accept;
+            }
+            if (event.text == Key.End) {
+                if (root.maximum-y > AtlasGrid.zero) { root.scroll-to(root.maximum-y); }
+                else { root.scroll-to-x(root.maximum-x); }
+                return accept;
+            }
             return reject;
         }
     }
@@ -72,6 +117,29 @@ export component AtlasScrollViewport inherits Rectangle {
         root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, offset));
         root.scrolled(root.viewport-y);
     }
+
+    public function scroll-to-x(offset: length) {
+        root.viewport-x = min(root.maximum-x, max(AtlasGrid.zero, offset));
+        root.scrolled-x(root.viewport-x);
+    }
+
+    public function reveal-rect(left: length, top: length, width: length, height: length) {
+        if (root.horizontal-scroll-enabled) {
+            if (left < root.viewport-x) { root.scroll-to-x(left); }
+            else if (left + width > root.viewport-x + root.viewport-width) {
+                root.scroll-to-x(left + width - root.viewport-width);
+            }
+        }
+        if (root.vertical-scroll-enabled) {
+            if (top < root.viewport-y) { root.scroll-to(top); }
+            else if (top + height > root.viewport-y + root.viewport-height) {
+                root.scroll-to(top + height - root.viewport-height);
+            }
+        }
+    }
+
+    changed maximum-x => { root.viewport-x = min(root.maximum-x, max(AtlasGrid.zero, root.viewport-x)); }
+    changed maximum-y => { root.viewport-y = min(root.maximum-y, max(AtlasGrid.zero, root.viewport-y)); }
 
     public function focus-from-keyboard() { keyboard.focus(); }
 }

@@ -19,7 +19,8 @@ export component AtlasPanel inherits Surface {
 
 export component AtlasSelectField inherits Rectangle {
     in property <string> label; in property <string> value; in property <string> hint; in property <string> error;
-    in property <bool> enabled: true; in property <bool> required: false; callback activated();
+    in property <bool> enabled: true; in property <bool> required: false; in property <bool> expanded: false; callback activated();
+    public function focus-from-keyboard() { action.focus-from-keyboard(); }
     height: AtlasDensity.control-height + AtlasGrid.space-8 + (root.hint != "" || root.error != "" ? AtlasGrid.space-4 : AtlasGrid.zero);
     background: AtlasTheme.transparent; opacity: root.enabled ? 1 : 0.55;
     Rectangle { y: AtlasGrid.space-5; height: AtlasDensity.control-height; border-width: AtlasShape.border-width; border-color: root.error != "" ? AtlasTheme.danger : action.focused ? AtlasTheme.focus-ring : AtlasTheme.border-strong; border-radius: AtlasShape.radius-control; background: AtlasTheme.canvas;
@@ -28,7 +29,7 @@ export component AtlasSelectField inherits Rectangle {
     }
     Text { y: AtlasGrid.space-5 + AtlasDensity.control-height + AtlasGrid.space-2; width: parent.width; text: root.error != "" ? root.error : root.hint; color: root.error != "" ? AtlasTheme.danger : AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; }
     Text { x: AtlasGrid.space-1; y: AtlasGrid.zero; width: parent.width - AtlasGrid.space-2; height: AtlasGrid.space-5; text: root.label + (root.required ? " *" : ""); color: root.error != "" ? AtlasTheme.danger : AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-caption; vertical-alignment: center; }
-    accessible-role: AccessibleRole.combobox; accessible-label: root.label; accessible-value: root.value; accessible-expandable: true; accessible-enabled: root.enabled; accessible-action-default => { action.trigger(); }
+    accessible-role: AccessibleRole.combobox; accessible-label: root.label; accessible-value: root.value; accessible-expandable: true; accessible-expanded: root.expanded; accessible-enabled: root.enabled; accessible-action-default => { action.trigger(); }
     action := ActionArea { enabled: root.enabled; activated => { root.activated(); } }
 }
 
@@ -145,13 +146,14 @@ export component AtlasPagination inherits Rectangle {
 
 export component AtlasKeyValueList inherits Surface {
     in property <string> title; in property <[KeyValueItem]> items; in property <bool> compact: false;
+    in property <[length]> allocated-column-widths;
     height: (root.title == "" ? AtlasGrid.zero : AtlasDensity.row-height) + root.items.length * (root.compact ? AtlasGrid.space-12 : AtlasDensity.row-height);
     accessible-role: AccessibleRole.list; accessible-label: root.title; accessible-item-count: root.items.length;
     VerticalLayout { padding: AtlasGrid.space-3;
         if root.title != "": Text { height: AtlasDensity.row-height; text: root.title; color: AtlasTheme.content-primary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-title-small; font-weight: AtlasTypography.weight-bold; }
         for item[index] in root.items: HorizontalLayout { height: root.compact ? AtlasGrid.space-12 : AtlasDensity.row-height; spacing: AtlasGrid.space-3;
-            Text { text: item.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
-            Text { horizontal-stretch: 1; horizontal-alignment: right; text: item.value; color: item.tone == ValueTone.positive ? AtlasTheme.success : item.tone == ValueTone.negative ? AtlasTheme.danger : AtlasTheme.content-primary; font-family: item.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+            Text { min-width: root.allocated-column-widths.length == 2 ? root.allocated-column-widths[0] : AtlasGrid.zero; max-width: root.allocated-column-widths.length == 2 ? root.allocated-column-widths[0] : AtlasGrid.content-wide * 100; text: item.label; color: AtlasTheme.content-secondary; font-family: AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
+            Text { min-width: root.allocated-column-widths.length == 2 ? root.allocated-column-widths[1] : AtlasGrid.zero; max-width: root.allocated-column-widths.length == 2 ? root.allocated-column-widths[1] : AtlasGrid.content-wide * 100; horizontal-stretch: root.allocated-column-widths.length == 2 ? 0 : 1; horizontal-alignment: right; text: item.value; color: item.tone == ValueTone.positive ? AtlasTheme.success : item.tone == ValueTone.negative ? AtlasTheme.danger : AtlasTheme.content-primary; font-family: item.mono ? AtlasTypography.font-mono : AtlasTypography.font-sans; font-size: AtlasTypography.size-body-small; }
         }
     }
 }

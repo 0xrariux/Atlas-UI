@@ -52,6 +52,7 @@ export component AtlasSidebar inherits Rectangle {
             : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
         flex-direction: root.collapsed ? column : row;
         flex-wrap: no-wrap;
+        alignment: stretch;
         cross-axis-alignment: stretch;
         @children
     }
@@ -68,6 +69,7 @@ export component AtlasSwitcher inherits Rectangle {
             : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
         flex-direction: root.stacked ? column : row;
         flex-wrap: no-wrap;
+        alignment: stretch;
         cross-axis-alignment: stretch;
         @children
     }
@@ -75,10 +77,13 @@ export component AtlasSwitcher inherits Rectangle {
 
 export component AtlasAutoGrid inherits Rectangle {
     in property <length> reference-width: root.width;
+    // Bind to a parent-owned width when child preferred widths use item-basis.
+    // This breaks the intrinsic child → grid → parent measurement cycle.
+    in property <length> basis-width: root.width;
     in property <LayoutGap> gap: LayoutGap.normal;
     out property <int> column-count: root.reference-width < AtlasGrid.breakpoint-compact ? 1
         : root.reference-width < AtlasGrid.breakpoint-wide ? 2 : 3;
-    out property <length> item-basis: (root.width - (root.column-count - 1) * root.resolved-gap) / root.column-count;
+    out property <length> item-basis: (root.basis-width - (root.column-count - 1) * root.resolved-gap) / root.column-count;
     private property <length> resolved-gap: root.gap == LayoutGap.compact ? AtlasGrid.space-2
         : root.gap == LayoutGap.spacious ? AtlasGrid.space-6 : AtlasGrid.space-4;
     background: transparent;
@@ -86,6 +91,7 @@ export component AtlasAutoGrid inherits Rectangle {
         spacing: root.resolved-gap;
         flex-direction: row;
         flex-wrap: wrap;
+        alignment: stretch;
         cross-axis-alignment: stretch;
         @children
     }
@@ -110,6 +116,7 @@ export component AtlasColumnGrid inherits Rectangle {
         spacing: root.resolved-gap;
         flex-direction: row;
         flex-wrap: wrap;
+        alignment: stretch;
         cross-axis-alignment: stretch;
         @children
     }
@@ -138,9 +145,9 @@ export component AtlasGridItem inherits Rectangle {
             / max(1, root.columns))
         + max(0, root.active-span - 1) * root.resolved-gap;
 
-    flex-basis: max(AtlasGrid.zero, root.resolved-width);
-    flex-grow: 0;
-    flex-shrink: 0;
+    min-width: max(AtlasGrid.zero, root.resolved-width);
+    preferred-width: self.min-width;
+    max-width: self.min-width;
     background: transparent;
     @children
 }
@@ -188,6 +195,7 @@ export component AtlasSplitView inherits Rectangle {
         spacing: root.resolved-gap;
         flex-direction: root.stacked ? column : row;
         flex-wrap: no-wrap;
+        alignment: stretch;
         cross-axis-alignment: stretch;
         @children
     }
@@ -202,9 +210,14 @@ export component AtlasSplitPane inherits Rectangle {
     in property <bool> flexible: false;
     out property <length> resolved-extent: max(root.min-extent, min(root.max-extent, root.preferred-extent));
 
-    flex-basis: root.resolved-extent;
-    flex-grow: root.flexible ? 1 : 0;
-    flex-shrink: root.flexible ? 1 : 0;
+    // The parent can switch its main axis at a breakpoint. Keep the same
+    // requested extent available on either axis so stacked panes retain size.
+    min-width: root.flexible ? root.min-extent : root.resolved-extent;
+    min-height: root.flexible ? root.min-extent : root.resolved-extent;
+    preferred-width: root.resolved-extent;
+    preferred-height: root.resolved-extent;
+    horizontal-stretch: root.flexible ? 1 : 0;
+    vertical-stretch: root.flexible ? 1 : 0;
     background: transparent;
     clip: true;
     @children

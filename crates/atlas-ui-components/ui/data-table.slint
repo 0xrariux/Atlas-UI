@@ -11,24 +11,27 @@ import {
 import { BadgeTone } from "badge.slint";
 import { AtlasSkeleton, AtlasEmptyState, AtlasErrorState } from "data-states.slint";
 
-// Every header and body track uses this exact constraint adapter. Slint's box
-// allocator therefore receives the same preferred, minimum, maximum and grow
-// values for every track. The final track absorbs the allocator's deterministic
-// logical-pixel remainder. When minimums exceed the viewport, ListView exposes
-// horizontal scrolling instead of shrinking a track below its minimum.
+// Every header and body track uses this adapter. An optional host allocation
+// fixes widths identically for both; otherwise Slint receives the same
+// preferred, minimum, maximum, and grow constraints in every row.
 component DataColumnTrack inherits Rectangle {
     in property <DataColumn> column;
-    min-width: max(AtlasGrid.space-4, root.column.min-width);
-    preferred-width: max(
-        self.min-width,
-        root.column.max-width > AtlasGrid.zero
-            ? min(root.column.max-width, root.column.width)
-            : root.column.width
-    );
-    max-width: root.column.max-width > AtlasGrid.zero
-        ? max(self.min-width, root.column.max-width)
-        : AtlasGrid.content-wide * 100;
-    horizontal-stretch: max(0, root.column.grow);
+    in property <bool> has-allocation: false;
+    in property <length> allocated-width: AtlasGrid.zero;
+    min-width: root.has-allocation ? max(AtlasGrid.zero, root.allocated-width)
+        : max(AtlasGrid.space-4, root.column.min-width);
+    preferred-width: root.has-allocation ? self.min-width
+        : max(
+            self.min-width,
+            root.column.max-width > AtlasGrid.zero
+                ? min(root.column.max-width, root.column.width)
+                : root.column.width
+        );
+    max-width: root.has-allocation ? self.min-width
+        : root.column.max-width > AtlasGrid.zero
+            ? max(self.min-width, root.column.max-width)
+            : AtlasGrid.content-wide * 100;
+    horizontal-stretch: root.has-allocation ? 0 : max(0, root.column.grow);
 }
 
 component DataCellBadge inherits Rectangle {
@@ -142,8 +145,9 @@ component DataCellView inherits Rectangle {
 
     if root.cell.kind == DataCellKind.badge: Rectangle {
         x: root.padding-x;
-        y: (parent.height - AtlasGrid.space-6) / 2;
+        y: (parent.height - self.height) / 2;
         width: parent.width - root.padding-x * 2;
+        height: AtlasGrid.space-5;
         DataCellBadge {
             x: root.cell.alignment == DataCellAlignment.end ? parent.width - self.width
                 : root.cell.alignment == DataCellAlignment.center ? (parent.width - self.width) / 2
@@ -215,6 +219,7 @@ component DataCellView inherits Rectangle {
 
 export component AtlasDataTable inherits Rectangle {
     in property <[DataColumn]> columns;
+    in property <[length]> allocated-column-widths;
     in property <[DataRow]> rows;
     in property <DataViewState> state: DataViewState.ready;
     in property <SelectionMode> selection-mode: SelectionMode.single;
@@ -271,14 +276,17 @@ export component AtlasDataTable inherits Rectangle {
             clip: true;
             background: AtlasTheme.surface-raised;
             header-layout := HorizontalLayout {
-                x: table-list.viewport-x;
+                x: table-list.content-x;
                 width: max(self.min-width, parent.width);
                 height: parent.height;
                 padding-left: root.cell-padding-x;
                 padding-right: root.cell-padding-x;
                 spacing: root.column-gap;
-                for column in root.columns: DataColumnTrack {
+                for column[column-index] in root.columns: DataColumnTrack {
                     column: column;
+                    has-allocation: root.allocated-column-widths.length == root.columns.length;
+                    allocated-width: root.allocated-column-widths.length == root.columns.length
+                        ? root.allocated-column-widths[column-index] : AtlasGrid.zero;
                     Text {
                         x: AtlasGrid.zero;
                         width: parent.width - (column.resizable ? AtlasGrid.space-2 : AtlasGrid.zero);
@@ -319,11 +327,11 @@ export component AtlasDataTable inherits Rectangle {
 
         table-list := ListView {
             vertical-stretch: 1;
-            changed viewport-width => {
-                root.horizontal-overflow = self.viewport-width > self.visible-width;
+            changed content-width => {
+                root.horizontal-overflow = self.content-width > self.visible-width;
             }
             changed visible-width => {
-                root.horizontal-overflow = self.viewport-width > self.visible-width;
+                root.horizontal-overflow = self.content-width > self.visible-width;
             }
             for row[index] in root.rows: Rectangle {
                 min-width: row-layout.min-width;
@@ -347,6 +355,12 @@ export component AtlasDataTable inherits Rectangle {
                     spacing: root.column-gap;
                     for cell[cell-index] in row.cells: DataColumnTrack {
                         column: root.columns[cell-index];
+                        min-height: root.active-row-height;
+                        preferred-height: root.active-row-height;
+                        max-height: root.active-row-height;
+                        has-allocation: root.allocated-column-widths.length == root.columns.length;
+                        allocated-width: root.allocated-column-widths.length == root.columns.length
+                            ? root.allocated-column-widths[cell-index] : AtlasGrid.zero;
                         DataCellView {
                             width: parent.width;
                             height: parent.height;

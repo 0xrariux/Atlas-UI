@@ -46,7 +46,7 @@ pub fn preview_slint_path() -> PathBuf {
 }
 
 /// Returns the non-responsive preview Slint facade for tools that require a
-/// concrete path. This facade does not require experimental Slint features.
+/// concrete path. This facade excludes responsive preview contracts.
 #[must_use]
 pub fn preview_nonresponsive_slint_path() -> PathBuf {
     components::ui_path().join("preview-nonresponsive.slint")

@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "candidate_slint_version": "1.18.0",
+  "reference_slint_version": "1.17.1",
+  "renderer": "software",
+  "platform": "macos-arm64",
+  "scale_factor": 1,
+  "threshold": 0.002,
+  "review_status": "pending-human",
+  "scenarios": [
+    {
+      "id": "foundations.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02184568,
+      "mean_absolute_difference": 0.00608468,
+      "passed": false
+    },
+    {
+      "id": "foundations.light.normal.desktop",
+      "changed_pixel_ratio": 0.02173663,
+      "mean_absolute_difference": 0.00646481,
+      "passed": false
+    },
+    {
+      "id": "foundations.dark.compact.desktop",
+      "changed_pixel_ratio": 0.02184568,
+      "mean_absolute_difference": 0.00608468,
+      "passed": false
+    },
+    {
+      "id": "foundations.dark.comfortable.desktop",
+      "changed_pixel_ratio": 0.02184568,
+      "mean_absolute_difference": 0.00608468,
+      "passed": false
+    },
+    {
+      "id": "foundations.dark.normal.narrow",
+      "changed_pixel_ratio": 0.03276852,
+      "mean_absolute_difference": 0.00912702,
+      "passed": false
+    },
+    {
+      "id": "foundations.dark.normal.grid",
+      "changed_pixel_ratio": 0.0217284,
+      "mean_absolute_difference": 0.00579872,
+      "passed": false
+    },
+    {
+      "id": "interactions.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02187831,
+      "mean_absolute_difference": 0.00582025,
+      "passed": false
+    },
+    {
+      "id": "interactions.light.compact.reduced",
+      "changed_pixel_ratio": 0.02195899,
+      "mean_absolute_difference": 0.00620168,
+      "passed": false
+    },
+    {
+      "id": "components.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02262061,
+      "mean_absolute_difference": 0.00592513,
+      "passed": false
+    },
+    {
+      "id": "components.light.compact.reduced",
+      "changed_pixel_ratio": 0.02246589,
+      "mean_absolute_difference": 0.00560965,
+      "passed": false
+    },
+    {
+      "id": "navigation.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02442412,
+      "mean_absolute_difference": 0.0066971,
+      "passed": false
+    },
+    {
+      "id": "navigation.light.compact.reduced",
+      "changed_pixel_ratio": 0.02411472,
+      "mean_absolute_difference": 0.00593915,
+      "passed": false
+    },
+    {
+      "id": "data.dark.normal.desktop",
+      "changed_pixel_ratio": 0.01782294,
+      "mean_absolute_difference": 0.0050065,
+      "passed": false
+    },
+    {
+      "id": "data.light.compact.reduced",
+      "changed_pixel_ratio": 0.01815379,
+      "mean_absolute_difference": 0.00516778,
+      "passed": false
+    },
+    {
+      "id": "data.dark.normal.narrow",
+      "changed_pixel_ratio": 0.02812669,
+      "mean_absolute_difference": 0.0075005,
+      "passed": false
+    },
+    {
+      "id": "data-rich.dark.normal.1024",
+      "changed_pixel_ratio": 0.03047852,
+      "mean_absolute_difference": 0.00698798,
+      "passed": false
+    },
+    {
+      "id": "data-rich.light.comfortable.1440",
+      "changed_pixel_ratio": 0.0298341,
+      "mean_absolute_difference": 0.00637913,
+      "passed": false
+    },
+    {
+      "id": "data-rich.dark.normal.2880",
+      "changed_pixel_ratio": 0.0153287,
+      "mean_absolute_difference": 0.00304696,
+      "passed": false
+    },
+    {
+      "id": "data-rich.dark.normal.overflow",
+      "changed_pixel_ratio": 0.02360156,
+      "mean_absolute_difference": 0.00592467,
+      "passed": false
+    },
+    {
+      "id": "data-rich.light.compact.card",
+      "changed_pixel_ratio": 0.03576461,
+      "mean_absolute_difference": 0.00896419,
+      "passed": false
+    },
+    {
+      "id": "wave.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02496387,
+      "mean_absolute_difference": 0.00763036,
+      "passed": false
+    },
+    {
+      "id": "wave.light.compact.reduced",
+      "changed_pixel_ratio": 0.02379968,
+      "mean_absolute_difference": 0.0074154,
+      "passed": false
+    },
+    {
+      "id": "final.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02954733,
+      "mean_absolute_difference": 0.00831771,
+      "passed": false
+    },
+    {
+      "id": "final.light.compact.reduced",
+      "changed_pixel_ratio": 0.02981584,
+      "mean_absolute_difference": 0.00841514,
+      "passed": false
+    },
+    {
+      "id": "editorial.dark.normal.desktop",
+      "changed_pixel_ratio": 0.04148971,
+      "mean_absolute_difference": 0.01291276,
+      "passed": false
+    },
+    {
+      "id": "editorial.light.compact.narrow",
+      "changed_pixel_ratio": 0.05193673,
+      "mean_absolute_difference": 0.01584185,
+      "passed": false
+    },
+    {
+      "id": "icons.dark.normal.desktop",
+      "changed_pixel_ratio": 0.01166667,
+      "mean_absolute_difference": 0.00356795,
+      "passed": false
+    },
+    {
+      "id": "icons.light.compact.desktop",
+      "changed_pixel_ratio": 0.01178935,
+      "mean_absolute_difference": 0.00345264,
+      "passed": false
+    },
+    {
+      "id": "responsive.dark.normal.360",
+      "changed_pixel_ratio": 0.03509568,
+      "mean_absolute_difference": 0.01004409,
+      "passed": false
+    },
+    {
+      "id": "responsive.light.compact.720",
+      "changed_pixel_ratio": 0.01931481,
+      "mean_absolute_difference": 0.00583204,
+      "passed": false
+    },
+    {
+      "id": "responsive.dark.normal.1080",
+      "changed_pixel_ratio": 0.01371605,
+      "mean_absolute_difference": 0.00384587,
+      "passed": false
+    },
+    {
+      "id": "responsive.light.comfortable.1440",
+      "changed_pixel_ratio": 0.01028627,
+      "mean_absolute_difference": 0.00304467,
+      "passed": false
+    },
+    {
+      "id": "rich-content.dark.normal.desktop",
+      "changed_pixel_ratio": 0.03363148,
+      "mean_absolute_difference": 0.00937204,
+      "passed": false
+    },
+    {
+      "id": "rich-content.light.compact.narrow",
+      "changed_pixel_ratio": 0.11703333,
+      "mean_absolute_difference": 0.02756921,
+      "passed": false
+    },
+    {
+      "id": "media-states.dark.normal.desktop",
+      "changed_pixel_ratio": 0.0188713,
+      "mean_absolute_difference": 0.00587513,
+      "passed": false
+    },
+    {
+      "id": "media-states.light.compact.mobile",
+      "changed_pixel_ratio": 0.0437284,
+      "mean_absolute_difference": 0.01393383,
+      "passed": false
+    },
+    {
+      "id": "content-navigation.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02951111,
+      "mean_absolute_difference": 0.00804974,
+      "passed": false
+    },
+    {
+      "id": "content-navigation.light.compact.mobile",
+      "changed_pixel_ratio": 0.06915432,
+      "mean_absolute_difference": 0.01845113,
+      "passed": false
+    },
+    {
+      "id": "destination-policy.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02469033,
+      "mean_absolute_difference": 0.0065669,
+      "passed": false
+    },
+    {
+      "id": "destination-policy.light.compact.mobile",
+      "changed_pixel_ratio": 0.05762963,
+      "mean_absolute_difference": 0.01517463,
+      "passed": false
+    },
+    {
+      "id": "document-loading.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02428909,
+      "mean_absolute_difference": 0.00700543,
+      "passed": false
+    },
+    {
+      "id": "document-loading.light.compact.mobile",
+      "changed_pixel_ratio": 0.04391358,
+      "mean_absolute_difference": 0.01331251,
+      "passed": false
+    },
+    {
+      "id": "markdown-presentation.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02570782,
+      "mean_absolute_difference": 0.00841291,
+      "passed": false
+    },
+    {
+      "id": "markdown-presentation.light.compact.mobile",
+      "changed_pixel_ratio": 0.0673642,
+      "mean_absolute_difference": 0.02468137,
+      "passed": false
+    },
+    {
+      "id": "reference-system.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02015226,
+      "mean_absolute_difference": 0.00584407,
+      "passed": false
+    },
+    {
+      "id": "reference-system.light.compact.mobile",
+      "changed_pixel_ratio": 0.0313642,
+      "mean_absolute_difference": 0.00830946,
+      "passed": false
+    },
+    {
+      "id": "footnotes.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02332819,
+      "mean_absolute_difference": 0.00701028,
+      "passed": false
+    },
+    {
+      "id": "footnotes.light.compact.mobile",
+      "changed_pixel_ratio": 0.06461728,
+      "mean_absolute_difference": 0.01858028,
+      "passed": false
+    },
+    {
+      "id": "selection-copy.dark.normal.desktop",
+      "changed_pixel_ratio": 0.02024074,
+      "mean_absolute_difference": 0.0059807,
+      "passed": false
+    },
+    {
+      "id": "selection-copy.light.compact.mobile",
+      "changed_pixel_ratio": 0.04801852,
+      "mean_absolute_difference": 0.01300056,
+      "passed": false
+    },
+    {
+      "id": "settings-template.dark.normal.desktop",
+      "changed_pixel_ratio": 0.01085391,
+      "mean_absolute_difference": 0.00303513,
+      "passed": false
+    },
+    {
+      "id": "settings-template.light.compact.mobile",
+      "changed_pixel_ratio": 0.03151543,
+      "mean_absolute_difference": 0.00832676,
+      "passed": false
+    },
+    {
+      "id": "dashboard-template.dark.normal.desktop",
+      "changed_pixel_ratio": 0.01963889,
+      "mean_absolute_difference": 0.00538724,
+      "passed": false
+    },
+    {
+      "id": "dashboard-template.light.compact.mobile",
+      "changed_pixel_ratio": 0.20307407,
+      "mean_absolute_difference": 0.03635163,
+      "passed": false
+    },
+    {
+      "id": "documentation-shell.dark.normal.desktop",
+      "changed_pixel_ratio": 0.08761458,
+      "mean_absolute_difference": 0.0178854,
+      "passed": false
+    },
+    {
+      "id": "documentation-shell.light.compact.mobile-nav",
+      "changed_pixel_ratio": 0.00902778,
+      "mean_absolute_difference": 0.0020971,
+      "passed": false
+    },
+    {
+      "id": "documentation-keyboard.dark.normal.desktop",
+      "changed_pixel_ratio": 0.08902639,
+      "mean_absolute_difference": 0.01845678,
+      "passed": false
+    },
+    {
+      "id": "documentation-keyboard.light.compact.mobile-nav",
+      "changed_pixel_ratio": 0.00902778,
+      "mean_absolute_difference": 0.0020971,
+      "passed": false
+    },
+    {
+      "id": "documentation-keyboard.dark.normal.mobile-toc",
+      "changed_pixel_ratio": 0.07048438,
+      "mean_absolute_difference": 0.01203979,
+      "passed": false
+    },
+    {
+      "id": "documentation-scroll-sync.dark.normal.user",
+      "changed_pixel_ratio": 0.09109375,
+      "mean_absolute_difference": 0.01870874,
+      "passed": false
+    },
+    {
+      "id": "documentation-scroll-sync.light.compact.restore",
+      "changed_pixel_ratio": 0.14843576,
+      "mean_absolute_difference": 0.04091001,
+      "passed": false
+    },
+    {
+      "id": "documentation-viewport.dark.normal.desktop",
+      "changed_pixel_ratio": 0.06503125,
+      "mean_absolute_difference": 0.00992973,
+      "passed": false
+    },
+    {
+      "id": "documentation-viewport.light.compact.mobile",
+      "changed_pixel_ratio": 0.10217187,
+      "mean_absolute_difference": 0.0206623,
+      "passed": false
+    },
+    {
+      "id": "document-tools.dark.normal.palette",
+      "changed_pixel_ratio": 0.01266255,
+      "mean_absolute_difference": 0.00224246,
+      "passed": false
+    },
+    {
+      "id": "document-tools.light.compact.mobile",
+      "changed_pixel_ratio": 0.04254514,
+      "mean_absolute_difference": 0.01162479,
+      "passed": false
+    },
+    {
+      "id": "web-proof.dark.normal.360",
+      "changed_pixel_ratio": 0.17983025,
+      "mean_absolute_difference": 0.06513448,
+      "passed": false
+    },
+    {
+      "id": "web-proof.light.compact.720",
+      "changed_pixel_ratio": 0.17527932,
+      "mean_absolute_difference": 0.04584405,
+      "passed": false
+    },
+    {
+      "id": "web-proof.dark.normal.1080",
+      "changed_pixel_ratio": 0.12249588,
+      "mean_absolute_difference": 0.03390804,
+      "passed": false
+    },
+    {
+      "id": "web-proof.light.comfortable.1440",
+      "changed_pixel_ratio": 0.10403611,
+      "mean_absolute_difference": 0.02591003,
+      "passed": false
+    },
+    {
+      "id": "content-stress.dark.normal.360",
+      "changed_pixel_ratio": 0.05995556,
+      "mean_absolute_difference": 0.01798873,
+      "passed": false
+    },
+    {
+      "id": "content-stress.light.comfortable.1080",
+      "changed_pixel_ratio": 0.04184259,
+      "mean_absolute_difference": 0.01393151,
+      "passed": false
+    },
+    {
+      "id": "theme-runtime.system-dark.normal",
+      "changed_pixel_ratio": 0.01930434,
+      "mean_absolute_difference": 0.00549314,
+      "passed": false
+    },
+    {
+      "id": "theme-runtime.system-light.compact",
+      "changed_pixel_ratio": 0.02809211,
+      "mean_absolute_difference": 0.00752235,
+      "passed": false
+    },
+    {
+      "id": "layout-intrinsics.dark.normal.desktop",
+      "changed_pixel_ratio": 0.01909259,
+      "mean_absolute_difference": 0.00517366,
+      "passed": false
+    },
+    {
+      "id": "layout-intrinsics.light.compact.mobile",
+      "changed_pixel_ratio": 0.06184568,
+      "mean_absolute_difference": 0.01239635,
+      "passed": false
+    },
+    {
+      "id": "typography-stress.dark.large.desktop",
+      "changed_pixel_ratio": 0.03355556,
+      "mean_absolute_difference": 0.01207776,
+      "passed": false
+    },
+    {
+      "id": "typography-stress.light.compact.mobile",
+      "changed_pixel_ratio": 0.073,
+      "mean_absolute_difference": 0.0234858,
+      "passed": false
+    }
+  ]
+}

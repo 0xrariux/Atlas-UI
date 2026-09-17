@@ -1,5 +1,83 @@
 # Changelog
 
+## 0.2.0 — release candidate
+
+- Pins Slint and `slint-build` to 1.18.0 and resolves `const-field-offset`
+  0.2.1. The published Atlas 0.1.1 package remains on Slint 1.17.1.
+- Migrates Atlas responsive recipes and in-repo application templates to
+  stable upstream `FlexboxLayout`; all source facades now compile without
+  experimental Slint compiler features. Responsive Atlas contracts remain
+  preview.
+- Adapts native scroll internals to Slint's `content-*` properties while
+  preserving the public Atlas viewport contract.
+- Forwards `line-height-factor` and `max-lines` in `AtlasStyledText`,
+  `line-height-factor` in `AtlasSelectableText`, and `input-method-hints` in
+  `AtlasTextField`.
+- Corrects rich-text fragment spacing and repeated document-list row sizing
+  under Slint 1.18 measurement; adjusts the gallery list-grid layout for
+  larger typography.
+- Regenerates the agent API manifest and records the full 1.18 changelog
+  impact audit. All 77 macOS visual scenarios have new comparison captures;
+  their 1.17.1 reference baselines remain pending human review before update.
+- Adds a rendered Slint geometry fixture for responsive pane transitions,
+  nested grid columns, and repeated document rows under text/model mutations.
+- Adds runtime keyboard and pointer conformance checks for `ActionArea` and
+  `AtlasModal`. Explicit keyboard focus now keeps its visible indicator,
+  disabling an action clears its focus and pressed state without restoring
+  stale focus on reenable, and activation requires release of the same key
+  that was pressed.
+- Restores keyboard focus to zero-size overlay controllers under Slint 1.18,
+  adds menu arrow/Home/End and Enter/Space navigation, prevents activation of
+  disabled menu entries, and verifies menu/drawer dismissal and focus return.
+- Adds a runtime workspace-tab keyboard fixture covering roving arrows,
+  Home/End, activation, close settlement, and disabled-tab recovery. The stable
+  tab list now exposes `focus-index(index)` so hosts can focus an eligible tab
+  after their model changes.
+- Adds a nested modal/menu runtime fixture that verifies Escape unwinds one
+  overlay at a time and restores focus to the correct invoking control. The
+  preview modal frame and modal now expose `focus-on-open` so a host can give
+  a menu priority when both layers open in one update.
+- Adds a host-side logical-pixel overlay placement API with flip, shift,
+  viewport fallback, and invalid-anchor handling. `AtlasMenu` now emits
+  dismissal when its anchor becomes ineligible.
+- Adds preview `AtlasPopover` with a slotted panel, host-provided placement,
+  outside-click and Escape dismissal, anchor-loss handling, and focus return.
+- Adds preview `AtlasCombobox`, composing the select field and menu with
+  keyboard selection, expanded accessibility state, and disabled-anchor
+  dismissal. A three-layer modal/popover/menu fixture verifies focus unwinding.
+- Makes `AtlasTooltip` hide when its anchor becomes ineligible, including while
+  `force-open` is set.
+- Adds preview `AtlasRadioGroup` with controlled choice IDs, accessible radio
+  states, token styling, and host-selected roving focus around disabled items.
+- Verifies `AtlasMenu` inside `AtlasPopover` for outside-click and Escape
+  dismissal with one focus restoration.
+- Adds preview `AtlasAutocomplete`, composing the stable text field and preview
+  menu. Typing retains editor focus; arrow keys navigate suggestions, Enter
+  selects, and Escape or Tab closes the list. The host supplies query results
+  and handles selection. `AtlasMenu.focus-on-open` permits this composition.
+- Lets the host place combobox and autocomplete menus with component-local
+  `menu-x`/`menu-y` coordinates and mark their anchors ineligible. The menu
+  clamps its active index when items change; the combobox closes when its
+  options become empty. Both expose a controlled active index for model updates.
+- Adds a public Rust track allocator for deterministic min/preferred/max/grow
+  widths, overflow, and unused-space reporting. `AtlasDataTable` can consume
+  one host-provided width model for matching header and row tracks. Both native
+  gallery tables now calculate that model from their live width and columns.
+- Adds preview `AtlasContainer` with local content metrics and size class.
+  A Slint 1.18 runtime fixture confirms that `layout-order` changes visual
+  positions while keyboard Tab keeps declaration order. Another fixture covers
+  wrapped repeated grid rows and conditional spans through model mutations.
+- Extends the host allocator to gallery document tables and key/value lists,
+  with column resize overrides keyed by stable IDs. `AtlasAutoGrid.basis-width`
+  lets an intrinsically sized pane use a parent-owned width without a layout
+  cycle.
+- Adds explicit `AtlasEnvironment` forwarding through nested containers;
+  extends `AtlasScrollViewport` to controlled two-axis offsets, reveal requests,
+  horizontal scrollbar presentation, and logical-direction keyboard paging.
+- Bounds long menus and reveals their active item while scrolling. Adds Rust
+  collection identity, paging, grouping, cell projection, and incremental tree
+  projection adapters plus preview `AtlasTreeView` with ID-based intentions.
+
 ## 0.1.1 — 2026-09-04
 
 - Pins `tinyvec` to `1.12.0` in the published facade so fresh Slint `1.17.1`

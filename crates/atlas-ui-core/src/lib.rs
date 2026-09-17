@@ -2,6 +2,15 @@
 
 use std::path::{Path, PathBuf};
 
+/// Host-side collection identity, paging, and tree projection.
+pub mod collections;
+
+/// Host-side placement for anchored overlays.
+pub mod overlay;
+
+/// Deterministic host-side horizontal track allocation.
+pub mod tracks;
+
 /// Returns the directory containing the public Slint core facade.
 #[must_use]
 pub fn ui_path() -> PathBuf {

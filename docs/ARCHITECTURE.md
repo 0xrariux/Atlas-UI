@@ -3,8 +3,6 @@
 Atlas is a Rust workspace divided by responsibility. A lower layer never
 depends on a higher layer, and dependency cycles are forbidden.
 
-![Atlas UI architecture showing the dependency flow from tokens, core, icons, and components to applications and the gallery; document and testing support layers; and Slint as the common foundation.](../assets/architecture/atlas-ui-layer-diagram.png)
-
 ## 1. Tokens — `atlas-ui-tokens`
 
 The first layer contains atomic visual decisions: semantic palette, themes, a
@@ -30,12 +28,11 @@ This layer composes tokens, core, and icons into the user-facing API. It
 contains controls, navigation, data presentation, editorial content,
 documentation, and templates. Four facades define the contract:
 
-- `stable.slint`: 58 symbols guaranteed by SemVer in the current `v0.1.1`
-  source;
-- `preview-nonresponsive.slint`: 80 evolving symbols without experimental
-  Slint dependencies;
-- `preview.slint`: 122 evolving symbols, plus compatibility re-exports for
-  contracts promoted from preview; it also loads responsive contracts;
+- `stable.slint`: SemVer-governed symbols;
+- `preview-nonresponsive.slint`: evolving controls without responsive layout
+  imports;
+- `preview.slint`: the complete evolving surface, plus compatibility
+  re-exports for promoted contracts; it also loads responsive contracts;
 - `components.slint`: stable-plus-preview compatibility aggregate, which also
   loads responsive contracts.
 
@@ -94,12 +91,8 @@ callbacks are intentions that the host validates and returns as controlled state
 The companion [`template-atlas`](https://github.com/0xrariux/template-atlas)
 repository contains native Slint + Atlas consumers for Command, Forge, Fleet,
 and Ledger, together with rendered previews and deterministic capture tooling.
-The dependency direction is one way:
-
-```text
-template-atlas applications -> Atlas public facades
-Atlas                         -X-> template-atlas product code
-```
+Template applications consume Atlas public facades. Atlas does not depend on
+their product code.
 
 The four applications provide cross-theme validation evidence; their product
 colors, fixed shell geometry, typography choices, and domain components do not

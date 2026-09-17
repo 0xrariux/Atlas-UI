@@ -2091,6 +2091,9 @@ impl SearchIndex {
     /// Searches all terms with stable score and route ordering.
     #[must_use]
     pub fn search(&self, query: &str, limit: usize) -> Vec<SearchResult> {
+        if limit == 0 {
+            return Vec::new();
+        }
         let query_terms = tokenize(query);
         if query_terms.is_empty() {
             return Vec::new();
@@ -2103,8 +2106,17 @@ impl SearchIndex {
                 }
             }
         }
-        let mut results = scores
+        let mut matches = scores.into_iter().collect::<Vec<_>>();
+        matches.sort_by(|(left_index, left_score), (right_index, right_score)| {
+            right_score.cmp(left_score).then_with(|| {
+                self.documents[*left_index]
+                    .route
+                    .cmp(&self.documents[*right_index].route)
+            })
+        });
+        matches
             .into_iter()
+            .take(limit)
             .map(|(index, score)| {
                 let document = &self.documents[index];
                 SearchResult {
@@ -2115,15 +2127,7 @@ impl SearchIndex {
                     score,
                 }
             })
-            .collect::<Vec<_>>();
-        results.sort_by(|left, right| {
-            right
-                .score
-                .cmp(&left.score)
-                .then_with(|| left.route.cmp(&right.route))
-        });
-        results.truncate(limit);
-        results
+            .collect()
     }
 }
 
@@ -2832,6 +2836,41 @@ mod tests {
             keywords: "dark light".into(),
         }];
         assert_eq!(match_commands(&commands, "dark", 5)[0].id, "theme");
+    }
+
+    #[test]
+    fn search_limits_ranked_results_before_building_excerpts() {
+        let index = SearchIndex::build(vec![
+            SearchDocument {
+                route: "/z".into(),
+                title: "Keyboard".into(),
+                section: "Reference".into(),
+                body: "keyboard basics".into(),
+            },
+            SearchDocument {
+                route: "/a".into(),
+                title: "Keyboard".into(),
+                section: "Reference".into(),
+                body: "keyboard accessibility".into(),
+            },
+            SearchDocument {
+                route: "/b".into(),
+                title: "Keyboard".into(),
+                section: "Reference".into(),
+                body: "keyboard accessibility".into(),
+            },
+        ]);
+        assert!(index.search("keyboard accessibility", 0).is_empty());
+        let results = index.search("keyboard accessibility", 2);
+        assert_eq!(
+            results
+                .iter()
+                .map(|result| result.route.as_str())
+                .collect::<Vec<_>>(),
+            vec!["/a", "/b"]
+        );
+        assert_eq!(results[0].score, 2);
+        assert_eq!(results[0].excerpt, "keyboard accessibility");
     }
 
     #[test]

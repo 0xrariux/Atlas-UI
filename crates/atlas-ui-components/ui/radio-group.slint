@@ -1,0 +1,101 @@
+import { AtlasTheme, AtlasGrid, AtlasShape, AtlasTypography, AtlasDensity } from "@atlas-ui-tokens/tokens.slint";
+import { ActionArea, FocusRing } from "@atlas-ui-core/stable.slint";
+
+export struct RadioChoice { id: string, label: string, enabled: bool }
+
+// Controlled selection with one eligible tab stop and host-selected roving
+// focus. The host resolves disabled items after navigation-requested().
+export component AtlasRadioGroup inherits Rectangle {
+    in property <string> label;
+    in property <[RadioChoice]> choices;
+    in property <string> selected-id;
+    in property <bool> enabled: true;
+    in-out property <int> active-index: 0;
+    out property <int> focused-index: focused-row;
+    callback selection-requested(string /* choice ID */);
+    callback navigation-requested(int /* -2 first, -1 previous, 1 next, 2 last */);
+    private property <int> focus-request-epoch: 0;
+    private property <int> focused-row: -1;
+
+    height: AtlasGrid.space-5 + root.choices.length * AtlasDensity.row-height;
+    background: AtlasTheme.transparent;
+    accessible-role: AccessibleRole.radio-group;
+    accessible-label: root.label;
+    accessible-enabled: root.enabled;
+    accessible-item-count: root.choices.length;
+
+    public function focus-index(index: int) {
+        if (index < 0 || index >= root.choices.length || !root.enabled || !root.choices[index].enabled) { return; }
+        root.active-index = index;
+        root.focus-request-epoch += 1;
+    }
+
+    Text {
+        height: AtlasGrid.space-5;
+        text: root.label;
+        color: AtlasTheme.content-secondary;
+        font-family: AtlasTypography.font-sans;
+        font-size: AtlasTypography.size-caption;
+        accessible-role: AccessibleRole.none;
+    }
+
+    for choice[index] in root.choices: Rectangle {
+        y: AtlasGrid.space-5 + index * AtlasDensity.row-height;
+        height: AtlasDensity.row-height;
+        background: AtlasTheme.transparent;
+        opacity: root.enabled && choice.enabled ? 1 : 0.55;
+        accessible-role: AccessibleRole.radio-button;
+        accessible-label: choice.label;
+        accessible-enabled: root.enabled && choice.enabled;
+        accessible-checkable: true;
+        accessible-checked: root.selected-id == choice.id;
+        accessible-item-index: index;
+        accessible-action-default => {
+            if (root.enabled && choice.enabled) { root.selection-requested(choice.id); }
+        }
+        private property <int> focus-epoch: root.focus-request-epoch;
+        changed focus-epoch => {
+            if (root.active-index == index && root.enabled && choice.enabled) {
+                action.focus-from-keyboard();
+            }
+        }
+
+        circle := Rectangle {
+            x: AtlasGrid.space-2;
+            y: (parent.height - self.height) / 2;
+            width: AtlasGrid.space-5;
+            height: AtlasGrid.space-5;
+            border-width: AtlasShape.border-width;
+            border-color: root.selected-id == choice.id ? AtlasTheme.info : AtlasTheme.border-strong;
+            border-radius: AtlasShape.radius-round;
+            background: AtlasTheme.canvas;
+            Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: AtlasGrid.space-2;
+                height: AtlasGrid.space-2;
+                border-radius: AtlasShape.radius-round;
+                background: root.selected-id == choice.id ? AtlasTheme.info : AtlasTheme.transparent;
+            }
+        }
+        Text {
+            x: AtlasGrid.space-10;
+            width: parent.width - AtlasGrid.space-10;
+            height: parent.height;
+            text: choice.label;
+            color: AtlasTheme.content-primary;
+            font-family: AtlasTypography.font-sans;
+            font-size: AtlasTypography.size-body-small;
+            vertical-alignment: center;
+        }
+        FocusRing { active: action.focus-visible; }
+        action := ActionArea {
+            enabled: root.enabled && choice.enabled;
+            focus-on-tab-navigation: root.active-index == index;
+            focus-entered(_) => { root.focused-row = index; }
+            focus-left => { if (root.focused-row == index) { root.focused-row = -1; } }
+            activated => { root.selection-requested(choice.id); }
+            navigation-requested(direction) => { root.navigation-requested(direction); }
+        }
+    }
+}

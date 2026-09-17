@@ -40,8 +40,9 @@ For every candidate Slint release, Atlas follows this process:
 
 An experimental Slint feature never enters Atlas's stable facade directly. It
 remains behind a preview wrapper or a replaceable Atlas implementation.
-`FlexboxLayout` in Slint 1.17.1 illustrates this rule: recipes that depend on it
-remain in preview.
+`FlexboxLayout` was experimental in Slint 1.17.1 and became stable in 1.18.0.
+Atlas keeps its responsive recipes in preview until their own contracts and
+visual evidence justify promotion.
 
 ## Licenses
 

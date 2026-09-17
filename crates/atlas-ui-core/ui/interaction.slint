@@ -1,3 +1,5 @@
+import { AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+
 // Shared behavior layer for every control that can be focused or activated.
 // Visual components consume these observable states and keep their own styling.
 export component ActionArea inherits Rectangle {
@@ -13,8 +15,8 @@ export component ActionArea inherits Rectangle {
     out property <bool> pointer-pressed: pointer.pressed && root.enabled;
     out property <bool> keyboard-pressed: key-active && root.enabled;
     out property <bool> pressed: root.pointer-pressed || root.keyboard-pressed;
-    out property <bool> focused: focus.has-focus;
-    out property <bool> focus-visible: focus.has-focus && keyboard-modality;
+    out property <bool> focused: focus.has-focus && root.enabled;
+    out property <bool> focus-visible: root.focused && keyboard-modality;
     out property <bool> disabled: !root.enabled;
 
     callback activated();
@@ -26,30 +28,47 @@ export component ActionArea inherits Rectangle {
     callback removal-requested();
 
     private property <bool> keyboard-modality: false;
+    private property <bool> keyboard-focus-requested: false;
     private property <bool> key-active: false;
+    private property <string> active-key: "";
 
     background: transparent;
 
     public function focus-from-keyboard() {
-        keyboard-modality = true;
+        if (!root.enabled) { return; }
+        keyboard-focus-requested = true;
         focus.focus();
+        keyboard-modality = true;
+        keyboard-focus-requested = false;
+    }
+
+    changed enabled => {
+        if (!root.enabled) {
+            root.key-active = false;
+            root.active-key = "";
+            focus.clear-focus();
+        }
     }
 
     focus := FocusScope {
-        enabled: root.enabled;
+        // Keep the scope clearable while the public action becomes disabled.
+        enabled: true;
         focus-on-click: false;
-        focus-on-tab-navigation: root.focus-on-tab-navigation;
+        focus-on-tab-navigation: root.enabled && root.focus-on-tab-navigation;
         accessible-role: AccessibleRole.none;
 
         focus-gained(reason) => {
-            root.keyboard-modality = reason == FocusReason.tab-navigation;
+            root.keyboard-modality = root.keyboard-focus-requested
+                || reason == FocusReason.tab-navigation;
             root.focus-entered(root.keyboard-modality);
         }
         focus-lost(_) => {
             root.key-active = false;
+            root.active-key = "";
             root.focus-left();
         }
         key-pressed(event) => {
+            if (!root.enabled) { return reject; }
             root.keyboard-modality = true;
             if (root.contained-focus && event.text == Key.Escape) {
                 root.dismiss-requested();
@@ -75,14 +94,16 @@ export component ActionArea inherits Rectangle {
             if (event.text == Key.End) { root.navigation-requested(2); return accept; }
             if (root.enabled && (event.text == Key.Return || event.text == Key.Space)) {
                 root.key-active = true;
+                root.active-key = event.text;
                 return accept;
             }
             return reject;
         }
         key-released(event) => {
             if (root.enabled && root.key-active
-                    && (event.text == Key.Return || event.text == Key.Space)) {
+                    && event.text == root.active-key) {
                 root.key-active = false;
+                root.active-key = "";
                 root.activated();
                 return accept;
             }
@@ -108,23 +129,51 @@ export component ActionArea inherits Rectangle {
 // maps traversal intents to concrete children and restores the invoking focus.
 export component OverlayFocusController inherits Rectangle {
     in property <bool> active: false;
+    in property <bool> directional-navigation: false;
     callback dismiss-requested();
     callback traverse-requested(bool /* backwards */);
+    callback navigation-requested(int /* -2 first, -1 previous, 1 next, 2 last */);
+    callback activation-requested();
     callback restore-focus-requested();
 
-    visible: false;
+    // Slint 1.18 removes focus from hidden items, so the focus scope must
+    // remain visible even though this controller paints and occupies nothing.
+    width: AtlasGrid.zero;
+    height: AtlasGrid.zero;
+    background: transparent;
 
     public function activate() { if (root.active) { scope.focus(); } }
+    public function clear() { scope.clear-focus(); }
     public function deactivate() { scope.clear-focus(); root.restore-focus-requested(); }
 
     scope := FocusScope {
-        enabled: root.active;
+        // An inactive scope remains clearable after its owner closes.
+        enabled: true;
         focus-on-tab-navigation: false;
         key-pressed(event) => {
+            if (!root.active) { return reject; }
             if (event.text == Key.Escape) { root.dismiss-requested(); return accept; }
             if (event.text == Key.Tab || event.text == Key.Backtab) {
                 root.traverse-requested(event.text == Key.Backtab || event.modifiers.shift);
                 return accept;
+            }
+            if (root.directional-navigation
+                    && (event.text == Key.LeftArrow || event.text == Key.UpArrow)) {
+                root.navigation-requested(-1); return accept;
+            }
+            if (root.directional-navigation
+                    && (event.text == Key.RightArrow || event.text == Key.DownArrow)) {
+                root.navigation-requested(1); return accept;
+            }
+            if (root.directional-navigation && event.text == Key.Home) {
+                root.navigation-requested(-2); return accept;
+            }
+            if (root.directional-navigation && event.text == Key.End) {
+                root.navigation-requested(2); return accept;
+            }
+            if (root.directional-navigation
+                    && (event.text == Key.Return || event.text == Key.Space)) {
+                root.activation-requested(); return accept;
             }
             return reject;
         }

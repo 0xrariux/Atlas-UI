@@ -1,0 +1,61 @@
+import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasSelectField } from "migration-wave.slint";
+import { AtlasMenu, MenuItem } from "menu.slint";
+
+// Controlled choice field with a keyboard-driven menu. The host owns option
+// identity and the selected value, and handles outside dismissal if needed.
+export component AtlasCombobox inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    in property <string> hint;
+    in property <string> error;
+    in property <[MenuItem]> options;
+    in property <bool> enabled: true;
+    in property <bool> anchor-eligible: true;
+    in property <bool> required: false;
+    in-out property <bool> open: false;
+    in-out property <int> active-index: 0;
+    in property <length> menu-x: AtlasGrid.zero;
+    in property <length> menu-y: selector.height - AtlasGrid.space-3;
+    callback selection-requested(string /* option ID */);
+    callback traversal-requested(bool /* backwards */);
+
+    background: AtlasTheme.transparent;
+    height: selector.height;
+
+    public function focus-from-keyboard() {
+        if (root.enabled && root.anchor-eligible) { selector.focus-from-keyboard(); }
+    }
+
+    selector := AtlasSelectField {
+        width: parent.width;
+        label: root.label;
+        value: root.value;
+        hint: root.hint;
+        error: root.error;
+        enabled: root.enabled;
+        required: root.required;
+        expanded: root.open && root.options.length > 0;
+        activated => { if (root.anchor-eligible && root.options.length > 0) { root.open = !root.open; } }
+    }
+    menu := AtlasMenu {
+        x: root.menu-x;
+        y: root.menu-y;
+        width: root.width;
+        open: root.open && root.options.length > 0;
+        anchor-eligible: root.enabled && root.anchor-eligible;
+        active-index <=> root.active-index;
+        items: root.options;
+        item-requested(id) => {
+            root.selection-requested(id);
+            root.open = false;
+        }
+        dismissed => { root.open = false; }
+        traversal-requested(backwards) => { root.traversal-requested(backwards); }
+        focus-restore-requested => {
+            if (root.enabled && root.anchor-eligible) { selector.focus-from-keyboard(); }
+        }
+    }
+    changed options => { if (root.open && root.options.length == 0) { root.open = false; } }
+    changed anchor-eligible => { if (root.open && !root.anchor-eligible) { root.open = false; } }
+}

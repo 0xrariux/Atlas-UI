@@ -9,8 +9,9 @@ export component AtlasTooltip inherits Rectangle {
     in property <TooltipTone> tone: TooltipTone.neutral;
     in property <TooltipPlacement> placement: TooltipPlacement.top;
     in property <bool> force-open: false;
+    in property <bool> anchor-eligible: true;
     in property <string> accessible-name: "More information";
-    out property <bool> open: root.force-open || action.hovered || action.focused;
+    out property <bool> open: root.anchor-eligible && (root.force-open || action.hovered || action.focused);
 
     width: AtlasGrid.space-5; height: AtlasGrid.space-5;
     border-width: AtlasShape.border-width; border-radius: AtlasShape.radius-round;
@@ -26,7 +27,7 @@ export component AtlasTooltip inherits Rectangle {
         font-weight: AtlasTypography.weight-bold; horizontal-alignment: center; vertical-alignment: center;
     }
     FocusRing { active: action.focus-visible; }
-    action := ActionArea { accessible-name: root.accessible-name; }
+    action := ActionArea { enabled: root.anchor-eligible; accessible-name: root.accessible-name; }
     if root.open: Rectangle {
         x: -(self.width - root.width) / 2;
         y: root.placement == TooltipPlacement.top ? -self.height - AtlasGrid.space-2 : root.height + AtlasGrid.space-2;

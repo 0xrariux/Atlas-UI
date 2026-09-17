@@ -54,7 +54,10 @@ export component AtlasRichText inherits Rectangle {
         for fragment in root.fragments: Rectangle {
             width: fragment.line-break-after
                 ? root.width
-                : min(label.preferred-width + (fragment.code ? AtlasGrid.space-3 : AtlasGrid.zero), root.width);
+                : min(label.preferred-width
+                    + (fragment.text.ends-with(" ")
+                        ? AtlasGrid.space-1 * AtlasTypography.scale-factor : AtlasGrid.zero)
+                    + (fragment.code ? AtlasGrid.space-3 : AtlasGrid.zero), root.width);
             height: max(AtlasTypography.line-body,
                 label.preferred-height + (fragment.code ? AtlasGrid.space-2 : AtlasGrid.zero));
             background: fragment.code ? AtlasTheme.surface-raised : AtlasTheme.transparent;
@@ -104,15 +107,15 @@ export component AtlasDocumentList inherits Rectangle {
     in property <string> accessible-name: "Document list";
     in property <bool> compact: false;
 
-    min-height: root.items.length * (root.compact ? AtlasGrid.space-8 : AtlasGrid.space-10);
+    min-height: max(root.items.length * (root.compact ? AtlasGrid.space-8 : AtlasGrid.space-10), rows.preferred-height);
     max-width: AtlasTypography.measure-readable;
     background: AtlasTheme.transparent;
     accessible-role: AccessibleRole.list;
     accessible-label: root.accessible-name;
-    VerticalLayout {
+    rows := VerticalLayout {
         spacing: root.compact ? AtlasGrid.space-1 : AtlasGrid.space-2;
         for item[index] in root.items: Rectangle {
-            height: root.compact ? AtlasGrid.space-8 : AtlasGrid.space-10;
+            height: max(root.compact ? AtlasGrid.space-8 : AtlasGrid.space-10, label.preferred-height);
             background: AtlasTheme.transparent;
             accessible-role: AccessibleRole.list-item;
             accessible-label: item.marker + " " + item.text;
@@ -126,7 +129,7 @@ export component AtlasDocumentList inherits Rectangle {
                 horizontal-alignment: right;
                 vertical-alignment: top;
             }
-            Text {
+            label := Text {
                 x: AtlasGrid.space-10; width: parent.width - AtlasGrid.space-10;
                 text: item.text;
                 color: AtlasTheme.content-primary;
@@ -356,7 +359,24 @@ component CalloutFrame inherits Rectangle {
     border-width: AtlasShape.border-width;
     border-color: AtlasTheme.border-subtle;
     border-radius: AtlasShape.radius-surface;
-    clip: true;
+    clip: false;
+    // Fill only the left rounded corner; the right corners keep the surface radius.
+    Rectangle {
+        x: AtlasGrid.zero; y: AtlasGrid.zero;
+        width: AtlasShape.radius-surface; height: parent.height;
+        background: AtlasTheme.surface;
+    }
+    Rectangle {
+        x: AtlasGrid.zero; y: AtlasGrid.zero;
+        width: AtlasShape.radius-surface; height: AtlasShape.border-width;
+        background: AtlasTheme.border-subtle;
+    }
+    Rectangle {
+        x: AtlasGrid.zero;
+        y: parent.height - AtlasShape.border-width;
+        width: AtlasShape.radius-surface; height: AtlasShape.border-width;
+        background: AtlasTheme.border-subtle;
+    }
     Rectangle {
         x: AtlasGrid.zero; y: AtlasGrid.zero;
         width: AtlasGrid.space-1; height: parent.height;
@@ -618,6 +638,7 @@ export struct DocumentTableRow { cells: [string] }
 
 export component AtlasDocumentTable inherits Rectangle {
     in property <[DocumentTableColumn]> columns;
+    in property <[length]> allocated-column-widths;
     in property <[DocumentTableRow]> rows;
     in property <string> accessible-name: "Documentation table";
     in property <length> row-height: AtlasGrid.space-10;
@@ -638,7 +659,8 @@ export component AtlasDocumentTable inherits Rectangle {
                 padding-left: AtlasGrid.space-4;
                 padding-right: AtlasGrid.space-4;
                 for column[index] in root.columns: Text {
-                    width: column.width;
+                    width: root.allocated-column-widths.length == root.columns.length
+                        ? root.allocated-column-widths[index] : column.width;
                     text: column.title;
                     color: AtlasTheme.content-primary;
                     font-family: AtlasTypography.font-sans;
@@ -657,7 +679,10 @@ export component AtlasDocumentTable inherits Rectangle {
                 padding-left: AtlasGrid.space-4;
                 padding-right: AtlasGrid.space-4;
                 for cell[index] in row.cells: Text {
-                    width: index < root.columns.length ? root.columns[index].width : AtlasGrid.column-min-width;
+                    width: index < root.columns.length
+                        ? (root.allocated-column-widths.length == root.columns.length
+                            ? root.allocated-column-widths[index] : root.columns[index].width)
+                        : AtlasGrid.column-min-width;
                     text: cell;
                     color: AtlasTheme.content-secondary;
                     font-family: AtlasTypography.font-sans;

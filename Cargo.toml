@@ -14,7 +14,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.92"
 license = "MIT"
@@ -24,8 +24,8 @@ publish = true
 
 [workspace.dependencies]
 image = { version = "=0.25.10", default-features = false, features = ["png"] }
-slint = "=1.17.1"
-slint-build = "=1.17.1"
+slint = "=1.18.0"
+slint-build = "=1.18.0"
 pulldown-cmark = "=0.13.4"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 regex = "1"

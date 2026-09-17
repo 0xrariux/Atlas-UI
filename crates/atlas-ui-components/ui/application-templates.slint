@@ -27,7 +27,7 @@ export component AtlasSettingsTemplate inherits Rectangle {
     accessible-role: AccessibleRole.main;
     accessible-label: root.title;
     ScrollView {
-        viewport-width: parent.width;
+        content-width: parent.width;
         VerticalLayout {
             width: parent.width;
             spacing: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
@@ -100,7 +100,7 @@ export component AtlasDashboardTemplate inherits Rectangle {
     accessible-role: AccessibleRole.main;
     accessible-label: root.title;
     ScrollView {
-        viewport-width: parent.width;
+        content-width: parent.width;
         VerticalLayout {
             width: parent.width - AtlasGrid.space-3;
             spacing: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
@@ -110,11 +110,11 @@ export component AtlasDashboardTemplate inherits Rectangle {
             AtlasButton { width: root.compact ? parent.width : AtlasGrid.column-min-width * 3; text: root.refreshing ? "Refreshing…" : "Refresh"; loading: root.refreshing; enabled: !root.refreshing; clicked => { root.refresh-requested(); } }
             metric-grid := AtlasAutoGrid {
                 height: root.compact
-                    ? root.metrics.length * (AtlasGrid.space-12 * 2 + AtlasGrid.space-4)
+                    ? root.metrics.length * (AtlasGrid.space-12 * 2 + AtlasGrid.space-8)
                     : AtlasGrid.space-12 * 3;
                 reference-width: root.reference-width; gap: LayoutGap.normal;
                 for metric in root.metrics: AtlasMetricCard {
-                    flex-basis: metric-grid.item-basis; flex-grow: 1;
+                    preferred-width: metric-grid.item-basis; horizontal-stretch: 1;
                     compact: root.compact;
                     label: metric.label; value: metric.value; meta: metric.meta; tone: metric.tone;
                     TouchArea { clicked => { root.metric-requested(metric.id); } }

@@ -237,6 +237,9 @@ export component AtlasWorkspaceTabList inherits Rectangle {
         root.focus-requested(root.active-index);
     }
 
+    // The host chooses an eligible index after disabling or replacing tabs.
+    public function focus-index(index: int) { root.move-to(index); }
+
     public function navigate(direction: int) {
         if (root.tab-count <= 0) { return; }
         if (direction == -2) { root.move-to(0); return; }

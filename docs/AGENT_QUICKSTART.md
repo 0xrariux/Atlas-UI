@@ -27,6 +27,10 @@ captured and inspected its rendered output.
 - Stable API: SemVer-governed.
 - Preview API: may change in a minor Atlas release.
 
+These values describe the published Atlas 0.1.1 release. The current source
+checkout pins Slint 1.18.0 and compiles responsive preview without an
+experimental compiler flag. Use path dependencies when consuming this checkout.
+
 Read `docs/COMPATIBILITY.md` before selecting a renderer or making a production
 platform-support claim. Cross-platform CI validates the code and contracts; it
 does not guarantee pixel-identical rendering on every deployment profile.

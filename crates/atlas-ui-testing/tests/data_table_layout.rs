@@ -1,100 +1,11 @@
-//! Deterministic geometry oracle for the shared Slint data-table track contract.
+//! Deterministic geometry contract for the public Atlas track allocator.
 
-#[derive(Clone, Copy, Debug)]
-struct ColumnConstraint {
-    preferred: u32,
-    minimum: u32,
-    maximum: u32,
-    grow: u32,
-}
+use atlas_ui_core::tracks::{
+    TrackAllocation, TrackAllocationError, TrackConstraint, allocate_tracks,
+};
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct Allocation {
-    widths: Vec<u32>,
-    offsets: Vec<u32>,
-    content_width: u32,
-    overflow: bool,
-}
-
-fn distribute_growth(widths: &mut [u32], columns: &[ColumnConstraint], mut remaining: u32) {
-    while remaining > 0 {
-        let eligible: Vec<usize> = columns
-            .iter()
-            .enumerate()
-            .filter_map(|(index, column)| {
-                (column.grow > 0 && widths[index] < column.maximum).then_some(index)
-            })
-            .collect();
-        if eligible.is_empty() {
-            break;
-        }
-        let total_grow: u32 = eligible.iter().map(|&index| columns[index].grow).sum();
-        let pass = remaining;
-        let mut consumed = 0;
-        for &index in &eligible {
-            let share = pass.saturating_mul(columns[index].grow) / total_grow;
-            let granted = share.min(columns[index].maximum - widths[index]);
-            widths[index] += granted;
-            consumed += granted;
-        }
-        remaining -= consumed;
-        if consumed == 0 || remaining > 0 {
-            for &index in eligible.iter().rev() {
-                let capacity = columns[index].maximum - widths[index];
-                let granted = capacity.min(remaining);
-                widths[index] += granted;
-                remaining -= granted;
-                if remaining == 0 {
-                    break;
-                }
-            }
-        }
-        if consumed == 0 && remaining > 0 {
-            break;
-        }
-    }
-}
-
-fn distribute_shrink(widths: &mut [u32], columns: &[ColumnConstraint], mut deficit: u32) {
-    while deficit > 0 {
-        let eligible: Vec<usize> = columns
-            .iter()
-            .enumerate()
-            .filter_map(|(index, column)| (widths[index] > column.minimum).then_some(index))
-            .collect();
-        if eligible.is_empty() {
-            break;
-        }
-        let total_capacity: u32 = eligible
-            .iter()
-            .map(|&index| widths[index] - columns[index].minimum)
-            .sum();
-        let pass = deficit;
-        let mut consumed = 0;
-        for &index in &eligible {
-            let capacity = widths[index] - columns[index].minimum;
-            let share = pass.saturating_mul(capacity) / total_capacity;
-            let removed = share.min(capacity);
-            widths[index] -= removed;
-            consumed += removed;
-        }
-        deficit -= consumed;
-        if consumed == 0 || deficit > 0 {
-            for &index in eligible.iter().rev() {
-                let capacity = widths[index] - columns[index].minimum;
-                let removed = capacity.min(deficit);
-                widths[index] -= removed;
-                deficit -= removed;
-                if deficit == 0 {
-                    break;
-                }
-            }
-        }
-        if consumed == 0 && deficit > 0 {
-            break;
-        }
-    }
-}
+type ColumnConstraint = TrackConstraint;
+type Allocation = TrackAllocation;
 
 fn allocate(
     viewport_width: u32,
@@ -102,38 +13,8 @@ fn allocate(
     column_gap: u32,
     columns: &[ColumnConstraint],
 ) -> Allocation {
-    let gap_width = column_gap * u32::try_from(columns.len().saturating_sub(1)).unwrap();
-    let chrome = horizontal_padding * 2 + gap_width;
-    let available = viewport_width.saturating_sub(chrome);
-    let minimum_total: u32 = columns.iter().map(|column| column.minimum).sum();
-    let overflow = minimum_total > available;
-    let target = if overflow { minimum_total } else { available };
-    let mut widths: Vec<u32> = columns
-        .iter()
-        .map(|column| column.preferred.clamp(column.minimum, column.maximum))
-        .collect();
-    let preferred_total: u32 = widths.iter().sum();
-    if preferred_total < target {
-        distribute_growth(&mut widths, columns, target - preferred_total);
-    } else if preferred_total > target {
-        distribute_shrink(&mut widths, columns, preferred_total - target);
-    }
-
-    let mut cursor = horizontal_padding;
-    let offsets = widths
-        .iter()
-        .map(|width| {
-            let offset = cursor;
-            cursor += width + column_gap;
-            offset
-        })
-        .collect();
-    Allocation {
-        widths,
-        offsets,
-        content_width: target + chrome,
-        overflow,
-    }
+    allocate_tracks(viewport_width, horizontal_padding, column_gap, columns)
+        .expect("valid data-table constraints")
 }
 
 fn access_matrix_columns() -> [ColumnConstraint; 5] {
@@ -248,4 +129,43 @@ fn access_matrix_has_zero_overlap_at_all_acceptance_widths() {
         assert_eq!(allocation.content_width, viewport);
         assert_no_overlap(&allocation, 12, 8);
     }
+}
+
+#[test]
+fn capped_tracks_report_unused_space_instead_of_fabricating_content_width() {
+    let columns = [ColumnConstraint {
+        preferred: 90,
+        minimum: 80,
+        maximum: 100,
+        grow: 1,
+    }];
+    let allocation = allocate(300, 10, 0, &columns);
+    assert_eq!(allocation.widths, [100]);
+    assert_eq!(allocation.content_width, 120);
+    assert_eq!(allocation.unused_width, 180);
+    assert!(!allocation.overflow);
+}
+
+#[test]
+fn invalid_and_unrepresentable_constraints_return_errors() {
+    let inverted = [ColumnConstraint {
+        preferred: 50,
+        minimum: 100,
+        maximum: 80,
+        grow: 1,
+    }];
+    assert_eq!(
+        allocate_tracks(300, 0, 0, &inverted),
+        Err(TrackAllocationError::InvalidConstraint(0))
+    );
+    let huge = [ColumnConstraint {
+        preferred: u32::MAX,
+        minimum: u32::MAX,
+        maximum: u32::MAX,
+        grow: 0,
+    }];
+    assert_eq!(
+        allocate_tracks(u32::MAX, 1, 0, &huge),
+        Err(TrackAllocationError::ArithmeticOverflow)
+    );
 }

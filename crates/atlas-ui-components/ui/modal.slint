@@ -11,6 +11,7 @@ export component AtlasModalFrame inherits Rectangle {
     in property <string> label;
     in property <string> description;
     in property <bool> contained: false;
+    in property <bool> focus-on-open: true;
     in property <length> panel-width: AtlasOverlayTokens.modal-width-normal;
     in property <length> panel-height: AtlasGrid.space-12 * 6;
     in property <length> horizontal-inset: AtlasGrid.space-6;
@@ -59,8 +60,8 @@ export component AtlasModalFrame inherits Rectangle {
         restore-focus-requested => { root.focus-restore-requested(); }
     }
     changed open => {
-        if (root.open) { focus-cycle.activate(); }
-        else { focus-cycle.deactivate(); }
+        if (root.open && root.focus-on-open) { focus-cycle.activate(); }
+        else if (!root.open) { focus-cycle.deactivate(); }
     }
 }
 
@@ -123,6 +124,6 @@ export component AtlasModal inherits AtlasModalFrame {
         }
     }
     changed open => {
-        if (root.open) { confirm-action.focus-from-keyboard(); }
+        if (root.open && root.focus-on-open) { confirm-action.focus-from-keyboard(); }
     }
 }

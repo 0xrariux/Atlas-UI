@@ -13,7 +13,7 @@ export component AtlasMetricCard inherits Surface {
     in property <bool> compact: false;
     in property <string> help-text;
 
-    height: root.compact ? AtlasGrid.space-12 * 2 : AtlasGrid.space-12 * 3;
+    height: root.compact ? AtlasGrid.space-12 * 2 + AtlasGrid.space-4 : AtlasGrid.space-12 * 3;
     raised: true;
     accessible-role: AccessibleRole.region;
     accessible-label: root.label;
@@ -22,8 +22,8 @@ export component AtlasMetricCard inherits Surface {
         : root.help-text == "" ? root.meta : root.meta + " " + root.help-text;
 
     VerticalLayout {
-        padding: AtlasGrid.space-4;
-        spacing: AtlasGrid.space-2;
+        padding: root.compact ? AtlasGrid.space-3 : AtlasGrid.space-4;
+        spacing: root.compact ? AtlasGrid.space-1 : AtlasGrid.space-2;
         Text {
             text: root.label;
             color: AtlasTheme.content-secondary;

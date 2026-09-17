@@ -6,9 +6,9 @@ For a quick task-oriented selection, especially from an AI agent, also see the
 The `v0.1.1` release exposes 97 components. Public classification is enforced
 by the `stable.slint` and `preview.slint` facades.
 Non-responsive preview contracts are also available from
-`preview-nonresponsive.slint` without experimental Slint features. The full
-`preview.slint` and `components.slint` aggregates both load the responsive
-module and therefore require `SLINT_ENABLE_EXPERIMENTAL_FEATURES=1`.
+`preview-nonresponsive.slint`. The full `preview.slint` and
+`components.slint` aggregates both load the responsive module. Under Slint
+1.18.0, neither requires experimental compiler features.
 
 ## Stable foundations
 
@@ -24,6 +24,19 @@ The following contracts are available from `stable.slint`:
 - editorial: `AtlasHeading`, `AtlasParagraph`, `AtlasStyledText`,
   `AtlasInlineCode`, `AtlasCodeBlock`, `AtlasBlockQuote`, `AtlasDivider`;
 - globals and types associated with themes, tokens, density, motion, and typography.
+
+With Slint 1.18.0, `AtlasHeading` and `AtlasParagraph` expose native
+`line-height-factor` and `max-lines` through their `Text` base. `AtlasStyledText`
+forwards both properties to its inner `Text`; `AtlasSelectableText` forwards
+`line-height-factor` to its multiline `TextInput`. Their defaults preserve the
+existing Atlas font metrics and rendering.
+
+`AtlasTextField.input-method-hints` forwards Slint 1.18.0 soft-keyboard hints to
+its `TextInput`. The host can request them for a field, while the selected
+platform input method decides whether to apply them.
+Its additive `suggestion-navigation` input and suggestion callbacks allow an
+overlay to handle arrow keys, Enter, Escape, and Tab while the editor retains
+focus. Leave the input false for ordinary fields.
 
 These 58 symbols—components, types, and globals combined—follow SemVer.
 
@@ -42,6 +55,9 @@ navigation through `AtlasWorkspaceTabList`; Enter and Space activate. Delete
 requests close when `closable` is true. Backspace is deliberately unclaimed.
 After the host accepts a close and updates its model, call
 `settle-after-close`; it focuses the new selected tab or the nearest survivor.
+If an active tab becomes disabled or the host replaces the model, choose an
+eligible surviving index and call `focus-index(index)`; the list clamps that
+index and emits `focus-requested(index)` for the host to focus its tab.
 Labels have a bounded width and elide; `overflowed` and `overflow-requested`
 let the host provide a menu without hidden model mutation.
 
@@ -96,6 +112,7 @@ Use `preview-nonresponsive.slint` for the interaction, grid-overlay, and scroll
 contracts below. Intrinsic, split, sticky, and responsive recipes are available
 only through the full `preview.slint` aggregate.
 
+- local content metrics: `AtlasContainer`, `ContainerSize`;
 - interaction: `ActionArea`, `OverlayFocusController`,
   `RovingFocusController`, `SelectionController`;
 - geometry: `LayoutGridOverlay`, `AtlasIntrinsicFrame`, `AtlasStickyRegion`;
@@ -143,12 +160,12 @@ scrollbar. For per-instance scrollbar colors or geometry inside an
 `AtlasViewportTokens.scrollbar-hit-width`, and bind one `AtlasScrollbar` to the
 same controlled offset.
 
-`AtlasAutoGrid` remains preview: its wrapping, basis, growth, and shrinkage
-depend on experimental `FlexboxLayout` in Slint 1.17.1. Stable consumers should
-choose a deterministic column count in application state and compose explicit
-`HorizontalLayout`/`VerticalLayout` groups. Promotion requires a stable Slint
-flex contract or a non-experimental Atlas implementation, breakpoint and nested
-overflow evidence, three-platform verification, and a clean stable consumer.
+`AtlasAutoGrid` remains preview while its wrapping, size constraints, and
+stretch behavior are validated on Slint 1.18.0. Stable consumers should choose
+a deterministic column count in application state and compose explicit
+`HorizontalLayout`/`VerticalLayout` groups. Promotion requires breakpoint and
+nested overflow evidence, three-platform verification, and a clean stable
+consumer.
 
 ## Preview navigation and overlays
 
@@ -166,6 +183,91 @@ high-level API; use `AtlasModalFrame` instead of rebinding those managed values
 when a product needs custom dialog anatomy. The frame exposes a child slot and
 `dismissed()`, `traversal-requested(bool)`, and
 `focus-restore-requested()` intentions.
+
+`AtlasMenu` accepts arrow and Home/End navigation, activates its current
+enabled entry with Enter or Space, dismisses with Escape, and reports Tab exit
+direction through `traversal-requested(bool)`. Disabled entries remain in the
+arrow sequence but cannot activate, following the
+[WAI-ARIA menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
+The host controls `open`, handles `dismissed()` and `item-requested(id)`, and
+restores its invoking focus when `focus-restore-requested()` fires. On Tab exit,
+the menu suppresses that restoration so the host can focus the next or previous
+control from `traversal-requested(bool)`. Slint 1.18
+does not expose menu-specific accessibility roles, so the current native
+semantics use list and list-item roles pending upstream support.
+Bind `anchor-eligible` to the invoking control's eligibility; the menu emits
+`dismissed()` when that anchor becomes ineligible. For host-side anchor
+collision and viewport placement, use the [overlay placement contract](OVERLAY_PLACEMENT.md).
+Set `focus-on-open: false` when a text editor must keep focus while controlling
+the menu through its public `navigate(direction)` and `activate-current()`
+functions.
+For outside-click dismissal, place `AtlasMenu` inside `AtlasPopover`, bind both
+`open` properties to the same host state, set the popover's `focus-on-open` to
+false, and close that state from either `dismissed()` callback. Wire only the
+menu's `focus-restore-requested()` to the invoker. This composition has a
+[software-window fixture](../crates/atlas-ui-testing/tests/menu_layer_runtime.rs).
+
+When opening a menu over `AtlasModalFrame` in one update, bind the modal's
+`focus-on-open` to `!menu-open` so the menu takes focus. The standard
+`AtlasModal` inherits this property. Wire the menu's
+`focus-restore-requested()` to the invoking control inside the modal, and the
+modal's restoration to the control outside it. The same focus return works
+when the modal and menu open in separate updates. Deeper stacks still require
+the host to define focus priority for each layer.
+
+`AtlasPopover` is a viewport-sized preview surface for custom anchored content.
+Set its `panel-x`, `panel-y`, `panel-width`, and `panel-height` from the host's
+placement result, and put content in its child slot. It emits `dismissed()` on
+Escape, an outside click when `dismiss-on-outside` is enabled, or loss of
+`anchor-eligible`. The host closes its controlled `open` state and handles
+`focus-restore-requested()` and `traversal-requested(bool)`. Use
+`focus-on-open: false` when a child or a higher overlay should own initial
+focus. The [placement guide](OVERLAY_PLACEMENT.md) defines the coordinate and
+recalculation contract.
+
+`AtlasTooltip` now accepts `anchor-eligible`. Bind it to the trigger's
+availability so hover, focus, and `force-open` cannot leave help visible after
+the trigger becomes ineligible.
+
+`AtlasCombobox` composes the preview `AtlasSelectField` and `AtlasMenu`. The
+host supplies `options`, a display `value`, and handles
+`selection-requested(option-id)`; the component owns its local `open` state.
+The field exposes its expanded state to accessibility services, while the menu
+handles arrow navigation, Enter/Space selection, Escape dismissal, and focus
+return to the field. Disabling the field closes an open menu. The host should
+handle outside dismissal when the choice list must close after a click
+elsewhere; this component does not install a window-wide pointer listener.
+Set `menu-x` and `menu-y` to the host's placement result converted to component
+coordinates; the default remains directly below the field. Bind
+`anchor-eligible` to the invoking control's lifecycle. The menu closes when
+options become empty, and its controlled `active-index` clamps to the remaining
+range when the model changes. The host can set that index after reordering to
+preserve its chosen item identity.
+
+`AtlasAutocomplete` composes `AtlasTextField` and `AtlasMenu` for a controlled
+`query` and host-provided `suggestions` (`MenuItem` entries). The host filters
+results in `query-changed(text)`, binds `open`, and handles
+`suggestion-requested(id)` by updating its selected value or query. The editor
+keeps focus while the list is open. Up/Down navigate entries, Enter selects the
+active enabled entry, Escape closes, and Tab/Shift+Tab close and emit
+`traversal-requested(backwards)`. Home/End remain available for caret movement.
+The root exposes combobox expanded accessibility state and contains a text
+input. Check screen-reader behavior on target platforms as part of the
+[manual template review](P0_2_MANUAL_REVIEW.md).
+`menu-x` and `menu-y` accept component-local placement coordinates, and
+`anchor-eligible` closes the list when the host invalidates its anchor.
+`active-index` is controlled so the host can preserve a suggestion ID when
+results are replaced or reordered. An empty suggestions list hides the menu
+while keeping `open` under host control for asynchronous results.
+
+`AtlasRadioGroup` accepts `RadioChoice` entries with stable IDs and a
+host-controlled `selected-id`. It emits `selection-requested(id)` on pointer,
+Enter, Space, or accessible activation. One enabled choice is a tab stop;
+`navigation-requested(direction)` asks the host to choose the next eligible
+index, then `focus-index(index)` moves focus. Disabled choices are rejected by
+`focus-index`. The host should update the active index after model mutations
+and keep `selected-id` valid for its model. Focus settles when Slint evaluates
+the changed binding in the next render cycle.
 
 Use `AtlasDrawer` for the standard title/body/actions anatomy. It inherits
 controlled `open`, `side`, `contained`, `dismiss-on-backdrop`, backdrop/panel
@@ -190,12 +292,19 @@ components are preview.
 The table supports virtualization, a sticky header, resizable columns,
 multi-selection, sorting, filtering, inline editing, contextual menus,
 expandable details, rich compound cells, and a compact responsive card mode.
-`DataColumn.width` is the preferred width; the shared track allocator clamps it
-to `min-width`/`max-width`, distributes remaining space by `grow`, and gives
-the deterministic rounding remainder to the final track. Header and row tracks
-share the same padding and gap inputs. If the sum of minimum widths is wider
-than the viewport, desktop mode preserves those minimums and enables horizontal
-scrolling. Domain operations remain in the Rust host.
+`DataColumn.width` is the preferred width. By default, matching header and row
+tracks give Slint the same min/preferred/max/grow constraints. For exact widths,
+the host calls the public Rust track allocator and supplies its result through
+`allocated-column-widths`; header and row tracks then use that one model.
+The allocator reports overflow and unused space, and rejects invalid ranges.
+See the [track allocation guide](TRACK_ALLOCATION.md) for coordinate and update
+rules. If minimum widths exceed the viewport, desktop mode preserves them and
+enables horizontal scrolling. Domain operations remain in the Rust host.
+
+`AtlasDocumentTable` and `AtlasKeyValueList` also accept an optional
+`allocated-column-widths` model. The gallery demonstrates all three consumer
+bindings and ID-keyed resize overrides. See the [P0 foundation guide](P0_FOUNDATIONS.md)
+for the explicit environment, two-axis viewport, and tree model contracts.
 
 `AtlasMetric` is the unframed label/value/metadata anatomy for metric strips,
 inspectors, and product-owned cards. It exposes semantic `ValueTone` plus
@@ -312,6 +421,10 @@ Decorative icons keep `decorative: true`. Informative standalone icons set
   `AtlasFootnoteReference`, `AtlasFootnoteList`;
 - tools: `AtlasAnchorAction`, `AtlasDocumentSearch`, `AtlasCommandPalette`;
 - shell: `AtlasDocumentationShell`, `AtlasThemeControl`.
+
+`AtlasDocumentList` measures wrapped item text when sizing each row and its
+minimum height. Give its enclosing panel enough room at larger typography
+scales so the full list remains visible.
 
 `AtlasLink` separates its label and directional icon with the shared
 control-gap token.

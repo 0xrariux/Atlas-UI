@@ -11,8 +11,14 @@ export component AtlasTextField inherits Rectangle {
     in property <bool> enabled: true;
     in property <bool> required: false;
     in property <bool> mono: false;
+    in property <InputMethodHints> input-method-hints;
+    in property <bool> suggestion-navigation: false;
     in property <string> automation-id;
     callback edited(string);
+    callback suggestion-navigation-requested(int /* -2 first, -1 previous, 1 next, 2 last */);
+    callback suggestion-accepted();
+    callback suggestion-dismiss-requested();
+    callback suggestion-traversal-requested(bool /* backwards */);
 
     out property <bool> invalid: root.error != "";
     out property <bool> focused: editor.has-focus;
@@ -21,6 +27,8 @@ export component AtlasTextField inherits Rectangle {
         + (root.hint != "" || root.invalid ? AtlasGrid.space-4 : AtlasGrid.zero);
     background: AtlasTheme.transparent;
     opacity: root.enabled ? 1 : 0.55;
+
+    public function focus-from-keyboard() { editor.focus(); }
 
     VerticalLayout {
         spacing: AtlasGrid.space-1;
@@ -48,6 +56,7 @@ export component AtlasTextField inherits Rectangle {
                 enabled: root.enabled;
                 read-only: !root.enabled;
                 single-line: true;
+                input-method-hints: root.input-method-hints;
                 color: root.enabled ? AtlasTheme.content-primary : AtlasTheme.content-disabled;
                 selection-foreground-color: AtlasTheme.canvas;
                 selection-background-color: AtlasTheme.content-accent;
@@ -57,7 +66,26 @@ export component AtlasTextField inherits Rectangle {
                 accessible-label: root.label;
                 accessible-description: root.invalid ? root.error : root.hint;
                 accessible-id: root.automation-id;
+                accessible-role: AccessibleRole.text-input;
                 edited => { root.edited(self.text); }
+                accepted => { if (root.suggestion-navigation) { root.suggestion-accepted(); } }
+                key-pressed(event) => {
+                    if (!root.suggestion-navigation) { return reject; }
+                    if (event.text == Key.DownArrow) {
+                        root.suggestion-navigation-requested(1); return accept;
+                    }
+                    if (event.text == Key.UpArrow) {
+                        root.suggestion-navigation-requested(-1); return accept;
+                    }
+                    if (event.text == Key.Escape) {
+                        root.suggestion-dismiss-requested(); return accept;
+                    }
+                    if (event.text == Key.Tab || event.text == Key.Backtab) {
+                        root.suggestion-traversal-requested(event.text == Key.Backtab || event.modifiers.shift);
+                        return reject;
+                    }
+                    return reject;
+                }
             }
             Text {
                 x: AtlasDensity.control-padding-x;

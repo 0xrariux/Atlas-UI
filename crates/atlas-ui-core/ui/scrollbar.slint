@@ -87,3 +87,71 @@ export component AtlasScrollbar inherits Rectangle {
         )));
     }
 }
+
+// Controlled horizontal rail for two-axis viewports. It remains an overlay so
+// showing one rail cannot trigger a cross-axis layout cycle with the other.
+export component AtlasHorizontalScrollbar inherits Rectangle {
+    in property <length> viewport-x: AtlasGrid.zero;
+    in property <length> maximum-x: max(AtlasGrid.zero, root.content-width - root.viewport-width);
+    in property <length> viewport-width: root.width;
+    in property <length> content-width: root.width;
+    in property <bool> enabled: true;
+    in property <length> horizontal-inset: AtlasGrid.space-1;
+    callback scroll-requested(length);
+
+    private property <length> effective-inset: min(root.horizontal-inset, root.width / 2);
+    private property <length> effective-viewport-x: min(root.maximum-x, max(AtlasGrid.zero, root.viewport-x));
+    private property <length> thumb-length: root.content-width <= AtlasGrid.zero
+        ? rail.width : min(rail.width, max(
+            AtlasViewportTokens.scrollbar-thumb-min-height,
+            rail.width * root.viewport-width / max(root.viewport-width, root.content-width)
+        ));
+    private property <length> thumb-travel: max(AtlasGrid.zero, rail.width - root.thumb-length);
+    private property <length> thumb-x: root.maximum-x > AtlasGrid.zero
+        ? root.effective-viewport-x / root.maximum-x * root.thumb-travel : AtlasGrid.zero;
+
+    height: AtlasViewportTokens.scrollbar-hit-width;
+    visible: root.maximum-x > AtlasGrid.zero;
+    background: AtlasTheme.transparent;
+    opacity: root.enabled ? 1 : AtlasControlTokens.disabled-opacity;
+    accessible-role: AccessibleRole.slider;
+    accessible-label: "Horizontal scroll position";
+    accessible-enabled: root.enabled;
+    accessible-value: root.effective-viewport-x / AtlasGrid.hairline;
+    accessible-value-minimum: 0;
+    accessible-value-maximum: root.maximum-x / AtlasGrid.hairline;
+    accessible-value-step: root.viewport-width / AtlasGrid.hairline;
+
+    rail := Rectangle {
+        x: root.effective-inset;
+        y: (parent.height - self.height) / 2;
+        width: max(AtlasGrid.zero, parent.width - root.effective-inset * 2);
+        height: AtlasViewportTokens.scrollbar-thumb-width;
+        border-radius: AtlasViewportTokens.scrollbar-corner-radius;
+        background: AtlasViewportTokens.scrollbar-track;
+        Rectangle {
+            x: root.thumb-x;
+            width: root.thumb-length;
+            height: parent.height;
+            border-radius: AtlasViewportTokens.scrollbar-corner-radius;
+            background: drag.pressed ? AtlasViewportTokens.scrollbar-thumb-active
+                : drag.has-hover ? AtlasViewportTokens.scrollbar-thumb-hover
+                : AtlasViewportTokens.scrollbar-thumb;
+            animate background { duration: AtlasMotion.fast; }
+        }
+    }
+    drag := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.scroll-to-position(self.mouse-x); }
+        moved => { root.scroll-to-position(self.mouse-x); }
+    }
+    function scroll-to-position(position: length) {
+        if (root.thumb-travel <= AtlasGrid.zero) { return; }
+        root.scroll-requested(min(root.maximum-x, max(
+            AtlasGrid.zero,
+            (position - root.effective-inset - root.thumb-length / 2)
+                / root.thumb-travel * root.maximum-x
+        )));
+    }
+}

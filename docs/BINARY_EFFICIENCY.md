@@ -35,6 +35,10 @@ atlas-ui = "=0.1.1"
 slint-build = "=1.17.1"
 ```
 
+The dependency snippet above targets published Atlas 0.1.1. The current
+source checkout uses Slint 1.18.0 and should be consumed through a path
+dependency until a matching package is published.
+
 Consumers import explicit symbols from the stable or preview facade:
 
 ```slint

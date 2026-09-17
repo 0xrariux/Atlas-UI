@@ -32,11 +32,11 @@ an absolute path for temporary local work. The path must point to the
 # Cargo.toml
 [dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui" }
-slint = "=1.17.1"
+slint = "=1.18.0"
 
 [build-dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui" }
-slint-build = "=1.17.1"
+slint-build = "=1.18.0"
 ```
 
 ```rust

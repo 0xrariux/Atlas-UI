@@ -274,15 +274,16 @@ export component AtlasDocumentationShell inherits Rectangle {
         x: root.main-x + AtlasGrid.space-2;
         y: topbar.height + AtlasGrid.space-12 + AtlasGrid.space-2;
         width: root.main-width - AtlasGrid.space-4;
-        height: parent.height - self.y - AtlasGrid.space-12 * 2 - AtlasGrid.space-2;
+        height: parent.height - self.y - AtlasGrid.space-12 * 2 - AtlasGrid.space-2 * 2;
         content-height: max(self.height, root.content-height);
         viewport-y <=> root.content-scroll-y;
         preview-scrollbar-active: root.preview-scrollbar-active;
         scrolled(offset) => { root.content-scrolled(offset); }
         content-layer := Rectangle {
             x: AtlasGrid.space-2;
+            y: AtlasGrid.space-3;
             width: parent.width - AtlasGrid.space-4;
-            height: max(scroll-viewport.height, root.content-height);
+            height: max(AtlasGrid.zero, max(scroll-viewport.height, root.content-height) - AtlasGrid.space-3 * 2);
             background: AtlasTheme.transparent;
             accessible-role: AccessibleRole.main;
             accessible-label: "Document content";
@@ -334,11 +335,20 @@ export component AtlasDocumentationShell inherits Rectangle {
         }
     }
 
+    Rectangle {
+        x: root.main-x;
+        y: parent.height - AtlasGrid.space-12 - AtlasGrid.space-3;
+        width: root.main-width;
+        height: AtlasShape.border-width;
+        background: AtlasTheme.border-subtle;
+        accessible-role: AccessibleRole.none;
+    }
+
     AtlasEdgeSurface {
         x: root.main-x; y: parent.height - AtlasGrid.space-12;
         width: root.main-width; height: AtlasGrid.space-12;
         background: AtlasTheme.canvas;
-        divider-edge: DividerEdge.top;
+        show-divider: false;
         accessible-role: AccessibleRole.navigation;
         accessible-label: "Documentation footer";
         if !root.compact: HorizontalLayout {

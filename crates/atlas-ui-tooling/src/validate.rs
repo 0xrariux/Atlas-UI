@@ -223,6 +223,7 @@ pub fn run(root: &Path, name: &str) -> Result {
 pub fn quality_gate(root: &Path) -> Result {
     run(root, "all")?;
     crate::manifest::run(root, &["--check".into()])?;
+    crate::evidence::run(root, true)?;
     crate::capture::run(root, &["--validate-only".into()])
 }
 

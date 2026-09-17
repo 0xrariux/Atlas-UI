@@ -27,15 +27,16 @@ assumed shared defect requires consensus across at least two batch captures.
 - `results/`: generated captures, ignored by Git;
 - `diffs/`: generated red-channel diffs, ignored by Git.
 
-The PNG in `baselines/` is the latest promoted reference after recapture and
-therefore shows the current final rendering to review. `results/` contains the
-most recent working capture, `diffs/` visualizes its difference from the
-baseline, and `reviews/` stores local Codex assessments. A recaptured baseline
-remains `pending-human` until explicitly approved.
+The PNGs in `baselines/` are the last approved Slint 1.17.1 references. They
+do not represent the current 1.18.0 rendering. `results/` contains the most
+recent working capture, `diffs/` visualizes its difference from the baseline,
+and `reviews/` stores local Codex assessments. A recaptured baseline remains
+`pending-human` until explicitly approved.
 
 ```bash
 cargo run -p atlas-ui-tooling -- capture-scenarios --validate-only
 cargo run -p atlas-ui-tooling -- capture-scenarios --scenario foundations.dark.normal.desktop
+cargo run -p atlas-ui-tooling -- capture-scenarios --continue-on-diff
 cargo run -p atlas-ui-tooling -- capture-scenarios --update-baselines
 cargo run -p atlas-ui-tooling -- capture-scenarios \
   --approve-baseline foundations.dark.normal.desktop \
@@ -45,3 +46,5 @@ cargo run -p atlas-ui-tooling -- capture-scenarios \
 
 Updating a baseline resets its approval to `pending-human`. A comparison is
 refused if identity or dimensions differ, even if the images look similar.
+`--continue-on-diff` captures every scenario and reports all mismatches before
+returning failure; it cannot be combined with `--update-baselines`.

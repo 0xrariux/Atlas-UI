@@ -9,6 +9,8 @@ export enum EditorialEmphasis { regular, emphasis, strong }
 
 export component AtlasStyledText inherits Rectangle {
     in property <string> text;
+    in property <float> line-height-factor: 1;
+    in property <int> max-lines: 0;
     in property <EditorialTone> tone: EditorialTone.primary;
     in property <EditorialEmphasis> emphasis: EditorialEmphasis.regular;
     in property <bool> underlined: false;
@@ -31,6 +33,8 @@ export component AtlasStyledText inherits Rectangle {
         font-weight: root.emphasis == EditorialEmphasis.strong
             ? AtlasTypography.weight-bold : AtlasTypography.weight-regular;
         font-italic: root.emphasis == EditorialEmphasis.emphasis;
+        line-height-factor: root.line-height-factor;
+        max-lines: root.max-lines;
         wrap: word-wrap;
     }
     if root.underlined: Rectangle {
@@ -85,6 +89,7 @@ export component AtlasParagraph inherits Text {
 
 export component AtlasSelectableText inherits Rectangle {
     in property <string> text;
+    in property <float> line-height-factor: 1;
     in property <string> selected-text;
     in property <int> selection-start;
     in property <int> selection-end;
@@ -119,6 +124,7 @@ export component AtlasSelectableText inherits Rectangle {
         selection-foreground-color: AtlasTheme.on-accent;
         font-family: AtlasTypography.font-sans;
         font-size: AtlasTypography.size-body;
+        line-height-factor: root.line-height-factor;
         wrap: word-wrap;
     }
     init => {

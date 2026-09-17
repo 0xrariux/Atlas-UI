@@ -8,15 +8,17 @@ Run commands from the workspace root:
 
 ```bash
 cargo run -p atlas-ui-tooling -- generate-agent-manifest --check
+cargo run -p atlas-ui-tooling -- component-evidence --check
 cargo run -p atlas-ui-tooling -- capture-scenarios --validate-only
 cargo run -p atlas-ui-tooling -- review-screenshots --dry-run
 cargo run -p atlas-ui-tooling -- measure-render-performance
 cargo run -p atlas-ui-tooling -- validate all
 ```
 
-The screenshot commands preserve the existing options, including `--scenario`,
+The screenshot commands include `--scenario`, `--continue-on-diff`,
 `--update-baselines`, `--approve-baseline`, `--reviewer`, `--note`, `--reset`,
-`--rerun-last-batch`, and `--batch-size`.
+`--rerun-last-batch`, and `--batch-size`. `--continue-on-diff` collects every
+visual mismatch before failing and leaves the reference images unchanged.
 
 The public quality gate remains the canonical entry point:
 
@@ -27,7 +29,8 @@ sh scripts/quality-gate.sh
 It runs Cargo formatting, compilation, Clippy, tests, public validation, package
 content checks, local Markdown-link validation, the Rust-only tooling invariant,
 optional local `ai/` data validation, source-derived agent-manifest validation,
-and capture-manifest validation. It deliberately does not launch 77 graphical
+[component evidence](COMPONENT_EVIDENCE.md), and capture-manifest validation.
+It deliberately does not launch 77 graphical
 captures.
 
 Before publishing a release, run the exhaustive gate on the reference computer:

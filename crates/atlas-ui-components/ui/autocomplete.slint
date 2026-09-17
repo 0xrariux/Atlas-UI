@@ -1,0 +1,80 @@
+import { AtlasTheme, AtlasGrid } from "@atlas-ui-tokens/tokens.slint";
+import { AtlasTextField } from "text-field.slint";
+import { AtlasMenu, MenuItem } from "menu.slint";
+
+// The host owns querying and results. Suggestions never take focus from the
+// editor, so users can continue typing while the list is open.
+export component AtlasAutocomplete inherits Rectangle {
+    in property <string> label;
+    in-out property <string> query;
+    in property <string> placeholder;
+    in property <string> hint;
+    in property <string> error;
+    in property <[MenuItem]> suggestions;
+    in property <bool> enabled: true;
+    in-out property <bool> open: false;
+    out property <bool> input-focused: editor.focused;
+    in-out property <int> active-index: 0;
+    in property <bool> anchor-eligible: true;
+    in property <length> menu-x: AtlasGrid.zero;
+    in property <length> menu-y: editor.height - AtlasGrid.space-3;
+    callback query-changed(string);
+    callback suggestion-requested(string /* suggestion ID */);
+    callback traversal-requested(bool /* backwards */);
+    private property <bool> restore-input-on-close: true;
+
+    background: AtlasTheme.transparent;
+    height: editor.height;
+    accessible-role: AccessibleRole.combobox;
+    accessible-label: root.label;
+    accessible-expandable: true;
+    accessible-expanded: root.open && root.suggestions.length > 0;
+
+    public function focus-from-keyboard() {
+        if (root.enabled && root.anchor-eligible) { editor.focus-from-keyboard(); }
+    }
+
+    editor := AtlasTextField {
+        width: parent.width;
+        label: root.label;
+        value <=> root.query;
+        placeholder: root.placeholder;
+        hint: root.hint;
+        error: root.error;
+        enabled: root.enabled;
+        suggestion-navigation: root.open && root.anchor-eligible && root.suggestions.length > 0;
+        edited(text) => { root.query-changed(text); }
+        suggestion-navigation-requested(direction) => { menu.navigate(direction); }
+        suggestion-accepted => { menu.activate-current(); }
+        suggestion-dismiss-requested => { root.open = false; }
+        suggestion-traversal-requested(backwards) => {
+            root.restore-input-on-close = false;
+            root.open = false;
+            root.traversal-requested(backwards);
+        }
+    }
+    menu := AtlasMenu {
+        x: root.menu-x;
+        y: root.menu-y;
+        width: root.width;
+        open: root.open && root.anchor-eligible && root.suggestions.length > 0;
+        focus-on-open: false;
+        anchor-eligible: root.enabled && root.anchor-eligible;
+        active-index <=> root.active-index;
+        items: root.suggestions;
+        item-requested(id) => {
+            root.suggestion-requested(id);
+            root.open = false;
+        }
+        dismissed => { root.open = false; }
+        focus-restore-requested => {
+            if (root.restore-input-on-close && root.enabled && root.anchor-eligible) {
+                editor.focus-from-keyboard();
+            }
+        }
+    }
+    changed open => {
+        if (root.open) { root.restore-input-on-close = true; }
+    }
+    changed anchor-eligible => { if (root.open && !root.anchor-eligible) { root.open = false; } }
+}

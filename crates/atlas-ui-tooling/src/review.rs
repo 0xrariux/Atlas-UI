@@ -117,7 +117,7 @@ pub fn run(root: &Path, args: &[String]) -> Result {
             ),
             ("state", scenario["fixture"].as_str().unwrap().into()),
             ("atlas_version", env!("CARGO_PKG_VERSION").into()),
-            ("slint_version", "1.17.1".into()),
+            ("slint_version", "1.18.0".into()),
             (
                 "metadata_json",
                 serde_json::to_string(&metadata["identity"])?,

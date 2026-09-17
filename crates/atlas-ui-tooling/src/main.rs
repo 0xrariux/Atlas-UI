@@ -1,6 +1,7 @@
 //! Native maintenance tooling for Atlas UI.
 
 mod capture;
+mod evidence;
 mod local;
 mod manifest;
 mod performance;
@@ -37,6 +38,7 @@ fn run() -> Result {
     let root = root()?;
     match command.as_str() {
         "capture-scenarios" => capture::run(&root, &rest),
+        "component-evidence" => evidence::run(&root, rest.iter().any(|arg| arg == "--check")),
         "generate-agent-manifest" => manifest::run(&root, &rest),
         "measure-render-performance" => performance::run(&root),
         "review-screenshots" => review::run(&root, &rest),
@@ -56,6 +58,6 @@ fn run() -> Result {
 
 fn print_help() {
     println!(
-        "Atlas UI native tooling\n\nCommands:\n  capture-scenarios\n  generate-agent-manifest\n  measure-render-performance\n  review-screenshots\n  validate <agent-evals|agent-kit|publication|links|rust-only|packages|local|all>\n  quality-gate\n  release-gate"
+        "Atlas UI native tooling\n\nCommands:\n  capture-scenarios\n  component-evidence [--check]\n  generate-agent-manifest\n  measure-render-performance\n  review-screenshots\n  validate <agent-evals|agent-kit|publication|links|rust-only|packages|local|all>\n  quality-gate\n  release-gate"
     );
 }

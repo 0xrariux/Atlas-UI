@@ -26,9 +26,9 @@ import { AtlasDataTable, AtlasModal } from "@atlas-ui/preview-nonresponsive.slin
 
 Use `@atlas-ui/preview.slint` only for responsive preview contracts. That
 compatibility facade and `@atlas-ui/components.slint` eagerly load
-`FlexboxLayout`, so they require `SLINT_ENABLE_EXPERIMENTAL_FEATURES=1` even
-when an import names only a non-responsive symbol. Do not mix maturity levels
-unless the consumer explicitly acknowledges its preview dependency.
+`FlexboxLayout`. With Slint 1.18.0, no experimental compiler flag is needed.
+Do not mix maturity levels unless the consumer explicitly acknowledges its
+preview dependency.
 
 ## Choose the scroll contract
 
@@ -100,9 +100,9 @@ independent of Cargo's package extraction layout.
 - `docs/AGENT_COMPONENT_INDEX.md`: lookup by need and component family;
 - `crates/atlas-ui-components/ui/stable.slint`: stable properties and types;
 - `crates/atlas-ui-components/ui/preview-nonresponsive.slint`: preview
-  contracts without experimental layout dependencies;
+  contracts without responsive layout dependencies;
 - `crates/atlas-ui-components/ui/preview.slint`: complete preview compatibility
-  aggregate, including experimental responsive contracts;
+  aggregate, including responsive recipes;
 - `examples/getting-started`: compiled integration;
 - `screenshots/scenarios.json`: addressable visual evidence.
 
