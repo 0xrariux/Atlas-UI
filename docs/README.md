@@ -53,6 +53,4 @@ For focused implementation work, see [P0 foundations](P0_FOUNDATIONS.md),
 [layout review](P0_1_MANUAL_REVIEW.md), [interaction review](P0_2_MANUAL_REVIEW.md),
 [track allocation](TRACK_ALLOCATION.md), [overlay placement](OVERLAY_PLACEMENT.md),
 [collection adapters](COLLECTION_ADAPTERS.md), and
-[binary efficiency](BINARY_EFFICIENCY.md). The
-[Talos consumer audit](TALOS_CONSUMER_GAP_AUDIT.md) records an earlier external
-integration review.
+[binary efficiency](BINARY_EFFICIENCY.md).
