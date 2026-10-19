@@ -17,17 +17,18 @@ slint-build = "=1.18.0"
 
 ## Local source checkout
 
-Place your application beside an Atlas `v0.2.2` checkout and adjust the path
-if your directories differ:
+The current source candidate pins Slint 1.18.1. Place your application beside
+that Atlas checkout and adjust the path if your directories differ. A checkout
+of the published `v0.2.2` tag instead requires the 1.18.0 pins shown above.
 
 ```toml
 [dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui", version = "=0.2.2" }
-slint = "=1.18.0"
+slint = "=1.18.1"
 
 [build-dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui", version = "=0.2.2" }
-slint-build = "=1.18.0"
+slint-build = "=1.18.1"
 ```
 
 Neither form needs an experimental Slint flag.

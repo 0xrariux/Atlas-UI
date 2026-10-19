@@ -12936,22 +12936,23 @@
     "ValueTone"
   ],
   "release_context": {
-    "api_state": "tagged-release",
+    "api_state": "unreleased-dependency-update",
     "published_release": {
       "counts": {
-        "components": 97,
-        "preview_symbols": 122,
+        "components": 103,
+        "preview_symbols": 134,
         "stable_symbols": 58,
-        "total_symbols": 180,
+        "total_symbols": 192,
         "visual_scenarios": 77
       },
-      "tag": "v0.1.1",
-      "version": "0.1.1"
+      "slint_version": "1.18.0",
+      "tag": "v0.2.2",
+      "version": "0.2.2"
     },
     "workspace_version": "0.2.2"
   },
   "schema_version": 2,
-  "slint_version": "1.18.0",
+  "slint_version": "1.18.1",
   "stable_components": [
     "AtlasBadge",
     "AtlasBlockQuote",

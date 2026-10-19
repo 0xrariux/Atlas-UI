@@ -2,7 +2,8 @@
 
 This page describes the Atlas-owned P0 work first reviewed in the `v0.2.0`
 source snapshot and published in `v0.2.2`. The exact Slint and `slint-build`
-pins are 1.18.0.
+pins in that release are 1.18.0. The current source candidate evaluates 1.18.1;
+see the [compatibility matrix](COMPATIBILITY.md) for its validation status.
 
 ## P0.1: measurement and tracks
 

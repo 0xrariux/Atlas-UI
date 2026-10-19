@@ -8,6 +8,10 @@ Atlas v0.2.2 requires Rust 1.92 and pins Slint 1.18.0. All facades compile
 without experimental Slint configuration. The 77 approved visual baselines
 cover the macOS arm64 software renderer with Slint 1.18.0.
 
+The current unreleased source candidate pins Slint and slint-build to 1.18.1.
+Local path consumers must match those pins. Consult docs/COMPATIBILITY.md for
+candidate evidence; published 0.2.2 packages retain their 1.18.0 dependencies.
+
 ## Start here
 
 - [README](README.md): vision, scope, maturity, and project positioning

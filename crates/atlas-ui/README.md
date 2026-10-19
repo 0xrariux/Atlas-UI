@@ -21,6 +21,9 @@ is macOS arm64 with Slint's software renderer at scale factor 1. The 77 Slint
 - [Companion template showcase](https://github.com/0xrariux/template-atlas)
 
 The `v0.2.2` tagged source and crates.io package use Slint `1.18.0`.
+The current unreleased source candidate pins Slint and `slint-build` to
+`1.18.1`; local path consumers must match those pins. Candidate validation is
+recorded in the compatibility matrix.
 The earlier `0.1.1` package and tag remain on Slint `1.17.1`.
 
 Use `atlas_ui::slint_library_paths()` from `build.rs`, then import stable Slint
