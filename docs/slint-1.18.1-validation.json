@@ -254,5 +254,20 @@
     "tag_created": false,
     "package_published": false,
     "new_human_baseline_approval_claimed": false
+  },
+  "msrv_validation": {
+    "status": "passed",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "profile": "macOS 26.5.1 arm64",
+    "source_commit": "776129452d4c88177937380b46a89b736d167479",
+    "command": "RUSTUP_TOOLCHAIN=1.92.0 CARGO_TARGET_DIR=target/msrv-1.92 CARGO_NET_OFFLINE=true sh scripts/quality-gate.sh",
+    "tests_passed": 121,
+    "tests_failed": 0,
+    "completed_test_suites": 30,
+    "format_check": "passed",
+    "workspace_all_targets": "passed",
+    "clippy_warnings_denied": "passed",
+    "contracts_and_packages": "passed",
+    "clean_target_directory": true
   }
 }

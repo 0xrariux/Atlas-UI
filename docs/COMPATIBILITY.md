@@ -19,8 +19,12 @@ at seven pixels above the comparison's channel tolerance, confined to its
 animated spinner. All four render budgets pass, and Command, Forge, Fleet and
 Ledger compile with matching pins in temporary source copies.
 
+The complete quality gate also passes all 121 tests with Rust 1.92.0 in a
+separate clean target directory on macOS arm64. CI uses `--locked` so every
+platform validates the reviewed dependency resolution.
+
 The baseline images and their original approval metadata are unchanged.
-Candidate hosted CI and a local Rust 1.92 run remain pending. These results do
+Candidate hosted CI remains pending. These results do
 not establish native accessibility, IME, touch, touchpad or another platform's
 behavior. The 97 external native captures were not rerun. See the
 [patch audit](SLINT_1_18_AUDIT.md#slint-1181-candidate-review-on-2026-10-19).

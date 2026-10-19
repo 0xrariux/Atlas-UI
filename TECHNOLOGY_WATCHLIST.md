@@ -21,6 +21,8 @@ records the affected Atlas contracts.
 Local validation passes 121 tests, all 77 visual comparisons, four render
 budgets and four temporary template consumers. The
 [validation record](docs/slint-1.18.1-validation.json) preserves the evidence.
+The complete quality gate also passes under Rust 1.92.0 on macOS arm64 in a
+separate clean target directory.
 Candidate hosted CI and native interaction/accessibility reviews remain
 separate work.
 
