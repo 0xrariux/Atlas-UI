@@ -2,7 +2,8 @@
 
 Start with the [repository README](../README.md) for the project and its
 current release status. The published v0.2.2 crate and tagged source use Slint
-1.18.0.
+1.18.0. The current source candidate evaluates Slint 1.18.1; its validation
+status is recorded in the compatibility matrix.
 
 ## Build an application
 

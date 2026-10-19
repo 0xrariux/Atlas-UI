@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-19",
+  "status": "local-validation-passed",
+  "branch": "chore/validate-slint-1.18.1",
+  "base_commit": "7656da59209de8f518936115cc9a843e068c5b55",
+  "atlas_workspace_version": "0.2.2",
+  "candidate_slint_version": "1.18.1",
+  "published_atlas_version": "0.2.2",
+  "published_atlas_slint_version": "1.18.0",
+  "profile": {
+    "os": "macOS",
+    "os_version": "26.5.1",
+    "architecture": "arm64",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "renderer": "software",
+    "scale_factor": 1,
+    "experimental_features_enabled": false
+  },
+  "dependencies": {
+    "changed_packages": [
+      {
+        "package": "i-slint-backend-linuxkms",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-backend-selector",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-backend-testing",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-backend-winit",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-common",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-compiler",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-core",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-core-macros",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-renderer-femtovg",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-renderer-skia",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "i-slint-renderer-software",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "slint",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "slint-build",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      },
+      {
+        "package": "slint-macros",
+        "from": "1.18.0",
+        "to": "1.18.1"
+      }
+    ],
+    "unrelated_package_versions_changed": false,
+    "const_field_offset_version": "0.2.1"
+  },
+  "api": {
+    "signatures_and_facades_unchanged": true,
+    "components": 103,
+    "stable_components": 26,
+    "preview_components": 77,
+    "preview_promotions": 0
+  },
+  "quality_gate": {
+    "command": "sh scripts/quality-gate.sh",
+    "status": "passed",
+    "tests_passed": 121,
+    "tests_failed": 0,
+    "completed_test_suites": 30,
+    "format_check": "passed",
+    "workspace_all_targets": "passed",
+    "clippy_warnings_denied": "passed",
+    "contracts_and_packages": "passed"
+  },
+  "visual_comparison": {
+    "command": "cargo run -p atlas-ui-tooling -- capture-scenarios --continue-on-diff",
+    "baseline_slint_version": "1.18.0",
+    "scenarios": 77,
+    "passed": 77,
+    "failed": 0,
+    "identical_png_sha256_count": 76,
+    "nonidentical_comparisons": [
+      {
+        "scenario": "wave.dark.normal.desktop",
+        "passed": true,
+        "width": 1080,
+        "height": 820,
+        "mean_absolute_difference": 6.8e-07,
+        "changed_pixel_ratio": 7.9e-06,
+        "threshold": 0.002
+      }
+    ],
+    "delta_inspection": {
+      "scenario": "wave.dark.normal.desktop",
+      "pixels_with_channel_delta_over_8": 7,
+      "bounding_box_inclusive": [
+        228,
+        473,
+        240,
+        479
+      ],
+      "location": "animated spinner",
+      "original_threshold_retained": true
+    },
+    "agent_inspected_scenarios": [
+      "wave.dark.normal.desktop",
+      "layout-intrinsics.light.compact.mobile"
+    ],
+    "baseline_images_unchanged": true,
+    "baseline_approval_metadata_unchanged": true,
+    "baseline_set_digest": "cd71467e3390117c6e9b973f0187a9e0c040c25ecb00beaab28bc961ada4b6c3",
+    "baseline_metadata_set_digest": "e85f1b6c98865ae822a96c645c4e13fff7703f04c6e28735744e62d1ff35ea4f"
+  },
+  "render_performance": {
+    "command": "cargo run -p atlas-ui-tooling -- measure-render-performance",
+    "status": "passed",
+    "profile": "macos-26.5.1-arm64-debug",
+    "compilation_included": false,
+    "interpretation": "Debug process startup and software snapshot including the configured 100 ms capture delay; not release frame-time benchmarks.",
+    "results": [
+      {
+        "id": "render-foundations-desktop",
+        "maximum_ms": 387.617083,
+        "median_limit_ms": 2000.0,
+        "median_ms": 386.461375,
+        "minimum_ms": 386.316666,
+        "p95_ms": 387.617083,
+        "sample_count": 5,
+        "samples_ms": [
+          386.316666,
+          386.399042,
+          386.461375,
+          386.46529200000003,
+          387.617083
+        ],
+        "scenario": "foundations.dark.normal.desktop",
+        "warmup_iterations": 1
+      },
+      {
+        "id": "render-stable-controls",
+        "maximum_ms": 376.989958,
+        "median_limit_ms": 2000.0,
+        "median_ms": 375.589917,
+        "minimum_ms": 368.2215,
+        "p95_ms": 376.989958,
+        "sample_count": 5,
+        "samples_ms": [
+          368.2215,
+          374.848666,
+          375.589917,
+          376.12262499999997,
+          376.989958
+        ],
+        "scenario": "components.dark.normal.desktop",
+        "warmup_iterations": 1
+      },
+      {
+        "id": "render-content-mobile",
+        "maximum_ms": 291.31570800000003,
+        "median_limit_ms": 2000.0,
+        "median_ms": 289.44133300000004,
+        "minimum_ms": 281.739084,
+        "p95_ms": 291.31570800000003,
+        "sample_count": 5,
+        "samples_ms": [
+          281.739084,
+          288.283959,
+          289.44133300000004,
+          290.739833,
+          291.31570800000003
+        ],
+        "scenario": "content-stress.dark.normal.360",
+        "warmup_iterations": 1
+      },
+      {
+        "id": "render-documentation-desktop",
+        "maximum_ms": 514.923041,
+        "median_limit_ms": 2000.0,
+        "median_ms": 510.165334,
+        "minimum_ms": 502.21520799999996,
+        "p95_ms": 514.923041,
+        "sample_count": 5,
+        "samples_ms": [
+          502.21520799999996,
+          505.364375,
+          510.165334,
+          510.9153749999999,
+          514.923041
+        ],
+        "scenario": "documentation-shell.dark.normal.desktop",
+        "warmup_iterations": 1
+      }
+    ]
+  },
+  "external_consumers": {
+    "status": "passed",
+    "applications": [
+      "Command",
+      "Forge",
+      "Fleet",
+      "Ledger"
+    ],
+    "validation": "cargo check --offline --all-targets in temporary source copies",
+    "slint_and_slint_build_pins": "=1.18.1",
+    "original_consumer_repository_modified": false,
+    "native_capture_states_rerun": 0
+  },
+  "remaining_evidence": [
+    "Candidate hosted CI on Linux, Windows and macOS with Rust 1.92.",
+    "Native assistive technology, IME, touch and touchpad reviews.",
+    "Companion consumers must update both exact Slint pins before adopting this source candidate."
+  ],
+  "release_actions": {
+    "atlas_version_changed": false,
+    "tag_created": false,
+    "package_published": false,
+    "new_human_baseline_approval_claimed": false
+  }
+}

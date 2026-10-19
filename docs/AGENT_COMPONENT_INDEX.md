@@ -28,7 +28,7 @@ import { AtlasButton, AtlasTextField, AtlasTheme } from "@atlas-ui/stable.slint"
 // Non-responsive contracts that may change between minor versions
 import { AtlasDataTable, AtlasModal } from "@atlas-ui/preview-nonresponsive.slint";
 
-// Responsive preview contracts in the current Slint 1.18.0 checkout
+// Responsive preview contracts in the current Slint 1.18.1 source candidate
 import { AtlasAutoGrid } from "@atlas-ui/preview.slint";
 ```
 

@@ -65,13 +65,13 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Compile every target
-        run: cargo check --workspace --all-targets
+        run: cargo check --locked --workspace --all-targets
 
       - name: Run Clippy with warnings denied
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
 
       - name: Run the complete test suite
-        run: cargo test --workspace --all-targets
+        run: cargo test --locked --workspace --all-targets
 
       - name: Validate public contracts and release evidence
-        run: cargo run -p atlas-ui-tooling -- quality-gate
+        run: cargo run --locked -p atlas-ui-tooling -- quality-gate

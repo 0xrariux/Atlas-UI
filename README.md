@@ -35,6 +35,7 @@ Browse the [component catalog](docs/COMPONENTS.md) or the
 | | Atlas | Slint | How to consume |
 |---|---|---|---|
 | Published crate and tagged source | `v0.2.2` | `1.18.0` | crates.io or local path dependency |
+| Current source candidate | `0.2.2`, unreleased dependency update | `1.18.1` | local path dependency; see the compatibility matrix |
 
 The current source exposes **103 public components**: 26 stable and 77 preview.
 Stable imports follow SemVer; preview contracts can change in a minor release.

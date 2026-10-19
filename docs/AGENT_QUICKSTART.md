@@ -30,6 +30,10 @@ captured and inspected its rendered output.
 These values describe the published Atlas 0.2.2 release and its tagged source.
 Responsive preview compiles without an experimental compiler flag.
 
+The current source candidate pins Slint and `slint-build` to `=1.18.1`.
+For a local path dependency, use those matching pins and consult the candidate
+validation status in `docs/COMPATIBILITY.md`.
+
 Read `docs/COMPATIBILITY.md` before selecting a renderer or making a production
 platform-support claim. Cross-platform CI validates the code and contracts; it
 does not guarantee pixel-identical rendering on every deployment profile.

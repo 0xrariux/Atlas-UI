@@ -234,3 +234,58 @@ review.
 The source and consumer compilation gates, visual comparison, and platform CI
 are green. The `0.2.0` source tag is supported by this evidence; registry
 publication and broader native interaction claims remain separate decisions.
+
+## Slint 1.18.1 candidate review on 2026-10-19
+
+The current source branch evaluates exact `slint = "=1.18.1"` and
+`slint-build = "=1.18.1"` pins against the published
+[1.18.1 changelog](https://github.com/slint-ui/slint/blob/v1.18.1/CHANGELOG.md).
+The workspace retains version 0.2.2 during validation. Published Atlas 0.2.2
+packages and tags retain their original Slint 1.18.0 dependencies.
+
+### Patch contact points
+
+| Upstream correction | Atlas validation boundary |
+|---|---|
+| Nested minimum-height propagation and self-sized Flexbox cells | Responsive recipes, document rows, nested grids and constrained pane runtime fixtures |
+| Nested repeater property reads; row removal or popup closure from a repeated handler | Collection mutations, menu models and nested overlay runtime fixtures |
+| Nested Flickable touchpad scrolling | Controlled viewport fixtures; a native touchpad session remains separate evidence |
+| Standard ComboBox minimum width and TextEdit accessibility value action | Inspect wrapper dependencies; Atlas's composed combobox and text field do not automatically exercise the standard widgets |
+| Winit software startup, Skia transforms and platform-specific crashes | Rebuild the native gallery; the deterministic capture path validates software rendering without establishing native backend parity |
+| Generated Rust indexing and binding corrections | Compile stable, both preview facades, aggregate, gallery and getting-started targets |
+
+Run the full quality gate and all 77 captures against the approved 1.18.0
+references, then measure the four existing render budgets. External template
+checks must use matching 1.18.1 runtime/build pins in a temporary consumer copy.
+Record candidate results separately from baseline approval and hosted CI.
+
+### Candidate results
+
+Local validation passed on macOS 26.5.1 arm64 with Rust 1.97.1, the software
+renderer and scale factor 1, without experimental compiler features.
+
+| Gate | Result |
+|---|---|
+| Dependency resolution | Exactly 14 Slint packages move from 1.18.0 to 1.18.1; unrelated package versions and `const-field-offset` 0.2.1 are retained |
+| Quality gate | Formatting, workspace/all-target compilation, Clippy with warnings denied, 121 tests and contract/package checks pass |
+| API | All signatures, component counts and facades are unchanged; no preview promotion |
+| Visual comparison | 77/77 pass at their existing thresholds; 76 PNGs have identical SHA-256 hashes. The wave desktop capture has a normalized mean difference of 0.00000068 and seven pixels above channel tolerance, confined to the spinner at x=228–240, y=473–479 |
+| Baseline integrity | All tracked reference images and their approval metadata are unchanged |
+| Render budgets | Four debug-process medians pass the 2,000 ms limits: foundations 386.46 ms, controls 375.59 ms, narrow content 289.44 ms, documentation 510.17 ms. These include startup and the configured capture delay; they are not release frame-time benchmarks |
+| External consumers | Command, Forge, Fleet and Ledger pass `cargo check --offline --all-targets` in temporary copies with both exact Slint pins updated; the original consumer repository is unchanged |
+| Remaining evidence | Candidate hosted CI, a Rust 1.92 run and native accessibility/input reviews remain pending. The 97 external native captures were not rerun |
+
+The [machine-readable validation record](slint-1.18.1-validation.json)
+preserves the results. Raw logs are generated under
+`target/validation/slint-1.18.1/`. The gallery fixture copy retains its
+historical release examples so the comparison isolates the runtime update.
+The candidate is ready for review; publication requires a separate release
+decision. No version, tag or baseline approval was created.
+
+### Fixes outside this patch
+
+[Accessible virtualized focus #13425](https://github.com/slint-ui/slint/pull/13425)
+merged on 2026-10-19, and [scroll-clipped focus #13614](https://github.com/slint-ui/slint/pull/13614)
+merged after 1.18.1. Neither is included in this candidate. Named/typed slots,
+interfaces and the new headless/Basic controls on master remain experimental.
+No preview API is promoted by this dependency update.

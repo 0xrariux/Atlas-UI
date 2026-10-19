@@ -10,6 +10,28 @@ The status described here is not a commitment from the Slint project. Every item
 is reassessed when Atlas changes its pinned Slint version, validates a new
 platform, or starts work on an affected dependency tree.
 
+## Slint 1.18.1 candidate review on 2026-10-19
+
+The source branch evaluates the published [Slint 1.18.1 patch](https://github.com/slint-ui/slint/releases/tag/v1.18.1)
+with exact runtime/build pins. Published Atlas 0.2.2 retains Slint 1.18.0.
+The [compatibility matrix](docs/COMPATIBILITY.md) records candidate evidence;
+the [patch audit](docs/SLINT_1_18_AUDIT.md#slint-1181-candidate-review-on-2026-10-19)
+records the affected Atlas contracts.
+
+Local validation passes 121 tests, all 77 visual comparisons, four render
+budgets and four temporary template consumers. The
+[validation record](docs/slint-1.18.1-validation.json) preserves the evidence.
+Candidate hosted CI and native interaction/accessibility reviews remain
+separate work.
+
+| Upstream status | Atlas implication |
+|---|---|
+| 1.18.1 fixes nested minimum heights, cross-axis flex sizing, repeater mutation and nested touchpad scrolling | Revalidate layout, overlays, models and scrolling; compare with the approved 1.18.0 visual set |
+| [#13425](https://github.com/slint-ui/slint/pull/13425), accessible focus in virtualized lists, merged on 2026-10-19 | Monitor the next published release; this fix is absent from 1.18.1 |
+| [#13614](https://github.com/slint-ui/slint/pull/13614), focus retained when scrolling an item out of view, merged after 1.18.1 | Keep the native focus limitation explicit; this patch upgrade does not resolve it |
+| [#14001](https://github.com/slint-ui/slint/pull/14001), reusable headless/Basic controls, merged on master | Evaluate separately; named/typed slots and interfaces remain experimental and outside Atlas's stable facade |
+| [#14172](https://github.com/slint-ui/slint/issues/14172), language target version and layout compatibility | Track library imports through `-L` and host/compiler agreement before a future 1.19 migration |
+
 ## Slint 1.17.1 historical capability baseline
 
 | Area | Pinned baseline | Capability or evidence still required | Atlas interim strategy | Review trigger |
@@ -38,7 +60,7 @@ platform, or starts work on an affected dependency tree.
 
 ## Upstream delta reviewed on 2026-09-09
 
-Atlas's source checkout now pins Slint 1.18.0. The baseline above records the
+Published Atlas 0.2.2 pins Slint 1.18.0. The baseline above records the
 earlier 1.17.1 state; the table below records the upstream evidence available
 on 2026-09-09. The released [1.18.0 changelog](https://github.com/slint-ui/slint/blob/master/CHANGELOG.md#1180---2026-09-16)
 and [Atlas audit](docs/SLINT_1_18_AUDIT.md) supersede its release-status

@@ -32,11 +32,11 @@ an absolute path for temporary local work. The path must point to the
 # Cargo.toml
 [dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui" }
-slint = "=1.18.0"
+slint = "=1.18.1"
 
 [build-dependencies]
 atlas-ui = { path = "../Atlas/crates/atlas-ui" }
-slint-build = "=1.18.0"
+slint-build = "=1.18.1"
 ```
 
 ```rust
@@ -48,6 +48,9 @@ fn main() {
         .expect("compile the Atlas UI application");
 }
 ```
+
+These pins target the current source candidate. The published Atlas 0.2.2
+package and tag require Slint 1.18.0 instead.
 
 Keep machine-specific absolute paths out of committed manifests. Use the
 published crate or a pinned Git dependency when the consumer must build without
