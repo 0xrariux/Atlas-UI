@@ -23,8 +23,9 @@ budgets and four temporary template consumers. The
 [validation record](docs/slint-1.18.1-validation.json) preserves the evidence.
 The complete quality gate also passes under Rust 1.92.0 on macOS arm64 in a
 separate clean target directory.
-Candidate hosted CI and native interaction/accessibility reviews remain
-separate work.
+[Hosted Rust 1.92 CI](https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843)
+passes on Linux, Windows and macOS for candidate code revision `095a7e9`.
+Native interaction/accessibility reviews remain separate work.
 
 | Upstream status | Atlas implication |
 |---|---|

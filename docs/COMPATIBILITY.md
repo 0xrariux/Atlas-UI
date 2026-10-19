@@ -24,8 +24,10 @@ separate clean target directory on macOS arm64. CI uses `--locked` so every
 platform validates the reviewed dependency resolution.
 
 The baseline images and their original approval metadata are unchanged.
-Candidate hosted CI remains pending. These results do
-not establish native accessibility, IME, touch, touchpad or another platform's
+[Hosted Rust 1.92 CI](https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843)
+passes compilation, Clippy, tests and contract/package checks on Linux,
+Windows and macOS for candidate code revision `095a7e9`.
+These results do not establish native accessibility, IME, touch, touchpad or another platform's
 behavior. The 97 external native captures were not rerun. See the
 [patch audit](SLINT_1_18_AUDIT.md#slint-1181-candidate-review-on-2026-10-19).
 The [validation record](slint-1.18.1-validation.json) contains the measured

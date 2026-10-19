@@ -245,7 +245,6 @@
     "native_capture_states_rerun": 0
   },
   "remaining_evidence": [
-    "Candidate hosted CI on Linux, Windows and macOS with Rust 1.92.",
     "Native assistive technology, IME, touch and touchpad reviews.",
     "Companion consumers must update both exact Slint pins before adopting this source candidate."
   ],
@@ -269,5 +268,31 @@
     "clippy_warnings_denied": "passed",
     "contracts_and_packages": "passed",
     "clean_target_directory": true
+  },
+  "hosted_ci": {
+    "status": "passed",
+    "run_id": 39309386843,
+    "url": "https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843",
+    "tested_commit": "095a7e97277a4f3f074716d8be42f7d5f54a2bd2",
+    "pull_request": "https://github.com/0xrariux/Atlas-UI/pull/1",
+    "rust_version": "1.92.0",
+    "lockfile_enforced": true,
+    "jobs": [
+      {
+        "name": "Rust 1.92 \u00b7 macOS",
+        "status": "success",
+        "url": "https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843/job/118254941191"
+      },
+      {
+        "name": "Rust 1.92 \u00b7 Linux",
+        "status": "success",
+        "url": "https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843/job/118254941427"
+      },
+      {
+        "name": "Rust 1.92 \u00b7 Windows",
+        "status": "success",
+        "url": "https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843/job/118254941720"
+      }
+    ]
   }
 }

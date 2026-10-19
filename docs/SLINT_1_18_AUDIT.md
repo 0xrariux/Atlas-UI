@@ -274,7 +274,8 @@ renderer and scale factor 1, without experimental compiler features.
 | Render budgets | Four debug-process medians pass the 2,000 ms limits: foundations 386.46 ms, controls 375.59 ms, narrow content 289.44 ms, documentation 510.17 ms. These include startup and the configured capture delay; they are not release frame-time benchmarks |
 | External consumers | Command, Forge, Fleet and Ledger pass `cargo check --offline --all-targets` in temporary copies with both exact Slint pins updated; the original consumer repository is unchanged |
 | Rust 1.92 | The complete quality gate passes all 121 tests, compilation, Clippy and contract/package checks in a separate clean macOS arm64 target directory |
-| Remaining evidence | Candidate hosted CI and native accessibility/input reviews remain pending. The 97 external native captures were not rerun |
+| Hosted Rust 1.92 CI | Linux, Windows and macOS pass compilation, Clippy, tests and contract/package checks for `095a7e9`; [CI run](https://github.com/0xrariux/Atlas-UI/actions/runs/39309386843) |
+| Remaining evidence | Native accessibility/input reviews remain pending. The 97 external native captures were not rerun |
 
 The [machine-readable validation record](slint-1.18.1-validation.json)
 preserves the results. Raw logs are generated under

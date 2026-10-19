@@ -5,9 +5,9 @@
 - Updates the source candidate to exact Slint and `slint-build` 1.18.1 pins.
   Local validation passes 121 tests, all 77 existing visual comparisons,
   four render budgets and four temporary template consumers. Public API and
-  baseline approvals are unchanged. Candidate hosted CI and native input and
-  accessibility reviews remain pending; published Atlas 0.2.2 retains Slint
-  1.18.0.
+  baseline approvals are unchanged. Rust 1.92 CI passes on Linux, Windows and
+  macOS. Native input and accessibility reviews remain pending; published
+  Atlas 0.2.2 retains Slint 1.18.0.
 
 ## 0.2.2 — 2026-09-17
 
